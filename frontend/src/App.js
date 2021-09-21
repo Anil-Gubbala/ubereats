@@ -1,7 +1,11 @@
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+import PropTypes from 'prop-types';
+
 function App() {
+  const [click, setClicked] = useState('true');
   return (
     <div className='App'>
       <header className='App-header'>
@@ -17,9 +21,20 @@ function App() {
         >
           Learn React
         </a>
+        <button
+          type='button'
+          onClick={() => {
+            setClicked('false');
+          }}
+        >
+          Hello
+        </button>
+        <h2>{click}</h2>
       </header>
     </div>
   );
 }
+
+App.propTypes = {};
 
 export default App;
