@@ -1,32 +1,45 @@
-const http = require('http');
-
-const hostname = '127.0.0.1';
-const port = 3000;
-
+const express = require('express');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const mysql = require('mysql');
+const router = require('./src/router');
+const db = require('./src/dbConnector');
+const startServer = require('./src/server');
 
-const db = mysql.createConnection({
-  user: 'root',
-  host: 'ubereatsdb.cauvszlanaze.us-east-2.rds.amazonaws.com',
-  password: '12345678',
-  database: 'sys',
-  port: '3306',
-  multipleStatements: true,
-});
+const app = express();
+app.use(express.json());
+
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT'],
+    credentials: true,
+  })
+);
+app.use(express.urlencoded({ extended: true }));
+
+app.use('/', router);
+
+// ---------------------RECHECK----------------------
+app.use(cookieParser());
+app.use(
+  session({
+    key: 'ubereats',
+    secret: 'lab1',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 60 * 60 * 1000,
+    },
+  })
+);
 
 db.connect((err) => {
   if (err) {
-    throw new Error(`Error occured ${err}`);
+    throw new Error(`Database connection error  occured : ${err}`);
   }
-  console.log('connection created');
+  console.log('Database connection created');
 });
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World');
-});
-
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+startServer();
