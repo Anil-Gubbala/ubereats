@@ -8,21 +8,6 @@ const db = require('./src/dbConnector');
 const startServer = require('./src/server');
 
 const app = express();
-app.use(express.json());
-
-app.use(
-  cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT'],
-    credentials: true,
-  })
-);
-app.use(express.urlencoded({ extended: true }));
-
-app.use('/', router);
-
-// ---------------------RECHECK----------------------
-app.use(cookieParser());
 app.use(
   session({
     key: 'ubereats',
@@ -35,11 +20,28 @@ app.use(
   })
 );
 
+app.use(
+  cors({
+    origin: 'http://localhost:3006',
+    methods: ['GET', 'POST', 'PUT'],
+    credentials: true,
+  })
+);
+app.use(express.json());
+
+// ---------------------RECHECK----------------------
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+
+app.use('/', router);
+
 db.connect((err) => {
   if (err) {
     throw new Error(`Database connection error  occured : ${err}`);
   }
-  console.log('Database connection created');
+  console.log('Database connection established');
 });
 
-startServer();
+app.listen(3000, () => {
+  console.log('running server');
+});
