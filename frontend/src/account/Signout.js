@@ -13,10 +13,11 @@ function Signout() {
   const dispatch = useDispatch();
   const { signout } = bindActionCreators(actionCreators, dispatch);
   const [logout, setLogout] = useState(false);
-  signout();
+
   useEffect(() => {
     get('/signout').then(() => {
-      cookie.remove(COOKIE, { path: '/' });
+      // cookie.remove(COOKIE, { path: '/' });
+      signout();
       setLogout(true);
     });
   }, []);

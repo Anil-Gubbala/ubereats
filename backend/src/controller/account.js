@@ -90,6 +90,9 @@ const signout = (req, res) => {
     req.session.destroy();
     req.session = null;
     console.log(res.cookie);
+    res.clearCookie('customer', {
+      path: '/',
+    });
     res.send();
   } else {
     res.send();

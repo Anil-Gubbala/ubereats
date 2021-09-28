@@ -9,7 +9,7 @@ Axios.defaults.withCredentials = true;
 
 const get = (path, data) =>
   Axios.get(SERVERURL + path, data)
-    .then()
+    .then((response) => response.data)
     .catch();
 
 const post = (path, data) =>

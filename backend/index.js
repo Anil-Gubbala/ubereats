@@ -15,14 +15,14 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 60 * 60 * 1000,
+      maxAge: 900000,
     },
   })
 );
 
 app.use(
   cors({
-    origin: 'http://localhost:3006',
+    origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT'],
     credentials: true,
   })
@@ -42,6 +42,6 @@ db.connect((err) => {
   console.log('Database connection established');
 });
 
-app.listen(3000, () => {
+app.listen(4000, () => {
   console.log('running server');
 });
