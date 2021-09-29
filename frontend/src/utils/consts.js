@@ -1,4 +1,8 @@
-const COOKIE = 'customer';
-const SERVERURL = 'http://localhost:4000';
+const CONSTANTS = {
+  COOKIE: 'customer',
+  SERVERURL: 'http://localhost:4000',
+  USER_ENUM: 1,
+  RESTAURANT_ENUM: 2,
+};
 
-export { COOKIE, SERVERURL };
+export default CONSTANTS;

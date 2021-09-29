@@ -1,5 +1,5 @@
 import Axios from 'axios';
-import { SERVERURL } from './consts';
+import CONSTANTS from './consts';
 
 Axios.defaults.withCredentials = true;
 // Axios.defaults.headers = {
@@ -8,12 +8,12 @@ Axios.defaults.withCredentials = true;
 // };
 
 const get = (path, data) =>
-  Axios.get(SERVERURL + path, data)
+  Axios.get(CONSTANTS.SERVERURL + path, data)
     .then((response) => response.data)
     .catch();
 
 const post = (path, data) =>
-  Axios.post(SERVERURL + path, data, { mode: 'cors' })
+  Axios.post(CONSTANTS.SERVERURL + path, data, { mode: 'cors' })
     .then((response) => response.data)
     .catch();
 

@@ -11,15 +11,20 @@ import { actionCreators } from '../reducers/actionCreators';
 
 function Signout() {
   const dispatch = useDispatch();
-  const { signout } = bindActionCreators(actionCreators, dispatch);
+  const { signout, customer } = bindActionCreators(actionCreators, dispatch);
   const [logout, setLogout] = useState(false);
 
   useEffect(() => {
-    get('/signout').then(() => {
-      // cookie.remove(COOKIE, { path: '/' });
-      signout();
-      setLogout(true);
-    });
+    get('/signout')
+      .then(() => {
+        // cookie.remove(COOKIE, { path: '/' });
+        localStorage.clear();
+        signout();
+        setLogout(true);
+      })
+      .catch(() => {
+        console.log('error');
+      });
   }, []);
 
   if (logout) {

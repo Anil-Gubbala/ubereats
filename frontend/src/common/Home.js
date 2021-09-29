@@ -3,14 +3,13 @@ import cookie from 'react-cookies';
 import { Redirect } from 'react-router';
 import CustomerHome from '../customer/CustomerHome';
 import RestaurantHome from '../restaurant/RestaurantHome';
-import { COOKIE } from '../utils/consts';
 
 function Home() {
-  const cookieData = cookie.load(COOKIE);
-  if (cookieData === undefined) {
+  const isLoggedIn = localStorage.getItem('ubereats');
+  if (isLoggedIn === null) {
     return <Redirect to='/signin'></Redirect>;
   }
-  if (cookieData === 'true') {
+  if (isLoggedIn === 1) {
     return <CustomerHome></CustomerHome>;
   }
 

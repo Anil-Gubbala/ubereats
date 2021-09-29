@@ -30,8 +30,10 @@ function Signin() {
     post('/signin', formData)
       .then((data) => {
         if (formData.customer) {
+          localStorage.setItem('ubereats', 'customer');
           customer();
         } else {
+          localStorage.setItem('ubereats', 'restaurant');
           restaurant();
         }
         setSuccess(true);
@@ -48,7 +50,7 @@ function Signin() {
     setFormData({ ...formData, [e.target.name]: !e.target.checked });
   };
 
-  if (success || cookie.load(COOKIE)) {
+  if (success || localStorage.getItem('ubereats')) {
     return <Redirect to='/home'></Redirect>;
   }
   return (
