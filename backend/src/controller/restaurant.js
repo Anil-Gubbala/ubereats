@@ -93,4 +93,38 @@ const updateDish = (req, res) => {
   }
 };
 
-module.exports = { getRestaurantInfo, getDishes, addDish, updateDish };
+const updateRestaurantInfo = (req, res) => {
+  const { body } = req;
+  if (!req.session.user || req.session.user.isCustomer) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(
+      RESTAURANT.UPDATE_RESTAURANT,
+      [
+        body.name,
+        body.location,
+        body.contact,
+        body.picture,
+        body.description,
+        body.start,
+        body.end,
+        req.session.user.email,
+      ],
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+          return;
+        }
+        res.send();
+      }
+    );
+  }
+};
+
+module.exports = {
+  getRestaurantInfo,
+  getDishes,
+  addDish,
+  updateDish,
+  updateRestaurantInfo,
+};

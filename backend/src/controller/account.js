@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const db = require('../dbConnector');
 const RESTAURANT = require('../sql/restaurantSql');
+const USER = require('../sql/userSql');
 
 const saltRounds = 10;
 
@@ -8,27 +9,49 @@ const sendError = (res, status, code) => {
   res.status(status).send({ err: code });
 };
 
-const registerRestaurant = (req, res) => {
+const registerRestaurant = (req, res, hash) => {
+  db.query(
+    RESTAURANT.SIGNUP,
+    [req.body.restaurantName, req.body.email, hash, req.body.address],
+    (err1) => {
+      if (err1) {
+        sendError(
+          res,
+          409,
+          err1.errno === 1062 ? 'email already registered' : err1.code
+        );
+      } else {
+        res.status(200).send({ success: true });
+      }
+    }
+  );
+};
+
+const registerUser = (req, res, hash) => {
+  db.query(USER.SIGNUP, [req.body.name, req.body.email, hash], (err1) => {
+    if (err1) {
+      sendError(
+        res,
+        409,
+        err1.errno === 1062 ? 'email already registered' : err1.code
+      );
+    } else {
+      res.status(200).send({ success: true });
+    }
+  });
+};
+
+const signup = (req, res) => {
   bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
     if (err) {
       sendError(res, 404, err.code);
       return;
     }
-    db.query(
-      RESTAURANT.SIGNUP,
-      [req.body.restaurantName, req.body.email, hash, req.body.address],
-      (err1) => {
-        if (err1) {
-          sendError(
-            res,
-            409,
-            err1.errno === 1062 ? 'email already registered' : err1.code
-          );
-        } else {
-          res.status(200).send({ success: true });
-        }
-      }
-    );
+    if (req.body.accountType === '1') {
+      registerRestaurant(req, res, hash);
+    } else {
+      registerUser(req, res, hash);
+    }
   });
 };
 
@@ -56,9 +79,9 @@ const signin = (req, res) => {
     res.send(req.session.user);
     return;
   }
-  let sql = RESTAURANT.CHECK_USER;
+  let sql = USER.PASSWORD;
   if (!req.body.customer) {
-    sql = RESTAURANT.CHECK_USER;
+    sql = RESTAURANT.PASSWORD;
   }
   db.query(sql, req.body.email, (err, result) => {
     if (err) {
@@ -99,4 +122,4 @@ const signout = (req, res) => {
   }
 };
 
-module.exports = { registerRestaurant, signin, signout };
+module.exports = { signup, signin, signout };
