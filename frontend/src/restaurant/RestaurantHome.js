@@ -19,8 +19,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import { get, post } from '../utils/serverCall';
 import Dishes from './Dishes';
+import CONSTANTS from '../utils/consts';
 
 function RestaurantHome() {
+  const windowUrl = window.location.search;
+  const params = new URLSearchParams(windowUrl);
+
   const defaultValues = {
     contact: '',
     description: 'Add description',
@@ -29,11 +33,16 @@ function RestaurantHome() {
     name: '',
     picture: 'Add Restaurant Image',
     start: '16:00:00',
+    email: params.get('id'),
   };
+
+  const [isCustomer, setIsCustomer] = useState(
+    localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_USER
+  );
 
   const [restaurantInfo, setRestaurantInfo] = useState(defaultValues);
   useEffect(() => {
-    get('/restaurantInfo').then((data) => {
+    get('/restaurantInfo', { id: params.get('id') }).then((data) => {
       setRestaurantInfo((prev) => ({ ...prev, ...data[0] }));
     });
   }, []);
@@ -96,89 +105,91 @@ function RestaurantHome() {
                 </Typography>
               </Stack>
             </Col>
-            <Col md='auto'>
-              <Row style={{ padding: '8px' }}>
-                <Stack spacing={2}>
-                  <Button onClick={handleClickOpen}>
-                    Update Restaurant Info
-                  </Button>
-                  <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Subscribe</DialogTitle>
-                    <DialogContent>
-                      <TextField
-                        margin='dense'
-                        id='rdname'
-                        name='name'
-                        label='Name'
-                        fullWidth
-                        variant='standard'
-                        value={dialogData.name}
-                        onChange={handleDialogChange}
-                      />
-                      <TextField
-                        margin='dense'
-                        id='rddescription'
-                        name='description'
-                        label='Description'
-                        fullWidth
-                        variant='standard'
-                        value={dialogData.description}
-                        onChange={handleDialogChange}
-                      />
-                      <TextField
-                        margin='dense'
-                        id='rdcontact'
-                        name='contact'
-                        label='Contact Information'
-                        fullWidth
-                        variant='standard'
-                        value={dialogData.contact}
-                        onChange={handleDialogChange}
-                      />
-                      <TextField
-                        margin='dense'
-                        id='rdstart'
-                        name='start'
-                        label='Start time'
-                        fullWidth
-                        variant='standard'
-                        value={dialogData.start}
-                        onChange={handleDialogChange}
-                      />
-                      <TextField
-                        margin='dense'
-                        id='rdend'
-                        name='end'
-                        label='End time'
-                        fullWidth
-                        variant='standard'
-                        value={dialogData.end}
-                        onChange={handleDialogChange}
-                      />
-                      <TextField
-                        margin='dense'
-                        id='rdlocation'
-                        name='location'
-                        label='Location'
-                        fullWidth
-                        variant='standard'
-                        value={dialogData.location}
-                        onChange={handleDialogChange}
-                      />
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={handleClose}>Cancel</Button>
-                      <Button onClick={handleSave}>Save</Button>
-                    </DialogActions>
-                  </Dialog>
-                </Stack>
-              </Row>
-            </Col>
+            {!isCustomer && (
+              <Col md='auto'>
+                <Row style={{ padding: '8px' }}>
+                  <Stack spacing={2}>
+                    <Button onClick={handleClickOpen}>
+                      Update Restaurant Info
+                    </Button>
+                    <Dialog open={open} onClose={handleClose}>
+                      <DialogTitle>Subscribe</DialogTitle>
+                      <DialogContent>
+                        <TextField
+                          margin='dense'
+                          id='rdname'
+                          name='name'
+                          label='Name'
+                          fullWidth
+                          variant='standard'
+                          value={dialogData.name}
+                          onChange={handleDialogChange}
+                        />
+                        <TextField
+                          margin='dense'
+                          id='rddescription'
+                          name='description'
+                          label='Description'
+                          fullWidth
+                          variant='standard'
+                          value={dialogData.description}
+                          onChange={handleDialogChange}
+                        />
+                        <TextField
+                          margin='dense'
+                          id='rdcontact'
+                          name='contact'
+                          label='Contact Information'
+                          fullWidth
+                          variant='standard'
+                          value={dialogData.contact}
+                          onChange={handleDialogChange}
+                        />
+                        <TextField
+                          margin='dense'
+                          id='rdstart'
+                          name='start'
+                          label='Start time'
+                          fullWidth
+                          variant='standard'
+                          value={dialogData.start}
+                          onChange={handleDialogChange}
+                        />
+                        <TextField
+                          margin='dense'
+                          id='rdend'
+                          name='end'
+                          label='End time'
+                          fullWidth
+                          variant='standard'
+                          value={dialogData.end}
+                          onChange={handleDialogChange}
+                        />
+                        <TextField
+                          margin='dense'
+                          id='rdlocation'
+                          name='location'
+                          label='Location'
+                          fullWidth
+                          variant='standard'
+                          value={dialogData.location}
+                          onChange={handleDialogChange}
+                        />
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={handleSave}>Save</Button>
+                      </DialogActions>
+                    </Dialog>
+                  </Stack>
+                </Row>
+              </Col>
+            )}
           </Row>
         </Card>
       </Row>
       <Row>
-        <Dishes></Dishes>
+        <Dishes isCustomer={isCustomer}></Dishes>
       </Row>
     </Container>
   );

@@ -3,10 +3,14 @@ const RESTAURANT = require('../sql/restaurantSql');
 const { response } = require('../utils/response');
 
 const getRestaurantInfo = (req, res) => {
-  if (!req.session.user || req.session.user.isCustomer) {
+  if (!req.session.user) {
     response.unauthorized(res, 'unauthorized access');
   } else {
-    db.query(RESTAURANT.ALL_INFO, req.session.user.email, (err, result) => {
+    let { email } = req.session.user;
+    if (req.session.user.isCustomer) {
+      email = req.query.id;
+    }
+    db.query(RESTAURANT.ALL_INFO, email, (err, result) => {
       if (err) {
         response.error(res, 500, err.code);
         return;
@@ -21,10 +25,14 @@ const getRestaurantInfo = (req, res) => {
 };
 
 const getDishes = (req, res) => {
-  if (!req.session.user || req.session.user.isCustomer) {
+  if (!req.session.user) {
     response.unauthorized(res, 'unauthorized access');
   } else {
-    db.query(RESTAURANT.DISHES, req.session.user.email, (err, result) => {
+    let { email } = req.session.user;
+    if (req.session.user.isCustomer) {
+      email = req.query.id;
+    }
+    db.query(RESTAURANT.DISHES, email, (err, result) => {
       if (err) {
         response.error(res, 500, err.code);
         return;

@@ -6,10 +6,15 @@ import Row from 'react-bootstrap/esm/Row';
 import Container from 'react-bootstrap/esm/Container';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
+import { useDispatch } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import { post } from '../utils/serverCall';
+import { actionCreators } from '../reducers/actionCreators';
 
 function Signup() {
+  const dispatch = useDispatch();
+  const { signup } = bindActionCreators(actionCreators, dispatch);
   const defaultValues = {
     restaurantName: '',
     name: '',
@@ -36,6 +41,12 @@ function Signup() {
     e.preventDefault();
     post('/signup', formData)
       .then(() => {
+        signup(formData.email);
+        // if (formData.accountType === '0') {
+        //   signup(formData.email);
+        // } else {
+        //   signup(formData.email);
+        // }
         setSuccess(true);
       })
       .catch(() => {
@@ -50,8 +61,10 @@ function Signup() {
           <Card style={{ width: '18rem', margin: 'auto' }}>
             <Card.Body>
               <Card.Title>Registration success</Card.Title>
-
-              <Card.Link href='/signin'>Go to login page</Card.Link>
+              <Link to='/signin' className='nav-link'>
+                Go to login page
+              </Link>
+              {/* <Card.Link href='/signin'>Go to login page</Card.Link> */}
             </Card.Body>
           </Card>
         </Row>
@@ -143,12 +156,12 @@ function Signup() {
                   <Form.Control onChange={eventHandler} name='city' />
                 </Form.Group>
 
-                <Form.Group as={Col} controlId='formCity'>
+                <Form.Group as={Col} controlId='formState'>
                   <Form.Label>State</Form.Label>
                   <Form.Control onChange={eventHandler} name='state' />
                 </Form.Group>
 
-                <Form.Group as={Col} controlId='formState'>
+                <Form.Group as={Col} controlId='formCountry'>
                   <Form.Label>Country</Form.Label>
                   <Form.Select
                     name='country'

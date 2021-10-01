@@ -1,13 +1,36 @@
-const loggedReducer = (state = 0, action) => {
+const initialState = {
+  isLoggedIn: false,
+  isCustomer: true,
+  email: '',
+};
+
+const loggedReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'CUSTOMER':
-      return 1;
+      return {
+        ...state,
+        isLoggedIn: true,
+        isCustomer: true,
+        email: action.payload,
+      };
     case 'RESTAURANT':
-      return 2;
+      return {
+        ...state,
+        isLoggedIn: true,
+        isCustomer: false,
+        email: action.payload,
+      };
     case 'SIGNOUT':
-      return 0;
+      return { ...state, isLoggedIn: false };
+    case 'SIGNUP':
+      return {
+        ...state,
+        isLoggedIn: false,
+        isCustomer: true,
+        email: action.payload,
+      };
     default:
-      return state;
+      return initialState;
   }
 };
 

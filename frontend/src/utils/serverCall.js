@@ -7,14 +7,17 @@ Axios.defaults.withCredentials = true;
 //   // 'Access-Control-Allow-Origin': '*',
 // };
 
-const get = (path, data) =>
-  Axios.get(CONSTANTS.SERVERURL + path, data)
+const get = (path, data) => {
+  console.log(data);
+  return Axios.get(CONSTANTS.SERVERURL + path, { params: data })
     .then((response) => response.data)
     .catch();
+};
 
-const post = (path, data) =>
-  Axios.post(CONSTANTS.SERVERURL + path, data, { mode: 'cors' })
+const post = (path, data) => {
+  return Axios.post(CONSTANTS.SERVERURL + path, data, { mode: 'cors' })
     .then((response) => response.data)
     .catch();
+};
 
 export { get, post };

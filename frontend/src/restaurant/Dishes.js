@@ -5,7 +5,6 @@ import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Input from '@mui/material/Input';
 import InputLabel from '@mui/material/InputLabel';
@@ -21,10 +20,13 @@ import Typography from '@mui/material/Typography';
 
 import { Container } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import propTypes from 'prop-types';
 
 import { get, post } from '../utils/serverCall';
 
-export default function Dishes() {
+export default function Dishes(props) {
+  const windowUrl = window.location.search;
+  const params = new URLSearchParams(windowUrl);
   const [open, setOpen] = useState(false);
   const [dishes, setDishes] = useState([]);
   const [updateMode, setUpdateMode] = useState(false);
@@ -44,7 +46,7 @@ export default function Dishes() {
   };
 
   useEffect(() => {
-    get('/getDishes').then((response) => {
+    get('/getDishes', { id: params.get('id') }).then((response) => {
       // const result = new Map(response.map((i) => [i.name, i]));
       setDishes(() => response);
     });
@@ -99,83 +101,87 @@ export default function Dishes() {
 
   return (
     <Container>
-      <Button variant='outlined' onClick={handleClickOpen}>
-        Add Dishes
-      </Button>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add Dish</DialogTitle>
-        <DialogContent>
-          <Stack>
-            <TextField
-              id='dialogName'
-              name='name'
-              label='Dish Name'
-              variant='standard'
-              value={dialogData.name}
-              onChange={handleDialogChange}
-            />
-            <TextField
-              id='dialogIngredients'
-              name='ingredients'
-              label='Ingredients'
-              variant='standard'
-              value={dialogData.ingredients}
-              onChange={handleDialogChange}
-            />
-
-            <InputLabel htmlFor='dialogAmount'>Price</InputLabel>
-            <Input
-              id='dialogAmount'
-              name='price'
-              startAdornment={
-                <InputAdornment position='start'>$</InputAdornment>
-              }
-              value={dialogData.price}
-              onChange={handleDialogChange}
-            />
-            <TextField
-              id='dialogDescription'
-              name='description'
-              label='Description'
-              variant='standard'
-              value={dialogData.description}
-              onChange={handleDialogChange}
-            />
-            <TextField
-              id='dialogCategory'
-              name='category'
-              label='Category'
-              variant='standard'
-              value={dialogData.category}
-              onChange={handleDialogChange}
-            />
-          </Stack>
-
-          <Stack alignItems='center' spacing={2}>
-            <Image
-              src='https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
-              rounded
-              fluid
-            />
-            <label htmlFor='dialogImage'>
-              <Input
-                style={{ display: 'none' }}
-                accept='image/*'
-                id='dialogImage'
-                multiple
-                type='file'
+      {!props.isCustomer && (
+        <Button variant='outlined' onClick={handleClickOpen}>
+          Add Dishes
+        </Button>
+      )}
+      {!props.isCustomer && (
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>Add Dish</DialogTitle>
+          <DialogContent>
+            <Stack>
+              <TextField
+                id='dialogName'
+                name='name'
+                label='Dish Name'
+                variant='standard'
+                value={dialogData.name}
+                onChange={handleDialogChange}
               />
-              <Button variant='contained' component='span'>
-                Upload
-              </Button>
-            </label>
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Close</Button>
-          <Button onClick={addDish}>Confirm</Button>
-        </DialogActions>
-      </Dialog>
+              <TextField
+                id='dialogIngredients'
+                name='ingredients'
+                label='Ingredients'
+                variant='standard'
+                value={dialogData.ingredients}
+                onChange={handleDialogChange}
+              />
+
+              <InputLabel htmlFor='dialogAmount'>Price</InputLabel>
+              <Input
+                id='dialogAmount'
+                name='price'
+                startAdornment={
+                  <InputAdornment position='start'>$</InputAdornment>
+                }
+                value={dialogData.price}
+                onChange={handleDialogChange}
+              />
+              <TextField
+                id='dialogDescription'
+                name='description'
+                label='Description'
+                variant='standard'
+                value={dialogData.description}
+                onChange={handleDialogChange}
+              />
+              <TextField
+                id='dialogCategory'
+                name='category'
+                label='Category'
+                variant='standard'
+                value={dialogData.category}
+                onChange={handleDialogChange}
+              />
+            </Stack>
+
+            <Stack alignItems='center' spacing={2}>
+              <Image
+                src='https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
+                rounded
+                fluid
+              />
+              <label htmlFor='dialogImage'>
+                <Input
+                  style={{ display: 'none' }}
+                  accept='image/*'
+                  id='dialogImage'
+                  multiple
+                  type='file'
+                />
+                <Button variant='contained' component='span'>
+                  Upload
+                </Button>
+              </label>
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Close</Button>
+            <Button onClick={addDish}>Confirm</Button>
+          </DialogActions>
+        </Dialog>
+      )}
 
       <Grid
         container
@@ -199,12 +205,21 @@ export default function Dishes() {
                   {each.description}
                 </Typography>
               </CardContent>
-              <CardActions>
-                <Button size='small' index={index} onClick={handleDishEdit}>
-                  Edit
-                </Button>
-                <Button size='small'>Delete</Button>
-              </CardActions>
+              {!props.isCustomer && (
+                <CardActions>
+                  <Button size='small' index={index} onClick={handleDishEdit}>
+                    Edit
+                  </Button>
+                  <Button size='small'>Delete</Button>
+                </CardActions>
+              )}
+              {props.isCustomer && (
+                <CardActions>
+                  <Button size='small' index={index} onClick={handleDishEdit}>
+                    Add to cart
+                  </Button>
+                </CardActions>
+              )}
             </Card>
           </Grid>
         ))}
@@ -212,3 +227,7 @@ export default function Dishes() {
     </Container>
   );
 }
+
+Dishes.propTypes = {
+  isCustomer: propTypes.bool.isRequired,
+};

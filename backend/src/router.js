@@ -8,6 +8,8 @@ const {
   updateRestaurantInfo,
 } = require('./controller/restaurant');
 
+const { getRestaruantsList, addToCart } = require('./controller/common');
+
 const router = express.Router();
 
 // Account
@@ -21,5 +23,9 @@ router.route('/getDishes').get(getDishes);
 router.route('/addDish').post(addDish);
 router.route('/updateDish').post(updateDish);
 router.route('/updateRestaurantInfo').post(updateRestaurantInfo);
+
+// common
+router.route('/getRestaruantsList').get(getRestaruantsList);
+router.route('/addToCart').get(addToCart);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const RESTAURANT = {
   SIGNUP:
-    'INSERT INTO ubereats.restaurant_login (restaurant_name,email_id,password,location)VALUES(?,?,?,?);',
+    'INSERT INTO ubereats.restaurant_login (name,email,password,location)VALUES(?,?,?,?);',
   PASSWORD: 'SELECT password FROM ubereats.restaurant_login WHERE email = ?;',
   ALL_INFO:
     'SELECT `name`, `location`, `contact`, `picture`, `description`, `start`, `end` FROM ubereats.restaurant_login WHERE email = ?;',
