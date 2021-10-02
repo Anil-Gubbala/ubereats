@@ -35,12 +35,12 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/', router);
 
-db.connect((err) => {
-  if (err) {
-    throw new Error(`Database connection error  occured : ${err}`);
-  }
-  console.log('Database connection established');
-});
+// db.connect((err) => {
+//   if (err) {
+//     throw new Error(`Database connection error  occured : ${err}`);
+//   }
+//   console.log('Database connection established');
+// });
 
 app.listen(4000, () => {
   console.log('running server');

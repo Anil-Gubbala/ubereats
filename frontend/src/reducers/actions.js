@@ -13,3 +13,7 @@ export const signout = () => (dispatch) => {
 export const signup = (payload) => (dispatch) => {
   dispatch({ type: 'SIGNUP', payload });
 };
+
+export const addItem = (payload) => (dispatch) => {
+  dispatch({ type: 'ITEM', payload });
+};

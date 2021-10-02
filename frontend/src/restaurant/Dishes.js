@@ -22,9 +22,16 @@ import { Container } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import propTypes from 'prop-types';
 
+import { useDispatch } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import { actionCreators } from '../reducers/actionCreators';
+
 import { get, post } from '../utils/serverCall';
 
 export default function Dishes(props) {
+  const dispatch = useDispatch();
+  const { addItem } = bindActionCreators(actionCreators, dispatch);
   const windowUrl = window.location.search;
   const params = new URLSearchParams(windowUrl);
   const [open, setOpen] = useState(false);
@@ -97,6 +104,11 @@ export default function Dishes(props) {
     setDialogData(dishes[e.target.getAttribute('index')]);
     setUpdateIndex(e.target.getAttribute('index'));
     setOpen(true);
+  };
+
+  const addToCart = (e) => {
+    console.log(e);
+    addItem();
   };
 
   return (
@@ -215,7 +227,7 @@ export default function Dishes(props) {
               )}
               {props.isCustomer && (
                 <CardActions>
-                  <Button size='small' index={index} onClick={handleDishEdit}>
+                  <Button size='small' index={index} onClick={addToCart}>
                     Add to cart
                   </Button>
                 </CardActions>

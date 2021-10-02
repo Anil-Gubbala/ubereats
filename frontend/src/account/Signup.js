@@ -150,7 +150,7 @@ function Signup() {
                   required
                 />
               </Form.Group>
-              <Row className='mb-3'>
+              {/* <Row className='mb-3'>
                 <Form.Group as={Col} controlId='formCity'>
                   <Form.Label>City</Form.Label>
                   <Form.Control onChange={eventHandler} name='city' />
@@ -177,7 +177,7 @@ function Signup() {
                   <Form.Label>Zip</Form.Label>
                   <Form.Control onChange={eventHandler} name='zip' />
                 </Form.Group>
-              </Row>
+              </Row> */}
             </div>
           )}
           <Button variant='primary' type='submit'>
