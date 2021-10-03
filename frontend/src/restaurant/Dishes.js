@@ -28,6 +28,7 @@ import { bindActionCreators } from 'redux';
 import { actionCreators } from '../reducers/actionCreators';
 
 import { get, post } from '../utils/serverCall';
+import { restaurant } from '../reducers/actions';
 
 export default function Dishes(props) {
   const dispatch = useDispatch();
@@ -47,6 +48,9 @@ export default function Dishes(props) {
     description: '',
     category: '',
   };
+
+  const defaultCart = { restaurantId: '', dishes: {} };
+  const [cart, setCart] = useState(defaultCart);
   const [dialogData, setDialogData] = useState(dialogDefault);
   const handleDialogChange = (e) => {
     setDialogData({ ...dialogData, [e.target.name]: e.target.value });
@@ -71,7 +75,7 @@ export default function Dishes(props) {
     setOpen(false);
   };
 
-  const addDish = () => {
+  const createDish = () => {
     if (updateMode) {
       post('/updateDish', {
         ...dialogData,
@@ -87,7 +91,7 @@ export default function Dishes(props) {
         })
         .catch(() => {});
     } else {
-      post('/addDish', dialogData)
+      post('/createDish', dialogData)
         .then(() => {
           setDishes((prev) => [...prev, dialogData]);
           closeDialog();
@@ -107,8 +111,10 @@ export default function Dishes(props) {
   };
 
   const addToCart = (e) => {
-    console.log(e);
-    addItem();
+    const restaurantId = params.get('id');
+    const dish = e.target.getAttribute('dish');
+    const price = e.target.getAttribute('price');
+    addItem({ restaurantId, dish, price });
   };
 
   return (
@@ -190,7 +196,7 @@ export default function Dishes(props) {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Close</Button>
-            <Button onClick={addDish}>Confirm</Button>
+            <Button onClick={createDish}>Confirm</Button>
           </DialogActions>
         </Dialog>
       )}
@@ -216,6 +222,9 @@ export default function Dishes(props) {
                 <Typography variant='body2' color='text.secondary'>
                   {each.description}
                 </Typography>
+                <Typography variant='body2' color='text.secondary'>
+                  {`$${each.price}`}
+                </Typography>
               </CardContent>
               {!props.isCustomer && (
                 <CardActions>
@@ -227,7 +236,13 @@ export default function Dishes(props) {
               )}
               {props.isCustomer && (
                 <CardActions>
-                  <Button size='small' index={index} onClick={addToCart}>
+                  <Button
+                    dish={each.name}
+                    price={each.price}
+                    size='small'
+                    index={index}
+                    onClick={addToCart}
+                  >
                     Add to cart
                   </Button>
                 </CardActions>

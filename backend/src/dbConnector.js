@@ -26,7 +26,10 @@ const db = {
         return callback(err);
       }
       return connection.query(query, values, (err1, results) => {
+        console.log(connector._freeConnections.indexOf(connection));
+        console.log(query);
         connection.release();
+        console.log(connector._freeConnections.indexOf(connection));
         if (err1) {
           console.log(err1);
           return callback(err1);

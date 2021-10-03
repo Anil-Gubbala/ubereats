@@ -5,6 +5,7 @@ const session = require('express-session');
 const mysql = require('mysql');
 const router = require('./src/router');
 const db = require('./src/dbConnector');
+
 const startServer = require('./src/server');
 
 const app = express();

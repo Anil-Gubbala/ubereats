@@ -24,7 +24,7 @@ function CustomerHome() {
     <Container>
       <Row className='g-4'>
         {restaurantsInfo.map((each) => (
-          <Col>
+          <Col key={each.name}>
             <Card style={{ width: '18rem' }}>
               <Card.Img
                 style={{ height: '140px' }}

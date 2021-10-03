@@ -11,7 +11,7 @@ import { actionCreators } from '../reducers/actionCreators';
 
 function Signout() {
   const dispatch = useDispatch();
-  const { signout, customer } = bindActionCreators(actionCreators, dispatch);
+  const { signout, clearCart } = bindActionCreators(actionCreators, dispatch);
   const [logout, setLogout] = useState(false);
 
   useEffect(() => {
@@ -20,6 +20,7 @@ function Signout() {
         // cookie.remove(COOKIE, { path: '/' });
         localStorage.clear();
         signout();
+        clearCart();
         setLogout(true);
       })
       .catch(() => {

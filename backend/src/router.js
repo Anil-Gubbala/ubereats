@@ -8,7 +8,11 @@ const {
   updateRestaurantInfo,
 } = require('./controller/restaurant');
 
-const { getRestaruantsList, addToCart } = require('./controller/common');
+const {
+  getRestaruantsList,
+  addToCart,
+  getCart,
+} = require('./controller/common');
 
 const router = express.Router();
 
@@ -26,6 +30,7 @@ router.route('/updateRestaurantInfo').post(updateRestaurantInfo);
 
 // common
 router.route('/getRestaruantsList').get(getRestaruantsList);
-router.route('/addToCart').get(addToCart);
+router.route('/addToCart').post(addToCart);
+router.route('/getCart').get(getCart);
 
 module.exports = router;

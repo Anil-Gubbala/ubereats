@@ -8,6 +8,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Link } from 'react-router-dom';
 
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+
 import cookie from 'react-cookies';
 
 import Badge from '@mui/material/Badge';
@@ -17,16 +20,23 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 import CONSTANTS from '../utils/consts';
 import { actionCreators } from '../reducers/actionCreators';
+import { get } from '../utils/serverCall';
 
 function Navigator() {
   const currentState = useSelector((state) => state.loggedReducer);
+  const cartState = useSelector((state) => state.cartReducer);
   const cookieData = cookie.load(CONSTANTS.COOKIE);
+  const [cartFlag, setCartFlag] = useState(false);
   const dispatch = useDispatch();
-  const { signout, customer, restaurant } = bindActionCreators(
+  const { updateCart, customer, restaurant, signout } = bindActionCreators(
     actionCreators,
     dispatch
   );
 
+  // const [login, setLogin] = useState(currentState);
+  if (!cookieData) {
+    localStorage.clear();
+  }
   const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
       right: -3,
@@ -36,20 +46,62 @@ function Navigator() {
     },
   }));
 
+  const getCart = (callback) => {
+    get('/getCart')
+      .then((response) => {
+        if (response.length > 0) {
+          const dishes = response.reduce(
+            (obj, item) => ({
+              ...obj,
+              [item.dish]: [item.count, item.price],
+            }),
+            {}
+          );
+          updateCart({ restaurantId: response[0].restaurant_id, dishes });
+          setCartFlag(true);
+          if (callback) {
+            callback();
+          }
+        }
+      })
+      .catch(() => {});
+  };
+
   useEffect(() => {
-    // if (!cookieData) {
-    //   localStorage.removeItem(CONSTANTS.STR_KEY);
-    // }
-    // if (localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_USER) {
-    //   customer();
-    // } else if (
-    //   localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_RESTAURANT
-    // ) {
-    //   restaurant();
-    // } else {
-    //   signout();
-    // }
-  });
+    if (!cookieData) {
+      localStorage.removeItem(CONSTANTS.STR_KEY);
+    }
+    if (localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_USER) {
+      customer();
+      // getCart();
+    } else if (
+      localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_RESTAURANT
+    ) {
+      // getCart();
+      restaurant();
+    } else {
+      signout();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (localStorage.getItem(CONSTANTS.STR_KEY)) {
+      getCart();
+    }
+  }, [currentState]);
+
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const openCartDialog = () => {
+    if (!cartFlag) {
+      getCart(handleShow);
+    } else {
+      handleShow();
+    }
+  };
 
   return (
     <div>
@@ -82,8 +134,8 @@ function Navigator() {
                     Sign out
                   </Link>
                 )}
-                <IconButton aria-label='cart'>
-                  <StyledBadge badgeContent={0} color='secondary'>
+                <IconButton aria-label='cart' onClick={openCartDialog}>
+                  <StyledBadge badgeContent={0} color='primary'>
                     <ShoppingCartIcon />
                   </StyledBadge>
                 </IconButton>
@@ -97,6 +149,39 @@ function Navigator() {
             </Container>
           </Navbar>
         </Row>
+        <Modal show={show} onHide={handleClose} animation={false}>
+          <Modal.Header closeButton>
+            <Modal.Title>{cartState.restaurantId}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Col>
+              {Object.keys(cartState.dishes).map((key) => (
+                <Row key={key}>
+                  <Col>{key}</Col>
+                  <Col>
+                    <button>-</button>
+                  </Col>
+                  <Col>{cartState.dishes[key][0]} </Col>
+                  <Col>
+                    <button>+</button>
+                  </Col>
+                  <Col> {`$${cartState.dishes[key][1]}`}</Col>
+                </Row>
+              ))}
+            </Col>
+          </Modal.Body>
+          <Modal.Footer>
+            {/* <Button variant='secondary' onClick={handleClose}>
+              Close
+            </Button> */}
+            {/* <Button variant='primary' onClick={handleClose}>
+              Check out
+            </Button> */}
+            <Link to='/placeorder' className='nav-link' onClick={handleClose}>
+              Check out
+            </Link>
+          </Modal.Footer>
+        </Modal>
       </Container>
     </div>
   );

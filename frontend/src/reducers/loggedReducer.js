@@ -30,7 +30,7 @@ const loggedReducer = (state = initialState, action) => {
         email: action.payload,
       };
     default:
-      return initialState;
+      return state;
   }
 };
 

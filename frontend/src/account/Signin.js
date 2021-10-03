@@ -70,7 +70,7 @@ function Signin() {
               type='email'
               placeholder='Enter email'
               required
-              value={formData.email}
+              value={formData.email ? formData.email : ''}
             />
           </Form.Group>
           <Form.Group className='mb-3' controlId='formPassword'>

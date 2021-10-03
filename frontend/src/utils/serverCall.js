@@ -8,7 +8,6 @@ Axios.defaults.withCredentials = true;
 // };
 
 const get = (path, data) => {
-  console.log(data);
   return Axios.get(CONSTANTS.SERVERURL + path, { params: data })
     .then((response) => response.data)
     .catch();
