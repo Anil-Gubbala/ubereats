@@ -62,6 +62,8 @@ function Navigator() {
           if (callback) {
             callback();
           }
+        } else {
+          setCartFlag(true);
         }
       })
       .catch(() => {});
@@ -134,6 +136,12 @@ function Navigator() {
                     Sign out
                   </Link>
                 )}
+                {cookieData && currentState.isLoggedIn && (
+                  // <Nav.Link href='signout'>Signout</Nav.Link>
+                  <Link to='/myOrders' className='nav-link'>
+                    My Orders
+                  </Link>
+                )}
                 <IconButton aria-label='cart' onClick={openCartDialog}>
                   <StyledBadge badgeContent={0} color='primary'>
                     <ShoppingCartIcon />
@@ -154,21 +162,24 @@ function Navigator() {
             <Modal.Title>{cartState.restaurantId}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Col>
-              {Object.keys(cartState.dishes).map((key) => (
-                <Row key={key}>
-                  <Col>{key}</Col>
-                  <Col>
-                    <button>-</button>
-                  </Col>
-                  <Col>{cartState.dishes[key][0]} </Col>
-                  <Col>
-                    <button>+</button>
-                  </Col>
-                  <Col> {`$${cartState.dishes[key][1]}`}</Col>
-                </Row>
-              ))}
-            </Col>
+            <Col>No items in cart.</Col>
+            {cartState.restaurantId && (
+              <Col>
+                {Object.keys(cartState.dishes).map((key) => (
+                  <Row key={key}>
+                    <Col>{key}</Col>
+                    <Col>
+                      <button>-</button>
+                    </Col>
+                    <Col>{cartState.dishes[key][0]} </Col>
+                    <Col>
+                      <button>+</button>
+                    </Col>
+                    <Col> {`$${cartState.dishes[key][1]}`}</Col>
+                  </Row>
+                ))}
+              </Col>
+            )}
           </Modal.Body>
           <Modal.Footer>
             {/* <Button variant='secondary' onClick={handleClose}>
@@ -177,9 +188,11 @@ function Navigator() {
             {/* <Button variant='primary' onClick={handleClose}>
               Check out
             </Button> */}
-            <Link to='/placeorder' className='nav-link' onClick={handleClose}>
-              Check out
-            </Link>
+            {cartState.restaurantId && (
+              <Link to='/placeorder' className='nav-link' onClick={handleClose}>
+                Check out
+              </Link>
+            )}
           </Modal.Footer>
         </Modal>
       </Container>

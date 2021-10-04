@@ -14,6 +14,8 @@ const {
   getCart,
 } = require('./controller/common');
 
+const { placeOrder } = require('./controller/customer');
+
 const router = express.Router();
 
 // Account
@@ -32,5 +34,8 @@ router.route('/updateRestaurantInfo').post(updateRestaurantInfo);
 router.route('/getRestaruantsList').get(getRestaruantsList);
 router.route('/addToCart').post(addToCart);
 router.route('/getCart').get(getCart);
+
+// customer
+router.route('/placeOrder').post(placeOrder);
 
 module.exports = router;

@@ -57,7 +57,7 @@ const signup = (req, res) => {
 
 const setSession = (req, res, email, isCustomer) => {
   res.cookie('customer', isCustomer, {
-    maxAge: 900000,
+    maxAge: 9000000,
     httpOnly: false,
   });
   req.session.user = {
@@ -73,7 +73,7 @@ const setSession = (req, res, email, isCustomer) => {
 const signin = (req, res) => {
   if (req.session.user) {
     res.cookie('customer', req.session.user.isCustomer, {
-      maxAge: 900000,
+      maxAge: 9000000,
       httpOnly: false,
     });
     res.send(req.session.user);

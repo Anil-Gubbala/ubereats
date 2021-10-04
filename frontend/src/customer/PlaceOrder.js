@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Container, Row, Table } from 'react-bootstrap';
+import { Card, Col, Container, Form, Row, Table } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
+import { post } from '../utils/serverCall';
+import { Link } from 'react-router-dom';
 
 function PlaceOrder() {
   const cartState = useSelector((state) => state.cartReducer);
   const [totalCost, setTotalCost] = useState(0);
-
+  const [status, setStatus] = useState(0); // 0- not placed, 1- order placed.
   useEffect(() => {
     setTotalCost(0);
     Object.keys(cartState.dishes).forEach((key) => {
@@ -15,6 +17,40 @@ function PlaceOrder() {
       );
     });
   }, [cartState]);
+
+  useEffect(() => {
+    // get address list here.
+  });
+
+  const handlePlaceOrder = () => {
+    post('/placeOrder', {
+      restaurantId: cartState.restaurantId,
+      addressId: 'main',
+    })
+      .then((response) => {
+        setStatus(1);
+        console.log(response);
+      })
+      .catch(() => {});
+  };
+
+  if (status === 1) {
+    return (
+      <Container>
+        <Row>
+          <Card style={{ width: '18rem', margin: 'auto' }}>
+            <Card.Body>
+              <Card.Title>Placed Order succesfully</Card.Title>
+              <Link to='/myOrders' className='nav-link'>
+                Go to my orders page
+              </Link>
+              {/* <Card.Link href='/signin'>Go to login page</Card.Link> */}
+            </Card.Body>
+          </Card>
+        </Row>
+      </Container>
+    );
+  }
   return (
     <Container>
       <Row>{cartState.restaurantId}</Row>
@@ -48,9 +84,14 @@ function PlaceOrder() {
           </tbody>
         </Table>
       </Row>
-      <Row>Add Address Selection here</Row>
       <Row>
-        <Button variant='dark'>Place Order</Button>
+        <Form.Label>Select Address: </Form.Label>
+        <Button variant='dark'>Add New Address</Button>
+      </Row>
+      <Row>
+        <Button variant='dark' onClick={handlePlaceOrder}>
+          Place Order
+        </Button>
       </Row>
     </Container>
   );
