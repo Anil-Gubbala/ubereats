@@ -12,9 +12,10 @@ const {
   getRestaruantsList,
   addToCart,
   getCart,
+  getOrderDetails,
 } = require('./controller/common');
 
-const { placeOrder } = require('./controller/customer');
+const { placeOrder, myOrders } = require('./controller/customer');
 
 const router = express.Router();
 
@@ -34,8 +35,10 @@ router.route('/updateRestaurantInfo').post(updateRestaurantInfo);
 router.route('/getRestaruantsList').get(getRestaruantsList);
 router.route('/addToCart').post(addToCart);
 router.route('/getCart').get(getCart);
+router.route('/getOrderDetails').get(getOrderDetails);
 
 // customer
 router.route('/placeOrder').post(placeOrder);
+router.route('/myOrders').get(myOrders);
 
 module.exports = router;

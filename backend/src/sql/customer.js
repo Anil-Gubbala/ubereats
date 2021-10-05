@@ -5,6 +5,12 @@ const CUSTOMER = {
     'INSERT INTO ubereats.order_dishes (id,dish,count,price) SELECT ? ,dish, count, price FROM ubereats.cart WHERE user_id= ? and restaurant_id= ?;',
   CLEAR_CART:
     'DELETE FROM `ubereats`.`cart`WHERE user_id=? and restaurant_id=?;',
+  GET_ORDERS:
+    'SELECT `order`.`id`, `order`.`restaurant_id`, `order`.`address_id`, `order`.`status` FROM `ubereats`.`order` where `order`.`user_id`=?; ',
+  // GET_ORDER_DISHES:
+  //   'SELECT  `order_dishes`.`dish`, `order_dishes`.`count`, `order_dishes`.`price` FROM `ubereats`.`order_dishes` where `ubereats`.`user_id`=? ;',
+  // GET_ORDERS:
+  //   'SELECT `order`.`id`, `order`.`restaurant_id`, `order`.`address_id`, `order`.`status`,`order_dishes`.`dish`, `order_dishes`.`count`, `order_dishes`.`price` FROM `ubereats`.`order` natural join `ubereats`.`order_dishes` where `order`.`user_id`= ? ; ',
 };
 
 module.exports = CUSTOMER;

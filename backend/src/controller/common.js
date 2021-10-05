@@ -49,8 +49,23 @@ const getCart = (req, res) => {
   }
 };
 
+const getOrderDetails = (req, res) => {
+  if (!req.session.user) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(COMMON.GET_ORDER_DETAILS, [req.query.id], (err, result) => {
+      if (err) {
+        response.error(res, 500, err.code);
+        return;
+      }
+      res.send(result);
+    });
+  }
+};
+
 module.exports = {
   getRestaruantsList,
   addToCart,
   getCart,
+  getOrderDetails,
 };

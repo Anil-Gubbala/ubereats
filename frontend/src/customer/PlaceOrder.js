@@ -53,7 +53,7 @@ function PlaceOrder() {
   }
   return (
     <Container>
-      <Row>{cartState.restaurantId}</Row>
+      <Row>{`Restaurant Name: ${cartState.restaurantId}`}</Row>
       <Row>
         <Table striped bordered hover>
           <thead>

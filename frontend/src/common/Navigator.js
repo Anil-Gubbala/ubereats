@@ -162,7 +162,7 @@ function Navigator() {
             <Modal.Title>{cartState.restaurantId}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Col>No items in cart.</Col>
+            {!cartState.restaurantId && <Col>No items in cart.</Col>}
             {cartState.restaurantId && (
               <Col>
                 {Object.keys(cartState.dishes).map((key) => (

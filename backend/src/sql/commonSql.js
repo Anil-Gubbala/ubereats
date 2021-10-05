@@ -5,5 +5,7 @@ const COMMON = {
     'INSERT INTO `ubereats`.`cart` (`user_id`, `restaurant_id`, `dish`, `count`, `price`) VALUES (?,?, ?, ?,?) ON DUPLICATE KEY UPDATE count = ? ;',
   GET_CART:
     'SELECT  `cart`.`restaurant_id`, `cart`.`dish`, `cart`.`count`, `cart`.`price` FROM `ubereats`.`cart` where user_id = ? ;',
+  GET_ORDER_DETAILS:
+    'SELECT `order_dishes`.`dish`,     `order_dishes`.`count`,     `order_dishes`.`price` FROM `ubereats`.`order_dishes` where `order_dishes`.`id` = ?;',
 };
 module.exports = COMMON;

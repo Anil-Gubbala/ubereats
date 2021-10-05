@@ -5,7 +5,6 @@ const { response } = require('../utils/response');
 
 const placeOrder = (req, res) => {
   const { restaurantId, addressId } = req.body;
-
   if (!req.session.user || !req.session.user.isCustomer) {
     response.unauthorized(res, 'unauthorized access');
   } else {
@@ -43,6 +42,21 @@ const placeOrder = (req, res) => {
   }
 };
 
+const myOrders = (req, res) => {
+  if (!req.session.user || !req.session.user.isCustomer) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(CUSTOMER.GET_ORDERS, [req.session.user.email], (err, result) => {
+      if (err) {
+        response.error(res, 500, err.code);
+        return;
+      }
+      res.send(result);
+    });
+  }
+};
+
 module.exports = {
   placeOrder,
+  myOrders,
 };
