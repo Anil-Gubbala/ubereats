@@ -1,7 +1,8 @@
 const RESTAURANT = {
   SIGNUP:
     'INSERT INTO ubereats.restaurant_login (name,email,password,location)VALUES(?,?,?,?);',
-  PASSWORD: 'SELECT password FROM ubereats.restaurant_login WHERE email = ?;',
+  PASSWORD:
+    'SELECT password, status FROM ubereats.restaurant_login WHERE email = ?;',
   ALL_INFO:
     'SELECT `name`, `location`, `contact`, `picture`, `description`, `start`, `end` FROM ubereats.restaurant_login WHERE email = ?;',
   DISHES:
@@ -12,5 +13,9 @@ const RESTAURANT = {
     'UPDATE `ubereats`.`dishes` SET`name` = ? ,`ingredients` = ?,`image` = ?,`price` = ?,`description` = ?,`category` = ? WHERE `email` = ? AND `name` = ? ;',
   UPDATE_RESTAURANT:
     'UPDATE `ubereats`.`restaurant_login` SET `name` = ?, `location` = ?, `contact` = ?, `picture` = ? , `description` = ?, `start` = ? , `end` = ? WHERE `email` = ?;',
+  GET_RESTAURANT_ORDERS:
+    'SELECT `order`.`id`, `order`.`user_id`, `order`.`address_id`, `order`.`status`, `order`.`date` FROM `ubereats`.`order` where `order`.`restaurant_id`=?; ',
+  UDPATE_ORDER_STATUS:
+    'UPDATE `ubereats`.`order` SET `status` = ?  WHERE `id` = ? ;',
 };
 module.exports = RESTAURANT;

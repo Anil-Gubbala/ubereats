@@ -23,7 +23,7 @@ function Signin() {
   };
 
   const [formData, setFormData] = useState(defaultValues);
-  const [success, setSuccess] = useState(false);
+  // const [success, setSuccess] = useState(false);
   const [fail, setFail] = useState(false);
   useEffect(() => {
     setFormData({ ...formData, email: currentState.email });
@@ -36,9 +36,11 @@ function Signin() {
       .then((data) => {
         if (formData.customer) {
           localStorage.setItem(CONSTANTS.STR_KEY, CONSTANTS.STR_USER);
+          localStorage.setItem(CONSTANTS.STATUS, data.status);
           customer(formData.email);
         } else {
           localStorage.setItem(CONSTANTS.STR_KEY, CONSTANTS.STR_RESTAURANT);
+          localStorage.setItem(CONSTANTS.STATUS, data.status);
           restaurant(formData.email);
         }
         // setSuccess(true);
@@ -55,7 +57,7 @@ function Signin() {
     setFormData({ ...formData, [e.target.name]: !e.target.checked });
   };
 
-  if (success || localStorage.getItem(CONSTANTS.STR_KEY)) {
+  if (localStorage.getItem(CONSTANTS.STR_KEY)) {
     return <Redirect to='/home'></Redirect>;
   }
   return (

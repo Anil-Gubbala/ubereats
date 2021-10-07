@@ -55,8 +55,8 @@ const signup = (req, res) => {
   });
 };
 
-const setSession = (req, res, email, isCustomer) => {
-  res.cookie('customer', isCustomer, {
+const setSession = (req, res, email, isCustomer, status) => {
+  res.cookie('ubereats273', JSON.stringify({ customer: isCustomer, email }), {
     maxAge: 9000000,
     httpOnly: false,
   });
@@ -67,15 +67,23 @@ const setSession = (req, res, email, isCustomer) => {
   res.status(200).send({
     email,
     isCustomer,
+    status,
   });
 };
 
 const signin = (req, res) => {
   if (req.session.user) {
-    res.cookie('customer', req.session.user.isCustomer, {
-      maxAge: 9000000,
-      httpOnly: false,
-    });
+    res.cookie(
+      'ubereats273',
+      JSON.stringify({
+        customer: req.session.user.isCustomer,
+        email: req.session.email,
+      }),
+      {
+        maxAge: 9000000,
+        httpOnly: false,
+      }
+    );
     res.send(req.session.user);
     return;
   }
@@ -94,7 +102,13 @@ const signin = (req, res) => {
         result[0].password,
         (error, response) => {
           if (response) {
-            setSession(req, res, req.body.email, req.body.customer);
+            setSession(
+              req,
+              res,
+              req.body.email,
+              req.body.customer,
+              result[0].status
+            );
           } else {
             res
               .status(404)

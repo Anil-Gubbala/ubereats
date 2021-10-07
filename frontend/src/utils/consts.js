@@ -1,9 +1,10 @@
 const CONSTANTS = {
-  COOKIE: 'customer',
+  COOKIE: 'ubereats273',
   SERVERURL: 'http://localhost:4000',
   STR_KEY: 'ubereats',
   STR_USER: '1',
   STR_RESTAURANT: '2',
+  STATUS: 'uberstatus',
 };
 
 export const ORDER_STATUS = {

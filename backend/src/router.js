@@ -6,6 +6,8 @@ const {
   addDish,
   updateDish,
   updateRestaurantInfo,
+  getRestaurantOrders,
+  updateOrderStatus,
 } = require('./controller/restaurant');
 
 const {
@@ -15,7 +17,12 @@ const {
   getOrderDetails,
 } = require('./controller/common');
 
-const { placeOrder, myOrders } = require('./controller/customer');
+const {
+  placeOrder,
+  myOrders,
+  getUserProfile,
+  updateUserInfo,
+} = require('./controller/customer');
 
 const router = express.Router();
 
@@ -30,6 +37,8 @@ router.route('/getDishes').get(getDishes);
 router.route('/addDish').post(addDish);
 router.route('/updateDish').post(updateDish);
 router.route('/updateRestaurantInfo').post(updateRestaurantInfo);
+router.route('/getRestaurantOrders').get(getRestaurantOrders);
+router.route('/updateOrderStatus').post(updateOrderStatus);
 
 // common
 router.route('/getRestaruantsList').get(getRestaruantsList);
@@ -40,5 +49,7 @@ router.route('/getOrderDetails').get(getOrderDetails);
 // customer
 router.route('/placeOrder').post(placeOrder);
 router.route('/myOrders').get(myOrders);
+router.route('/getUserProfile').get(getUserProfile);
+router.route('/updateUserInfo').post(updateUserInfo);
 
 module.exports = router;

@@ -56,7 +56,57 @@ const myOrders = (req, res) => {
   }
 };
 
+const getUserProfile = (req, res) => {
+  if (!req.session.user) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(
+      CUSTOMER.GET_PROFILE,
+      [req.session.user.isCustomer ? req.session.user.email : req.query.email],
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+          return;
+        }
+        res.send(result);
+      }
+    );
+  }
+};
+
+const updateUserInfo = (req, res) => {
+  const { contact, email, dob, location, name, nickname, picture, about } =
+    req.body;
+  if (!req.session.user || !req.session.user.isCustomer) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(
+      CUSTOMER.UPDATE_USER,
+      [name, email, 1, req.session.user.email],
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+          return;
+        }
+        db.query(
+          CUSTOMER.UPDATE_USER_DATA,
+          [email, picture, contact, dob, nickname, location, about, email],
+          (err1, result1) => {
+            if (err1) {
+              response.error(res, 500, err1.code);
+              return;
+            }
+            res.send();
+          }
+        );
+      }
+    );
+  }
+};
+
 module.exports = {
   placeOrder,
   myOrders,
+  getUserProfile,
+  updateUserInfo,
 };

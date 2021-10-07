@@ -9,12 +9,23 @@ import Card from 'react-bootstrap/Card';
 import { useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import PlacesAutocomplete, {
+  geocodeByAddress,
+  getLatLng,
+} from 'react-places-autocomplete';
 import { post } from '../utils/serverCall';
 import { actionCreators } from '../reducers/actionCreators';
+import Location from './Location';
+import FileUpload from '../common/FileUpload';
+import CountriesList from '../utils/CountriesList';
 
 function Signup() {
   const dispatch = useDispatch();
   const { signup } = bindActionCreators(actionCreators, dispatch);
+
+  const [address, setAddress] = useState('');
+  const [lat, setLat] = useState('');
+  const [lng, setLng] = useState('');
   const defaultValues = {
     restaurantName: '',
     name: '',
@@ -34,7 +45,6 @@ function Signup() {
 
   const eventHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    console.log(formData);
   };
 
   const handleSubmit = (e) => {
@@ -42,11 +52,6 @@ function Signup() {
     post('/signup', formData)
       .then(() => {
         signup(formData.email);
-        // if (formData.accountType === '0') {
-        //   signup(formData.email);
-        // } else {
-        //   signup(formData.email);
-        // }
         setSuccess(true);
       })
       .catch(() => {
@@ -99,7 +104,7 @@ function Signup() {
             <Form.Group className='mb-3' controlId='Restaurant name'>
               <Form.Label>Name</Form.Label>
               <Form.Control
-                name='Name'
+                name='name'
                 type='text'
                 placeholder='Name'
                 onChange={eventHandler}
@@ -180,6 +185,23 @@ function Signup() {
               </Row> */}
             </div>
           )}
+          <Location
+            value={address}
+            change={(e) => {
+              setAddress(e);
+            }}
+            select={(e) => {
+              geocodeByAddress(e).then((results) => {
+                setAddress(e);
+                getLatLng(results[0])
+                  .then((coordinates) => {
+                    setLat(coordinates.lat);
+                    setLng(coordinates.lng);
+                  })
+                  .catch((error) => console.log(error));
+              });
+            }}
+          />
           <Button variant='primary' type='submit'>
             Submit
           </Button>

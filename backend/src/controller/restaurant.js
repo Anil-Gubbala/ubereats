@@ -129,10 +129,49 @@ const updateRestaurantInfo = (req, res) => {
   }
 };
 
+const getRestaurantOrders = (req, res) => {
+  if (!req.session.user || req.session.user.isCustomer) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(
+      RESTAURANT.GET_RESTAURANT_ORDERS,
+      [req.session.user.email],
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+          return;
+        }
+        res.send(result);
+      }
+    );
+  }
+};
+
+const updateOrderStatus = (req, res) => {
+  const { body } = req;
+  if (!req.session.user || req.session.user.isCustomer) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(
+      RESTAURANT.UDPATE_ORDER_STATUS,
+      [body.status, body.order_id],
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+          return;
+        }
+        res.send();
+      }
+    );
+  }
+};
+
 module.exports = {
   getRestaurantInfo,
   getDishes,
   addDish,
   updateDish,
   updateRestaurantInfo,
+  getRestaurantOrders,
+  updateOrderStatus,
 };

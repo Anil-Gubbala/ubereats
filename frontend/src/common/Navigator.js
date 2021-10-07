@@ -25,7 +25,8 @@ import { get } from '../utils/serverCall';
 function Navigator() {
   const currentState = useSelector((state) => state.loggedReducer);
   const cartState = useSelector((state) => state.cartReducer);
-  const cookieData = cookie.load(CONSTANTS.COOKIE);
+  const appCookies = cookie.load(CONSTANTS.COOKIE);
+  const cookieData = appCookies && appCookies.customer;
   const [cartFlag, setCartFlag] = useState(false);
   const dispatch = useDispatch();
   const { updateCart, customer, restaurant, signout } = bindActionCreators(
@@ -34,7 +35,7 @@ function Navigator() {
   );
 
   // const [login, setLogin] = useState(currentState);
-  if (!cookieData) {
+  if (!appCookies) {
     localStorage.clear();
   }
   const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -70,7 +71,7 @@ function Navigator() {
   };
 
   useEffect(() => {
-    if (!cookieData) {
+    if (!appCookies) {
       localStorage.removeItem(CONSTANTS.STR_KEY);
     }
     if (localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_USER) {
@@ -118,28 +119,34 @@ function Navigator() {
                 </Link>
               </Nav>
               <Nav>
-                {(!cookieData || !currentState.isLoggedIn) && (
-                  // <Nav.Link href='signup'>Signup</Nav.Link>
+                {(!appCookies || !currentState.isLoggedIn) && (
                   <Link to='/signup' className='nav-link'>
                     Sign up
                   </Link>
                 )}
-                {(!cookieData || !currentState.isLoggedIn) && (
-                  // <Nav.Link href='signin'>Singin</Nav.Link>
+                {(!appCookies || !currentState.isLoggedIn) && (
                   <Link to='/signin' className='nav-link'>
                     Sign in
                   </Link>
                 )}
-                {cookieData && currentState.isLoggedIn && (
-                  // <Nav.Link href='signout'>Signout</Nav.Link>
+                {appCookies && currentState.isLoggedIn && (
                   <Link to='/signout' className='nav-link'>
                     Sign out
                   </Link>
                 )}
-                {cookieData && currentState.isLoggedIn && (
-                  // <Nav.Link href='signout'>Signout</Nav.Link>
+                {appCookies && currentState.isLoggedIn && (
                   <Link to='/myOrders' className='nav-link'>
                     My Orders
+                  </Link>
+                )}
+                {appCookies && currentState.isLoggedIn && (
+                  <Link to='/profile' className='nav-link'>
+                    Profile
+                  </Link>
+                )}
+                {appCookies && currentState.isLoggedIn && (
+                  <Link to='/restaurantOrders' className='nav-link'>
+                    Orders
                   </Link>
                 )}
                 <IconButton aria-label='cart' onClick={openCartDialog}>
@@ -168,13 +175,13 @@ function Navigator() {
                 {Object.keys(cartState.dishes).map((key) => (
                   <Row key={key}>
                     <Col>{key}</Col>
-                    <Col>
+                    {/* <Col>
                       <button>-</button>
-                    </Col>
+                    </Col> */}
                     <Col>{cartState.dishes[key][0]} </Col>
-                    <Col>
+                    {/* <Col>
                       <button>+</button>
-                    </Col>
+                    </Col> */}
                     <Col> {`$${cartState.dishes[key][1]}`}</Col>
                   </Row>
                 ))}
