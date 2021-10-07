@@ -2,12 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { Card, Col, Container, Form, Row, Table } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { Link } from 'react-router-dom';
+import cookie from 'react-cookies';
+
 import { get, post } from '../utils/serverCall';
 
-import { ORDER_STATUS } from '../utils/consts';
+import CONSTANTS, { ORDER_STATUS } from '../utils/consts';
+import RedirectSignin from '../common/RedirectSignin';
+import RedirectInvalid from '../common/RedirectInvalid';
 
 function RestaurantOrders() {
+  const appCookies = cookie.load(CONSTANTS.COOKIE);
+  const isCustomer = appCookies && appCookies[CONSTANTS.COOKIE_KEY.ISCUSTOMER];
+  if (!appCookies) {
+    return <RedirectSignin />;
+  }
+  if (isCustomer) {
+    return <RedirectInvalid />;
+  }
+
   const [data, setData] = useState([]);
   const [dishesData, setDishesData] = useState([]);
   const defaultOrderInfo = {

@@ -16,12 +16,25 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import cookie from 'react-cookies';
 
+import { Redirect } from 'react-router';
 import { get, post } from '../utils/serverCall';
 import Dishes from './Dishes';
 import CONSTANTS from '../utils/consts';
+import RedirectSignin from '../common/RedirectSignin';
+import RedirectInvalid from '../common/RedirectInvalid';
 
 function RestaurantHome() {
+  const appCookies = cookie.load(CONSTANTS.COOKIE);
+  const isCustomer = appCookies && appCookies[CONSTANTS.COOKIE_KEY.ISCUSTOMER];
+  if (!appCookies) {
+    return <RedirectSignin />;
+  }
+  if (isCustomer) {
+    return <RedirectInvalid />;
+  }
+
   const windowUrl = window.location.search;
   const params = new URLSearchParams(windowUrl);
 
@@ -36,9 +49,9 @@ function RestaurantHome() {
     email: params.get('id'),
   };
 
-  const [isCustomer, setIsCustomer] = useState(
-    localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_USER
-  );
+  // const [isCustomer, setIsCustomer] = useState(
+  //   localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_USER
+  // );
 
   const [restaurantInfo, setRestaurantInfo] = useState(defaultValues);
   useEffect(() => {

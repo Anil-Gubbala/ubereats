@@ -8,7 +8,7 @@ function Invalid() {
       <Row>
         <Card style={{ width: '18rem', margin: 'auto' }}>
           <Card.Body>
-            <Card.Title>Invalid request</Card.Title>
+            <Card.Title>Unauthorized access</Card.Title>
             <Link to='/home' className='nav-link'>
               Go to Home page
             </Link>

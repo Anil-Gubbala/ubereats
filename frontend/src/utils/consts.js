@@ -1,5 +1,6 @@
 const CONSTANTS = {
   COOKIE: 'ubereats273',
+  COOKIE_KEY: { ISCUSTOMER: 'customer', EMAIL: 'email' },
   SERVERURL: 'http://localhost:4000',
   STR_KEY: 'ubereats',
   STR_USER: '1',
