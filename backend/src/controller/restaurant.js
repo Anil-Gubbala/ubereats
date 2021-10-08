@@ -37,16 +37,12 @@ const getDishes = (req, res) => {
         response.error(res, 500, err.code);
         return;
       }
-      if (result.length > 0) {
-        res.send(result);
-      } else {
-        response.error(res, 404, 'Record not found');
-      }
+      res.send(result);
     });
   }
 };
 
-const addDish = (req, res) => {
+const createDish = (req, res) => {
   const { body } = req;
   if (!req.session.user || req.session.user.isCustomer) {
     response.unauthorized(res, 'unauthorized access');
@@ -57,7 +53,7 @@ const addDish = (req, res) => {
         req.session.user.email,
         body.name,
         body.ingredients,
-        body.image,
+        body.picture,
         body.price,
         body.description,
         body.category,
@@ -83,7 +79,7 @@ const updateDish = (req, res) => {
       [
         body.name,
         body.ingredients,
-        body.image,
+        body.picture,
         body.price,
         body.description,
         body.category,
@@ -178,12 +174,32 @@ const updateOrderStatus = (req, res) => {
   }
 };
 
+const deleteDish = (req, res) => {
+  const { name } = req.body;
+  if (!req.session.user || req.session.user.isCustomer) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(
+      RESTAURANT.DELETE_DISH,
+      [req.session.user.email, name],
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+          return;
+        }
+        res.send();
+      }
+    );
+  }
+};
+
 module.exports = {
   getRestaurantInfo,
   getDishes,
-  addDish,
+  createDish,
   updateDish,
   updateRestaurantInfo,
   getRestaurantOrders,
   updateOrderStatus,
+  deleteDish,
 };

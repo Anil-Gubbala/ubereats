@@ -20,6 +20,19 @@ function CustomerHome() {
 
   const handleView = () => {};
 
+  if (restaurantsInfo.length === 0) {
+    return (
+      <Container>
+        <Row>
+          <Card style={{ width: '18rem', margin: 'auto' }}>
+            <Card.Body>
+              <Card.Title>No Restaurants Available</Card.Title>
+            </Card.Body>
+          </Card>
+        </Row>
+      </Container>
+    );
+  }
   return (
     <Container>
       <Row className='g-4'>

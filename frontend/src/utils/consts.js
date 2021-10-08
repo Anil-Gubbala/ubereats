@@ -23,4 +23,12 @@ export const LOG_REDUCER = {
   EMAIL: 'email',
 };
 
+export const DISH_CATEGORY = {
+  0: 'Appetizer',
+  1: 'Salad',
+  2: 'Main Course',
+  3: 'Desert',
+  4: 'Beverage',
+};
+
 export default CONSTANTS;

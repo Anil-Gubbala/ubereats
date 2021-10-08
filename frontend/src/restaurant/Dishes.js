@@ -29,6 +29,8 @@ import { actionCreators } from '../reducers/actionCreators';
 
 import { get, post } from '../utils/serverCall';
 import { restaurant } from '../reducers/actions';
+import { Col, Form } from 'react-bootstrap';
+import FileUpload from '../common/FileUpload';
 
 export default function Dishes(props) {
   const dispatch = useDispatch();
@@ -42,8 +44,7 @@ export default function Dishes(props) {
   const dialogDefault = {
     name: '',
     ingredients: '',
-    image:
-      'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+    picture: '',
     price: '',
     description: '',
     category: '',
@@ -117,8 +118,20 @@ export default function Dishes(props) {
     addItem({ restaurantId, dish, price });
   };
 
+  const deleteDish = (e) => {
+    const index = e.target.getAttribute('index');
+    post('/deleteDish', { name: dishes[index].name })
+      .then(() => {
+        setDishes((prev) => {
+          prev.splice(parseInt(index, 10), 1);
+          return [...prev];
+        });
+      })
+      .catch(() => {});
+  };
+
   return (
-    <Container>
+    <Container style={{ marginTop: '16px' }}>
       {!props.isCustomer && (
         <Button variant='outlined' onClick={handleClickOpen}>
           Add Dishes
@@ -175,23 +188,23 @@ export default function Dishes(props) {
             </Stack>
 
             <Stack alignItems='center' spacing={2}>
-              <Image
-                src='https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
-                rounded
-                fluid
-              />
-              <label htmlFor='dialogImage'>
-                <Input
-                  style={{ display: 'none' }}
-                  accept='image/*'
-                  id='dialogImage'
-                  multiple
-                  type='file'
-                />
-                <Button variant='contained' component='span'>
-                  Upload
-                </Button>
-              </label>
+              <Form.Group className='mb-3' controlId='nickname'>
+                <Col xs={6} md={4}>
+                  <Image
+                    src={dialogData.picture}
+                    roundedCircle
+                    thumbnail='true'
+                  />
+                </Col>
+                <Col>
+                  <FileUpload
+                    onUpload={(e) => {
+                      setDialogData({ ...dialogData, picture: e });
+                    }}
+                    id={`${params.get('id') + dialogData.name}`}
+                  />
+                </Col>
+              </Form.Group>
             </Stack>
           </DialogContent>
           <DialogActions>
@@ -205,6 +218,7 @@ export default function Dishes(props) {
         container
         spacing={{ xs: 2, md: 3 }}
         columns={{ xs: 4, sm: 8, md: 12 }}
+        style={{ marginTop: '16px' }}
       >
         {dishes.map((each, index) => (
           <Grid item xs={2} sm={4} md={4} key={each.name}>
@@ -212,7 +226,7 @@ export default function Dishes(props) {
               <CardMedia
                 component='img'
                 height='140'
-                image={each.image}
+                image={each.picture}
                 alt='green iguana'
               />
               <CardContent>
@@ -231,7 +245,9 @@ export default function Dishes(props) {
                   <Button size='small' index={index} onClick={handleDishEdit}>
                     Edit
                   </Button>
-                  <Button size='small'>Delete</Button>
+                  <Button size='small' index={index} onClick={deleteDish}>
+                    Delete
+                  </Button>
                 </CardActions>
               )}
               {props.isCustomer && (

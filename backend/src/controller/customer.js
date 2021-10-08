@@ -60,17 +60,16 @@ const getUserProfile = (req, res) => {
   if (!req.session.user) {
     response.unauthorized(res, 'unauthorized access');
   } else {
-    db.query(
-      CUSTOMER.GET_PROFILE,
-      [req.session.user.isCustomer ? req.session.user.email : req.query.email],
-      (err, result) => {
-        if (err) {
-          response.error(res, 500, err.code);
-          return;
-        }
-        res.send(result);
+    const email = req.session.user.isCustomer
+      ? req.session.user.email
+      : req.query.email;
+    db.query(CUSTOMER.GET_PROFILE1, [email, email, email], (err, result) => {
+      if (err) {
+        response.error(res, 500, err.code);
+        return;
       }
-    );
+      res.send(result);
+    });
   }
 };
 

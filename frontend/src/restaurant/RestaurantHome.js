@@ -26,7 +26,7 @@ import RedirectSignin from '../common/RedirectSignin';
 import RedirectInvalid from '../common/RedirectInvalid';
 import Location from '../account/Location';
 import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
-import { Form, Image } from 'react-bootstrap';
+import { FloatingLabel, Form, Image } from 'react-bootstrap';
 import FileUpload from '../common/FileUpload';
 
 function RestaurantHome() {
@@ -157,26 +157,33 @@ function RestaurantHome() {
                           value={dialogData.contact}
                           onChange={handleDialogChange}
                         />
-                        <TextField
-                          margin='dense'
-                          id='rdstart'
-                          name='start'
-                          label='Start time'
-                          fullWidth
-                          variant='standard'
-                          value={dialogData.start}
-                          onChange={handleDialogChange}
-                        />
-                        <TextField
-                          margin='dense'
-                          id='rdend'
-                          name='end'
-                          label='End time'
-                          fullWidth
-                          variant='standard'
-                          value={dialogData.end}
-                          onChange={handleDialogChange}
-                        />
+                        <FloatingLabel
+                          controlId='start'
+                          label='Start Time'
+                          className='mb-3'
+                        >
+                          <Form.Control
+                            name='start'
+                            type='time'
+                            onChange={handleDialogChange}
+                            required
+                            value={dialogData.start}
+                          />
+                        </FloatingLabel>
+                        <FloatingLabel
+                          controlId='end'
+                          label='End Time'
+                          className='mb-3'
+                        >
+                          <Form.Control
+                            name='end'
+                            type='time'
+                            onChange={handleDialogChange}
+                            required
+                            value={dialogData.end}
+                          />
+                        </FloatingLabel>
+
                         <Location
                           value={dialogData.location}
                           change={(e) => {

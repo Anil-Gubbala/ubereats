@@ -24,7 +24,7 @@ const connector = mysql.createPool({
   password: 'gnQAMYArWg3rqfuntohZ',
   database: 'ubereats',
   port: '3306',
-  // multipleStatements: true,
+  multipleStatements: true,
 });
 
 const db = {

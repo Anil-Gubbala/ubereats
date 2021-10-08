@@ -9,6 +9,9 @@ const CUSTOMER = {
     'SELECT `order`.`id`, `order`.`restaurant_id`, `order`.`address_id`, `order`.`status` , `order`.`date` FROM `ubereats`.`order` where `order`.`user_id`=?; ',
   GET_PROFILE:
     'SELECT `user`.`name` , `user`.`email`,     `user_data`.`picture`,     `user_data`.`contact`,     `user_data`.`dob`,     `user_data`.`nickname`, `user_data`.`about` , `addresses`.`location`, `addresses`.`country` ,`addresses`.`latitude`  ,`addresses`.`longitude`  FROM (`ubereats`.`user_data`  join `ubereats`.`addresses` on `user_data`.`email` = `addresses`.`user_id` ) right join `ubereats`.`user` on `user_data`.`email` = `user`.`email`  where `user`.`email`= ?;',
+  GET_PROFILE1:
+    'SELECT * from ubereats.user where user.email= ? ; SELECT * from ubereats.user_data where user_data.email= ? ; Select * from ubereats.addresses where addresses.user_id = ? ;',
+
   UPDATE_USER:
     'UPDATE `ubereats`.`user` SET `name` = ?, `email` = ?, `status` = ? WHERE `email` = ?;',
   UPDATE_USER_DATA:

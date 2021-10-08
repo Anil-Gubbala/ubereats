@@ -3,11 +3,12 @@ const { signup, signin, signout } = require('./controller/account');
 const {
   getRestaurantInfo,
   getDishes,
-  addDish,
+  createDish,
   updateDish,
   updateRestaurantInfo,
   getRestaurantOrders,
   updateOrderStatus,
+  deleteDish,
 } = require('./controller/restaurant');
 
 const {
@@ -34,11 +35,12 @@ router.route('/signout').get(signout);
 // Restaurant
 router.route('/restaurantInfo').get(getRestaurantInfo);
 router.route('/getDishes').get(getDishes);
-router.route('/addDish').post(addDish);
+router.route('/createDish').post(createDish);
 router.route('/updateDish').post(updateDish);
 router.route('/updateRestaurantInfo').post(updateRestaurantInfo);
 router.route('/getRestaurantOrders').get(getRestaurantOrders);
 router.route('/updateOrderStatus').post(updateOrderStatus);
+router.route('/deleteDish').post(deleteDish);
 
 // common
 router.route('/getRestaruantsList').get(getRestaruantsList);

@@ -41,7 +41,7 @@ function Profile() {
     nickname: '',
     picture: '',
     about: '',
-    country: '',
+    country: 'US',
     latitude: '',
     longitude: '',
   };
@@ -51,8 +51,10 @@ function Profile() {
     get('/getUserProfile', {
       email,
     }).then((response) => {
-      const data = response[0];
-      setFormData((prev) => ({ ...prev, ...data }));
+      const user = response[0][0];
+      const userData = response[1][0];
+      const addresses = response[2][0];
+      setFormData((prev) => ({ ...prev, ...user, ...userData, ...addresses }));
     });
   }, []);
 
@@ -123,7 +125,7 @@ function Profile() {
                 type='date'
                 onChange={eventHandler}
                 required
-                value={formData.dob}
+                value={formData.dob.split('T')[0]}
               />
             </FloatingLabel>
             <FloatingLabel

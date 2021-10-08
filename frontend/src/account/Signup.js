@@ -184,26 +184,29 @@ function Signup() {
               </Row> */}
             </div>
           )}
-          <Location
-            value={formData.location}
-            change={(e) => {
-              setFormData((prev) => ({ ...prev, location: e }));
-            }}
-            select={(e) => {
-              geocodeByAddress(e).then((results) => {
+          {formData.accountType === '1' && (
+            <Location
+              value={formData.location}
+              change={(e) => {
                 setFormData((prev) => ({ ...prev, location: e }));
-                getLatLng(results[0])
-                  .then(({ lat, lng }) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      latitude: lat,
-                      longitude: lng,
-                    }));
-                  })
-                  .catch((error) => console.log(error));
-              });
-            }}
-          />
+              }}
+              select={(e) => {
+                geocodeByAddress(e).then((results) => {
+                  setFormData((prev) => ({ ...prev, location: e }));
+                  getLatLng(results[0])
+                    .then(({ lat, lng }) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        latitude: lat,
+                        longitude: lng,
+                      }));
+                    })
+                    .catch((error) => console.log(error));
+                });
+              }}
+              country=''
+            />
+          )}
           <Button variant='primary' type='submit'>
             Submit
           </Button>

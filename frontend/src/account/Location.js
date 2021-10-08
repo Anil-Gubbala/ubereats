@@ -5,15 +5,16 @@ function Location({ value, change, select, country }) {
   const searchOptions = {
     componentRestrictions: { country: [country] },
   };
+  const obj = {};
   return (
     <PlacesAutocomplete
       value={value}
       onChange={change}
       onSelect={select}
-      searchOptions={country ? searchOptions : ''}
+      searchOptions={country ? searchOptions : obj}
     >
       {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-        <div>
+        <div style={{ margin: '16px' }}>
           <input
             {...getInputProps({
               placeholder: 'Location',

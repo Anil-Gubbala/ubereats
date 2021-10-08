@@ -28,13 +28,9 @@ function FileUpload({ onUpload, id }) {
   };
   return (
     <>
-      <label>
-        Upload file:
-        <input type='file' ref={fileInput} />
-      </label>
+      <input type='file' ref={fileInput} style={{ margin: '8px' }} />
       <br />
-
-      <button type='button' onClick={handleClick}>
+      <button type='button' onClick={handleClick} style={{ margin: '8px' }}>
         Upload
       </button>
     </>
