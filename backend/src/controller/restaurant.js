@@ -102,20 +102,32 @@ const updateDish = (req, res) => {
 };
 
 const updateRestaurantInfo = (req, res) => {
-  const { body } = req;
+  const {
+    name,
+    location,
+    contact,
+    picture,
+    description,
+    start,
+    end,
+    latitude,
+    longitude,
+  } = req.body;
   if (!req.session.user || req.session.user.isCustomer) {
     response.unauthorized(res, 'unauthorized access');
   } else {
     db.query(
       RESTAURANT.UPDATE_RESTAURANT,
       [
-        body.name,
-        body.location,
-        body.contact,
-        body.picture,
-        body.description,
-        body.start,
-        body.end,
+        name,
+        location,
+        contact,
+        picture,
+        description,
+        start,
+        end,
+        latitude,
+        longitude,
         req.session.user.email,
       ],
       (err, result) => {

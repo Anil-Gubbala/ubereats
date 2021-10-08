@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Card, Col, Container, Form, Row, Table } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { Link } from 'react-router-dom';
 import { get } from '../utils/serverCall';
 
 import { ORDER_STATUS } from '../utils/consts';
@@ -23,7 +22,6 @@ function MyOrders() {
   useEffect(() => {
     get('/myOrders')
       .then((response) => {
-        console.log(response);
         setData(response);
       })
       .catch(() => {});

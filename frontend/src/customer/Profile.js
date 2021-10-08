@@ -12,6 +12,9 @@ import { Redirect } from 'react-router';
 import CONSTANTS from '../utils/consts';
 import { get, post } from '../utils/serverCall';
 import FileUpload from '../common/FileUpload';
+import CountriesList from '../utils/CountriesList';
+import Location from '../account/Location';
+import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 
 function Profile() {
   const status = localStorage.getItem(CONSTANTS.STATUS);
@@ -20,11 +23,10 @@ function Profile() {
   const params = new URLSearchParams(windowUrl);
   let email = '';
   const [editMode, setEditMode] = useState(status === '0');
-  // const [viewMode, setViewMode] = useState(true);
 
   if (cookieData.customer) {
     if (params.get('id')) {
-      return <Redirect to='/profile'></Redirect>;
+      return <Redirect to='/profile' />;
     }
   } else {
     email = params.get('id');
@@ -39,6 +41,9 @@ function Profile() {
     nickname: '',
     picture: '',
     about: '',
+    country: '',
+    latitude: '',
+    longitude: '',
   };
   const [formData, setFormData] = useState(defaultFormData);
 
@@ -73,6 +78,19 @@ function Profile() {
       <Container>
         <Col>
           <Form onSubmit={handleUpdateProfile}>
+            <Form.Group className='mb-3' controlId='nickname'>
+              <Col xs={6} md={4}>
+                <Image src={formData.picture} roundedCircle thumbnail='true' />
+              </Col>
+              <Col>
+                <FileUpload
+                  onUpload={(e) => {
+                    setFormData({ ...formData, picture: e });
+                  }}
+                  id={`${formData.email}-profilePic`}
+                />
+              </Col>
+            </Form.Group>
             <FloatingLabel
               controlId='email'
               label='Email Address'
@@ -130,6 +148,32 @@ function Profile() {
                 value={formData.about}
               />
             </FloatingLabel>
+            <FloatingLabel controlId='country' label='Country' className='mb-3'>
+              <CountriesList
+                name='country'
+                value={formData.country}
+                onChange={eventHandler}
+              />
+              <Location
+                value={formData.location}
+                change={(e) => {
+                  setFormData((prev) => ({ ...prev, location: e }));
+                }}
+                select={(e) => {
+                  setFormData((prev) => ({ ...prev, location: e }));
+                  geocodeByAddress(e)
+                    .then((results) => getLatLng(results[0]))
+                    .then(({ lat, lng }) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        latitude: lat,
+                        longitude: lng,
+                      }));
+                    });
+                }}
+                country={formData.country}
+              />
+            </FloatingLabel>
             <FloatingLabel controlId='contact' label='Phone' className='mb-3'>
               <Form.Control
                 name='contact'
@@ -139,18 +183,6 @@ function Profile() {
                 value={formData.contact}
               />
             </FloatingLabel>
-            <Form.Group className='mb-3' controlId='nickname'>
-              <Col xs={6} md={4}>
-                <Image
-                  src='https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
-                  roundedCircle
-                  thumbnail='true'
-                />
-              </Col>
-              <Col>
-                <FileUpload></FileUpload>
-              </Col>
-            </Form.Group>
 
             <Button variant='primary' type='submit'>
               Submit
@@ -160,13 +192,15 @@ function Profile() {
       </Container>
     );
   }
-  // if (viewMode && status !== '0')
   return (
     <Container>
       <Row>
         <Col xs={6} md={4}>
           <Image
-            src='https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg'
+            src={
+              formData.picture ||
+              'https://imageuploadlab1.s3.us-east-2.amazonaws.com/profile/customer.jpeg'
+            }
             roundedCircle
             thumbnail='true'
           />

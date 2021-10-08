@@ -23,18 +23,17 @@ function Signup() {
   const dispatch = useDispatch();
   const { signup } = bindActionCreators(actionCreators, dispatch);
 
-  const [address, setAddress] = useState('');
-  const [lat, setLat] = useState('');
-  const [lng, setLng] = useState('');
+  // const [address, setAddress] = useState('');
+  // const [lat, setLat] = useState('');
+  // const [lng, setLng] = useState('');
   const defaultValues = {
     restaurantName: '',
     name: '',
     email: '',
     password: '',
-    address: '',
-    city: '',
-    state: '',
-    country: '',
+    location: '',
+    latitude: '',
+    longitude: '',
     zip: '',
     accountType: '0',
   };
@@ -146,7 +145,7 @@ function Signup() {
           </Form.Group>
           {formData.accountType === '1' && (
             <div>
-              <Form.Group className='mb-3' controlId='formAddress'>
+              {/* <Form.Group className='mb-3' controlId='formAddress'>
                 <Form.Label>Address</Form.Label>
                 <Form.Control
                   onChange={eventHandler}
@@ -154,7 +153,7 @@ function Signup() {
                   placeholder='Apartment, floor'
                   required
                 />
-              </Form.Group>
+              </Form.Group> */}
               {/* <Row className='mb-3'>
                 <Form.Group as={Col} controlId='formCity'>
                   <Form.Label>City</Form.Label>
@@ -186,17 +185,20 @@ function Signup() {
             </div>
           )}
           <Location
-            value={address}
+            value={formData.location}
             change={(e) => {
-              setAddress(e);
+              setFormData((prev) => ({ ...prev, location: e }));
             }}
             select={(e) => {
               geocodeByAddress(e).then((results) => {
-                setAddress(e);
+                setFormData((prev) => ({ ...prev, location: e }));
                 getLatLng(results[0])
-                  .then((coordinates) => {
-                    setLat(coordinates.lat);
-                    setLng(coordinates.lng);
+                  .then(({ lat, lng }) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      latitude: lat,
+                      longitude: lng,
+                    }));
                   })
                   .catch((error) => console.log(error));
               });

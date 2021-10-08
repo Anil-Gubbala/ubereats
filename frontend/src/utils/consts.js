@@ -17,4 +17,10 @@ export const ORDER_STATUS = {
   5: 'Picked up',
 };
 
+export const LOG_REDUCER = {
+  IS_CUSTOMER: 'isCustomer',
+  IS_LOGGEDIN: 'isLoggedIn',
+  EMAIL: 'email',
+};
+
 export default CONSTANTS;

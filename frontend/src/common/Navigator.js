@@ -9,7 +9,6 @@ import { bindActionCreators } from 'redux';
 import { Link } from 'react-router-dom';
 
 import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
 
 import cookie from 'react-cookies';
 
@@ -18,15 +17,26 @@ import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
-import CONSTANTS from '../utils/consts';
+import CONSTANTS, { LOG_REDUCER } from '../utils/consts';
 import { actionCreators } from '../reducers/actionCreators';
 import { get } from '../utils/serverCall';
 
 function Navigator() {
+  const appCookies = cookie.load(CONSTANTS.COOKIE);
+
   const currentState = useSelector((state) => state.loggedReducer);
   const cartState = useSelector((state) => state.cartReducer);
-  const appCookies = cookie.load(CONSTANTS.COOKIE);
-  const cookieData = appCookies && appCookies.customer;
+
+  const isSignedOut = !appCookies || !currentState[LOG_REDUCER.IS_LOGGEDIN];
+  const isCustomerLogin =
+    appCookies &&
+    currentState[LOG_REDUCER.IS_LOGGEDIN] &&
+    currentState[LOG_REDUCER.IS_CUSTOMER];
+  const isRestaurantLogin =
+    appCookies &&
+    currentState[LOG_REDUCER.IS_LOGGEDIN] &&
+    !currentState[LOG_REDUCER.IS_CUSTOMER];
+
   const [cartFlag, setCartFlag] = useState(false);
   const dispatch = useDispatch();
   const { updateCart, customer, restaurant, signout } = bindActionCreators(
@@ -34,7 +44,6 @@ function Navigator() {
     dispatch
   );
 
-  // const [login, setLogin] = useState(currentState);
   if (!appCookies) {
     localStorage.clear();
   }
@@ -88,7 +97,7 @@ function Navigator() {
   }, []);
 
   useEffect(() => {
-    if (localStorage.getItem(CONSTANTS.STR_KEY)) {
+    if (isCustomerLogin) {
       getCart();
     }
   }, [currentState]);
@@ -119,47 +128,43 @@ function Navigator() {
                 </Link>
               </Nav>
               <Nav>
-                {(!appCookies || !currentState.isLoggedIn) && (
+                {isSignedOut && (
                   <Link to='/signup' className='nav-link'>
                     Sign up
                   </Link>
                 )}
-                {(!appCookies || !currentState.isLoggedIn) && (
+                {isSignedOut && (
                   <Link to='/signin' className='nav-link'>
                     Sign in
                   </Link>
                 )}
-                {appCookies && currentState.isLoggedIn && (
+                {!isSignedOut && (
                   <Link to='/signout' className='nav-link'>
                     Sign out
                   </Link>
                 )}
-                {appCookies && currentState.isLoggedIn && (
+                {!isSignedOut && isCustomerLogin && (
                   <Link to='/myOrders' className='nav-link'>
                     My Orders
                   </Link>
                 )}
-                {appCookies && currentState.isLoggedIn && (
+                {!isSignedOut && isCustomerLogin && (
                   <Link to='/profile' className='nav-link'>
                     Profile
                   </Link>
                 )}
-                {appCookies && currentState.isLoggedIn && (
+                {!isSignedOut && isRestaurantLogin && (
                   <Link to='/restaurantOrders' className='nav-link'>
                     Orders
                   </Link>
                 )}
-                <IconButton aria-label='cart' onClick={openCartDialog}>
-                  <StyledBadge badgeContent={0} color='primary'>
-                    <ShoppingCartIcon />
-                  </StyledBadge>
-                </IconButton>
-                {/* {<Nav.Link href='signup'>Signup</Nav.Link>}
-                {<Nav.Link href='signin'>Signin</Nav.Link>}
-                {<Nav.Link href='signout'>Logout</Nav.Link>} */}
-                {/* {logged === 0 && <Nav.Link href='signup'>Signup</Nav.Link>}
-                {logged === 0 && <Nav.Link href='signin'>Signin</Nav.Link>}
-                {logged !== 0 && <Nav.Link href='signout'>Logout</Nav.Link>} */}
+                {!isSignedOut && isCustomerLogin && (
+                  <IconButton aria-label='cart' onClick={openCartDialog}>
+                    <StyledBadge badgeContent={0} color='primary'>
+                      <ShoppingCartIcon />
+                    </StyledBadge>
+                  </IconButton>
+                )}
               </Nav>
             </Container>
           </Navbar>
@@ -189,12 +194,6 @@ function Navigator() {
             )}
           </Modal.Body>
           <Modal.Footer>
-            {/* <Button variant='secondary' onClick={handleClose}>
-              Close
-            </Button> */}
-            {/* <Button variant='primary' onClick={handleClose}>
-              Check out
-            </Button> */}
             {cartState.restaurantId && (
               <Link to='/placeorder' className='nav-link' onClick={handleClose}>
                 Check out

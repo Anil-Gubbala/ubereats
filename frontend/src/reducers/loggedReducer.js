@@ -1,7 +1,9 @@
+import { LOG_REDUCER } from '../utils/consts';
+
 const initialState = {
-  isLoggedIn: false,
-  isCustomer: true,
-  email: '',
+  [LOG_REDUCER.IS_LOGGEDIN]: false,
+  [LOG_REDUCER.IS_CUSTOMER]: true,
+  [LOG_REDUCER.EMAIL]: '',
 };
 
 const loggedReducer = (state = initialState, action) => {
@@ -9,25 +11,25 @@ const loggedReducer = (state = initialState, action) => {
     case 'CUSTOMER':
       return {
         ...state,
-        isLoggedIn: true,
-        isCustomer: true,
-        email: action.payload,
+        [LOG_REDUCER.IS_LOGGEDIN]: true,
+        [LOG_REDUCER.IS_CUSTOMER]: true,
+        [LOG_REDUCER.EMAIL]: action.payload,
       };
     case 'RESTAURANT':
       return {
         ...state,
-        isLoggedIn: true,
-        isCustomer: false,
-        email: action.payload,
+        [LOG_REDUCER.IS_LOGGEDIN]: true,
+        [LOG_REDUCER.IS_CUSTOMER]: false,
+        [LOG_REDUCER.EMAIL]: action.payload,
       };
     case 'SIGNOUT':
-      return { ...state, isLoggedIn: false };
+      return { ...state, [LOG_REDUCER.IS_LOGGEDIN]: false };
     case 'SIGNUP':
       return {
         ...state,
-        isLoggedIn: false,
-        isCustomer: true,
-        email: action.payload,
+        [LOG_REDUCER.IS_LOGGEDIN]: false,
+        [LOG_REDUCER.IS_CUSTOMER]: true,
+        [LOG_REDUCER.EMAIL]: action.payload,
       };
     default:
       return state;

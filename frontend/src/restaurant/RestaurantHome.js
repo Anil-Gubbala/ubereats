@@ -24,15 +24,16 @@ import Dishes from './Dishes';
 import CONSTANTS from '../utils/consts';
 import RedirectSignin from '../common/RedirectSignin';
 import RedirectInvalid from '../common/RedirectInvalid';
+import Location from '../account/Location';
+import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { Form, Image } from 'react-bootstrap';
+import FileUpload from '../common/FileUpload';
 
 function RestaurantHome() {
   const appCookies = cookie.load(CONSTANTS.COOKIE);
   const isCustomer = appCookies && appCookies[CONSTANTS.COOKIE_KEY.ISCUSTOMER];
   if (!appCookies) {
     return <RedirectSignin />;
-  }
-  if (isCustomer) {
-    return <RedirectInvalid />;
   }
 
   const windowUrl = window.location.search;
@@ -44,14 +45,12 @@ function RestaurantHome() {
     end: '16:00:00',
     location: 'Add restaurant location',
     name: '',
-    picture: 'Add Restaurant Image',
+    picture: '',
     start: '16:00:00',
     email: params.get('id'),
+    latitude: '',
+    longitude: '',
   };
-
-  // const [isCustomer, setIsCustomer] = useState(
-  //   localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_USER
-  // );
 
   const [restaurantInfo, setRestaurantInfo] = useState(defaultValues);
   useEffect(() => {
@@ -126,7 +125,7 @@ function RestaurantHome() {
                       Update Restaurant Info
                     </Button>
                     <Dialog open={open} onClose={handleClose}>
-                      <DialogTitle>Subscribe</DialogTitle>
+                      <DialogTitle>Update Restaurant Info</DialogTitle>
                       <DialogContent>
                         <TextField
                           margin='dense'
@@ -178,16 +177,46 @@ function RestaurantHome() {
                           value={dialogData.end}
                           onChange={handleDialogChange}
                         />
-                        <TextField
-                          margin='dense'
-                          id='rdlocation'
-                          name='location'
-                          label='Location'
-                          fullWidth
-                          variant='standard'
+                        <Location
                           value={dialogData.location}
-                          onChange={handleDialogChange}
+                          change={(e) => {
+                            setDialogData((prev) => ({ ...prev, location: e }));
+                          }}
+                          select={(e) => {
+                            geocodeByAddress(e).then((results) => {
+                              setDialogData((prev) => ({
+                                ...prev,
+                                location: e,
+                              }));
+                              getLatLng(results[0])
+                                .then(({ lat, lng }) => {
+                                  setDialogData((prev) => ({
+                                    ...prev,
+                                    latitude: lat,
+                                    longitude: lng,
+                                  }));
+                                })
+                                .catch((error) => console.log(error));
+                            });
+                          }}
                         />
+                        <Form.Group className='mb-3' controlId='nickname'>
+                          <Col xs={6} md={4}>
+                            <Image
+                              src={dialogData.picture}
+                              roundedCircle
+                              thumbnail='true'
+                            />
+                          </Col>
+                          <Col>
+                            <FileUpload
+                              onUpload={(e) => {
+                                setDialogData({ ...dialogData, picture: e });
+                              }}
+                              id={`${dialogData.email}-restaurantPic`}
+                            />
+                          </Col>
+                        </Form.Group>
                       </DialogContent>
                       <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>

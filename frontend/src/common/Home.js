@@ -10,7 +10,6 @@ function Home() {
   const isLoggedIn = localStorage.getItem(CONSTANTS.STR_KEY);
   const status = localStorage.getItem(CONSTANTS.STATUS);
 
-  console.log(status);
   if (isLoggedIn === CONSTANTS.STR_USER) {
     if (status === '0') {
       return <Profile></Profile>;

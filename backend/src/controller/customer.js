@@ -75,8 +75,19 @@ const getUserProfile = (req, res) => {
 };
 
 const updateUserInfo = (req, res) => {
-  const { contact, email, dob, location, name, nickname, picture, about } =
-    req.body;
+  const {
+    contact,
+    email,
+    dob,
+    location,
+    name,
+    nickname,
+    picture,
+    about,
+    country,
+    latitude,
+    longitude,
+  } = req.body;
   if (!req.session.user || !req.session.user.isCustomer) {
     response.unauthorized(res, 'unauthorized access');
   } else {
@@ -90,13 +101,45 @@ const updateUserInfo = (req, res) => {
         }
         db.query(
           CUSTOMER.UPDATE_USER_DATA,
-          [email, picture, contact, dob, nickname, location, about, email],
+          [
+            email,
+            picture,
+            contact,
+            dob,
+            nickname,
+            about,
+            picture,
+            contact,
+            dob,
+            nickname,
+            about,
+          ],
           (err1, result1) => {
             if (err1) {
               response.error(res, 500, err1.code);
               return;
             }
-            res.send();
+            db.query(
+              CUSTOMER.UPDATE_USER_ADDRESS,
+              [
+                email,
+                location,
+                country,
+                latitude,
+                longitude,
+                location,
+                country,
+                latitude,
+                longitude,
+              ],
+              (err2, result2) => {
+                if (err2) {
+                  response.error(res, 500, err2.code);
+                  return;
+                }
+                res.send();
+              }
+            );
           }
         );
       }

@@ -1,9 +1,17 @@
 import React from 'react';
 import PlacesAutocomplete from 'react-places-autocomplete';
 
-function Location({ value, change, select }) {
+function Location({ value, change, select, country }) {
+  const searchOptions = {
+    componentRestrictions: { country: [country] },
+  };
   return (
-    <PlacesAutocomplete value={value} onChange={change} onSelect={select}>
+    <PlacesAutocomplete
+      value={value}
+      onChange={change}
+      onSelect={select}
+      searchOptions={country ? searchOptions : ''}
+    >
       {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
         <div>
           <input
@@ -24,6 +32,7 @@ function Location({ value, change, select }) {
                 : { backgroundColor: '#ffffff', cursor: 'pointer' };
               return (
                 <div
+                  key={suggestion.placeId}
                   {...getSuggestionItemProps(suggestion, {
                     className,
                     style,

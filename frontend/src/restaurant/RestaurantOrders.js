@@ -39,7 +39,6 @@ function RestaurantOrders() {
   useEffect(() => {
     get('/getRestaurantOrders')
       .then((response) => {
-        console.log(response);
         setData(response);
       })
       .catch(() => {});
@@ -129,7 +128,6 @@ function RestaurantOrders() {
               onChange={(e) => {
                 setOrderStatus(e.target.value);
                 setDisableUpdate(false);
-                console.log(e);
               }}
             >
               <option disabled={orderStatus > 0} value={0}>

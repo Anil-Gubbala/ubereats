@@ -10,9 +10,10 @@ const sendError = (res, status, code) => {
 };
 
 const registerRestaurant = (req, res, hash) => {
+  const { restaurantName, email, location, latitude, longitude } = req.body;
   db.query(
     RESTAURANT.SIGNUP,
-    [req.body.restaurantName, req.body.email, hash, req.body.address],
+    [restaurantName, email, hash, location, latitude, longitude],
     (err1) => {
       if (err1) {
         sendError(

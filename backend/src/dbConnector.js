@@ -9,10 +9,19 @@ const mysql = require('mysql');
 //   multipleStatements: true,
 // });
 
+// const connector = mysql.createPool({
+//   user: 'root',
+//   host: 'ubereatsdb.cauvszlanaze.us-east-2.rds.amazonaws.com',
+//   password: '12345678',
+//   database: 'ubereats',
+//   port: '3306',
+//   // multipleStatements: true,
+// });
+
 const connector = mysql.createPool({
-  user: 'root',
-  host: 'ubereatsdb.cauvszlanaze.us-east-2.rds.amazonaws.com',
-  password: '12345678',
+  user: 'auro',
+  host: 'lab1237cmpe.cauvszlanaze.us-east-2.rds.amazonaws.com',
+  password: 'gnQAMYArWg3rqfuntohZ',
   database: 'ubereats',
   port: '3306',
   // multipleStatements: true,
