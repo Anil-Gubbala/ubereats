@@ -142,12 +142,15 @@ const updateRestaurantInfo = (req, res) => {
 };
 
 const getRestaurantOrders = (req, res) => {
+  const { filter } = req.query;
   if (!req.session.user || req.session.user.isCustomer) {
     response.unauthorized(res, 'unauthorized access');
   } else {
     db.query(
-      RESTAURANT.GET_RESTAURANT_ORDERS,
-      [req.session.user.email],
+      filter === 0
+        ? RESTAURANT.GET_RESTAURANT_ORDERS_NEW
+        : RESTAURANT.GET_RESTAURANT_ORDERS_OLD,
+      [req.session.user.email, filter],
       (err, result) => {
         if (err) {
           response.error(res, 500, err.code);

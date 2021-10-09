@@ -1,10 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Col, Container, Form, Row, Table } from 'react-bootstrap';
+import {
+  Card,
+  Col,
+  Container,
+  FloatingLabel,
+  Form,
+  Row,
+  Table,
+} from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { get } from '../utils/serverCall';
 
-import { ORDER_STATUS } from '../utils/consts';
+import {
+  DELIVERY_STATUS,
+  ORDER_DELIVERY_MODE,
+  PICKUP_STATUS,
+} from '../utils/consts';
 
 function MyOrders() {
   const [data, setData] = useState([]);
@@ -19,12 +31,19 @@ function MyOrders() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  useEffect(() => {
-    get('/myOrders')
+  const [filter, setFilter] = useState(0);
+  const [deliveryType, setDeliveryType] = useState(0);
+
+  const getMyOrders = (param1, param2) => {
+    get('/myOrders', { deliveryType: param1, filter: param2 })
       .then((response) => {
         setData(response);
       })
       .catch(() => {});
+  };
+
+  useEffect(() => {
+    getMyOrders(deliveryType, filter);
   }, []);
 
   const showDetails = (e) => {
@@ -81,7 +100,60 @@ function MyOrders() {
 
   return (
     <Container>
-      <Row>My Orders</Row>
+      <Row>
+        <Col>
+          <FloatingLabel
+            style={{ marginTop: '8px' }}
+            controlId='floatingSelect'
+            label='Select Delivery Type'
+          >
+            <Form.Select
+              aria-label='Default select example'
+              value={deliveryType}
+              onChange={(e) => {
+                setDeliveryType(parseInt(e.target.value, 10));
+                getMyOrders(parseInt(e.target.value, 10), filter);
+              }}
+            >
+              {Object.keys(ORDER_DELIVERY_MODE).map((key) => (
+                <option key={key} value={key}>
+                  {ORDER_DELIVERY_MODE[key]}
+                </option>
+              ))}
+            </Form.Select>
+          </FloatingLabel>
+        </Col>
+        <Col>
+          <FloatingLabel
+            style={{ marginTop: '8px' }}
+            controlId='floatingSelect'
+            label='Select Order Type'
+          >
+            <Form.Select
+              aria-label='Default select example'
+              value={filter}
+              onChange={(e) => {
+                setFilter(parseInt(e.target.value, 10));
+                getMyOrders(deliveryType, parseInt(e.target.value, 10));
+              }}
+            >
+              {deliveryType === 0 &&
+                Object.keys(DELIVERY_STATUS).map((key) => (
+                  <option key={key} value={key}>
+                    {DELIVERY_STATUS[key]}
+                  </option>
+                ))}
+              {deliveryType === 1 &&
+                Object.keys(PICKUP_STATUS).map((key) => (
+                  <option key={key} value={key}>
+                    {PICKUP_STATUS[key]}
+                  </option>
+                ))}
+            </Form.Select>
+          </FloatingLabel>
+        </Col>
+      </Row>
+      <Row>My Orders : </Row>
       <Row>
         <Table striped bordered hover>
           <thead>
@@ -100,7 +172,11 @@ function MyOrders() {
                 <td>{each.id}</td>
                 <td>{each.restaurant_id}</td>
                 <td>{each.date}</td>
-                <td>{ORDER_STATUS[each.status]}</td>
+                <td>
+                  {each.delivery === 0
+                    ? DELIVERY_STATUS[each.status]
+                    : PICKUP_STATUS[each.status]}
+                </td>
                 <td>{each.delivery === 0 ? each.location : 'Pick up'}</td>
                 <td>
                   <Button

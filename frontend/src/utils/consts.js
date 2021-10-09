@@ -8,14 +8,20 @@ const CONSTANTS = {
   STATUS: 'uberstatus',
 };
 
-export const ORDER_STATUS = {
+export const DELIVERY_STATUS = {
   0: 'Order recieved',
   1: 'Preparing Food',
   2: 'On the way',
   3: 'Delivered',
-  4: 'Ready for pickup',
-  5: 'Picked up',
-  6: 'Cancelled',
+  4: 'Cancelled',
+};
+
+export const PICKUP_STATUS = {
+  0: 'Order recieved',
+  1: 'Preparing Food',
+  2: 'Ready for pickup',
+  3: 'Picked up',
+  4: 'Cancelled',
 };
 
 export const LOG_REDUCER = {
@@ -33,10 +39,9 @@ export const DISH_CATEGORY = {
 };
 
 export const REST_ORDER_FILTER = {
-  0: 'All Orders',
-  1: 'New Order',
-  2: 'Delivered Orders',
-  3: 'Cancelled Orders',
+  0: 'New Orders',
+  3: 'Delivered Orders',
+  4: 'Cancelled Orders',
 };
 
 export const REST_DELIVERY_MODE = {

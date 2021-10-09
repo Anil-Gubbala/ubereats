@@ -13,8 +13,11 @@ const RESTAURANT = {
     'UPDATE `ubereats`.`dishes` SET`name` = ? ,`ingredients` = ?,`picture` = ?,`price` = ?,`description` = ?,`category` = ? , `type`=? WHERE `email` = ? AND `name` = ? ;',
   UPDATE_RESTAURANT:
     'UPDATE `ubereats`.`restaurant_login` SET `name` = ?, `location` = ?, `contact` = ?, `picture` = ? , `description` = ?, `start` = ? , `end` = ? , `latitude`=? ,`longitude`=?, `delivery`= ? WHERE `email` = ? ;',
-  GET_RESTAURANT_ORDERS:
-    'SELECT `order`.`id`, `order`.`user_id`, `order`.`address_id`, `order`.`status`, `order`.`date`, addresses.location, order.delivery FROM `ubereats`.`order` join `ubereats`.`addresses` on  order.address_id = addresses.id where `order`.`restaurant_id`=?; ',
+  GET_RESTAURANT_ORDERS_NEW:
+    'SELECT `order`.`id`, `order`.`user_id`, `order`.`address_id`, `order`.`status`, `order`.`date`, addresses.location, order.delivery FROM `ubereats`.`order` join `ubereats`.`addresses` on  order.address_id = addresses.id where `order`.`restaurant_id`=? and `order`.`status` <= 2 ; ',
+  GET_RESTAURANT_ORDERS_OLD:
+    'SELECT `order`.`id`, `order`.`user_id`, `order`.`address_id`, `order`.`status`, `order`.`date`, addresses.location, order.delivery FROM `ubereats`.`order` join `ubereats`.`addresses` on  order.address_id = addresses.id where `order`.`restaurant_id`=? and `order`.`status` = ? ; ',
+
   UDPATE_ORDER_STATUS:
     'UPDATE `ubereats`.`order` SET `status` = ?  WHERE `id` = ? ;',
   DELETE_DISH:

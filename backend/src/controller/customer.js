@@ -44,16 +44,21 @@ const placeOrder = (req, res) => {
 };
 
 const myOrders = (req, res) => {
+  const { filter, deliveryType } = req.query;
   if (!req.session.user || !req.session.user.isCustomer) {
     response.unauthorized(res, 'unauthorized access');
   } else {
-    db.query(CUSTOMER.GET_ORDERS, [req.session.user.email], (err, result) => {
-      if (err) {
-        response.error(res, 500, err.code);
-        return;
+    db.query(
+      CUSTOMER.GET_ORDERS,
+      [req.session.user.email, deliveryType, filter],
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+          return;
+        }
+        res.send(result);
       }
-      res.send(result);
-    });
+    );
   }
 };
 

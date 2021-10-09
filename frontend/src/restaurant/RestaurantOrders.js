@@ -1,12 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Col, Container, Form, Row, Table } from 'react-bootstrap';
+import {
+  Card,
+  Col,
+  Container,
+  FloatingLabel,
+  Form,
+  Row,
+  Table,
+} from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import cookie from 'react-cookies';
 
 import { get, post } from '../utils/serverCall';
 
-import CONSTANTS, { ORDER_STATUS } from '../utils/consts';
+import CONSTANTS, {
+  DELIVERY_STATUS,
+  PICKUP_STATUS,
+  REST_ORDER_FILTER,
+} from '../utils/consts';
 import RedirectSignin from '../common/RedirectSignin';
 import RedirectInvalid from '../common/RedirectInvalid';
 import { Link } from 'react-router-dom';
@@ -34,15 +46,21 @@ function RestaurantOrders() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const [orderStatus, setOrderStatus] = useState('0');
+  const [orderStatus, setOrderStatus] = useState(0);
+  const [detailsDelivery, setDetailsDelivery] = useState(0);
   const [disableUpdate, setDisableUpdate] = useState(true);
+  const [filter, setFilter] = useState(0);
 
-  useEffect(() => {
-    get('/getRestaurantOrders')
+  const getRestaurantOrders = (type) => {
+    get('/getRestaurantOrders', { filter: type })
       .then((response) => {
         setData(response);
       })
       .catch(() => {});
+  };
+
+  useEffect(() => {
+    getRestaurantOrders(filter);
   }, []);
 
   const showDetails = (e) => {
@@ -57,6 +75,7 @@ function RestaurantOrders() {
           index: e.target.getAttribute('index'),
         }));
         setOrderStatus(e.target.getAttribute('status'));
+        setDetailsDelivery(parseInt(e.target.getAttribute('delivery'), 10));
         setDishesData(response);
         handleShow();
       })
@@ -81,6 +100,29 @@ function RestaurantOrders() {
   return (
     <Container>
       <Row>
+        <FloatingLabel
+          style={{ marginTop: '8px' }}
+          controlId='floatingSelect'
+          label='Select Order Type'
+        >
+          <Form.Select
+            aria-label='Default select example'
+            value={filter}
+            onChange={(e) => {
+              setFilter(e.target.value);
+              getRestaurantOrders(e.target.value);
+            }}
+          >
+            {Object.keys(REST_ORDER_FILTER).map((key) => (
+              <option key={key} value={key}>
+                {REST_ORDER_FILTER[key]}
+              </option>
+            ))}
+          </Form.Select>
+        </FloatingLabel>
+      </Row>
+
+      <Row style={{ marginTop: '8px' }}>
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -103,12 +145,17 @@ function RestaurantOrders() {
                 </td>
                 <td>{each.date}</td>
                 <td>{each.delivery === 0 ? each.location : 'Pick up'}</td>
-                <td>{ORDER_STATUS[each.status]}</td>
+                <td>
+                  {each.delivery === 0
+                    ? DELIVERY_STATUS[each.status]
+                    : PICKUP_STATUS[each.status]}
+                </td>
                 <td>
                   <Button
                     name={each.id}
                     user={each.user_id}
                     status={each.status}
+                    delivery={each.delivery}
                     index={index}
                     variant='link'
                     onClick={showDetails}
@@ -133,16 +180,24 @@ function RestaurantOrders() {
               <Form.Select
                 aria-label='Default select example'
                 value={orderStatus}
+                disabled={orderStatus >= 3}
                 onChange={(e) => {
                   setOrderStatus(e.target.value);
                   setDisableUpdate(false);
                 }}
               >
-                <option disabled={orderStatus > 0} value={0}>
-                  One
-                </option>
-                <option value={1}>Two</option>
-                <option value={2}>Three</option>
+                {detailsDelivery === 0 &&
+                  Object.keys(DELIVERY_STATUS).map((key) => (
+                    <option key={key} disabled={orderStatus > key} value={key}>
+                      {DELIVERY_STATUS[key]}
+                    </option>
+                  ))}
+                {detailsDelivery === 1 &&
+                  Object.keys(PICKUP_STATUS).map((key) => (
+                    <option key={key} disabled={orderStatus > key} value={key}>
+                      {PICKUP_STATUS[key]}
+                    </option>
+                  ))}
               </Form.Select>
             </Col>
           </Row>
