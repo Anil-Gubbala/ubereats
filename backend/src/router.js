@@ -29,6 +29,7 @@ const {
   getFavorites,
   getAllAddresses,
   addNewAddress,
+  getRestaurantDelivery,
 } = require('./controller/customer');
 
 const router = express.Router();
@@ -65,5 +66,6 @@ router.route('/removeFromFavorites').post(removeFromFavorites);
 router.route('/getFavorites').get(getFavorites);
 router.route('/getAllAddresses').get(getAllAddresses);
 router.route('/addNewAddress').post(addNewAddress);
+router.route('/getRestaurantDelivery').get(getRestaurantDelivery);
 
 module.exports = router;

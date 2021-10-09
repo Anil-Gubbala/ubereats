@@ -1,16 +1,17 @@
 const db = require('../dbConnector');
 const COMMON = require('../sql/commonSql');
 const CUSTOMER = require('../sql/customer');
+const RESTAURANT = require('../sql/restaurantSql');
 const { response } = require('../utils/response');
 
 const placeOrder = (req, res) => {
-  const { restaurantId, addressId } = req.body;
+  const { restaurantId, addressId, delivery } = req.body;
   if (!req.session.user || !req.session.user.isCustomer) {
     response.unauthorized(res, 'unauthorized access');
   } else {
     db.query(
       CUSTOMER.CART_INSERT,
-      [req.session.user.email, restaurantId, addressId],
+      [req.session.user.email, restaurantId, addressId, delivery],
       (err, result) => {
         if (err) {
           response.error(res, 500, err.code);
@@ -235,6 +236,24 @@ const addNewAddress = (req, res) => {
   }
 };
 
+const getRestaurantDelivery = (req, res) => {
+  if (!req.session.user) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(
+      RESTAURANT.GET_RESTAURANT_DELIVERY,
+      [req.query.email],
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+          return;
+        }
+        res.send(result);
+      }
+    );
+  }
+};
+
 module.exports = {
   placeOrder,
   myOrders,
@@ -245,4 +264,5 @@ module.exports = {
   getFavorites,
   getAllAddresses,
   addNewAddress,
+  getRestaurantDelivery,
 };

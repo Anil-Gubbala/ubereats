@@ -1,12 +1,12 @@
 const CUSTOMER = {
   CART_INSERT:
-    'INSERT INTO `ubereats`.`order` (`user_id`, `restaurant_id`, `address_id`) VALUES (?, ?, ?)',
+    'INSERT INTO `ubereats`.`order` (`user_id`, `restaurant_id`, `address_id`, delivery) VALUES (?, ?, ?, ?)',
   MOVE_TO_ORDER:
     'INSERT INTO ubereats.order_dishes (id,dish,count,price) SELECT ? ,dish, count, price FROM ubereats.cart WHERE user_id= ? and restaurant_id= ?;',
   CLEAR_CART:
     'DELETE FROM `ubereats`.`cart`WHERE user_id=? and restaurant_id=?;',
   GET_ORDERS:
-    'SELECT `order`.`id`, `order`.`restaurant_id`, `order`.`address_id`, `order`.`status` , `order`.`date`, `addresses`.`location` FROM `ubereats`.`order` join `ubereats`.`addresses` on `order`.`address_id`= `addresses`.`id` where `order`.`user_id`=?; ',
+    'SELECT `order`.`id`, `order`.`restaurant_id`, `order`.`address_id`, `order`.`status` , `order`.`date`, `addresses`.`location`, `order`.delivery FROM `ubereats`.`order` join `ubereats`.`addresses` on `order`.`address_id`= `addresses`.`id` where `order`.`user_id`=?; ',
   GET_PROFILE:
     'SELECT `user`.`name` , `user`.`email`,     `user_data`.`picture`,     `user_data`.`contact`,     `user_data`.`dob`,     `user_data`.`nickname`, `user_data`.`about` , `addresses`.`location`, `addresses`.`country` ,`addresses`.`latitude`  ,`addresses`.`longitude`  FROM (`ubereats`.`user_data`  join `ubereats`.`addresses` on `user_data`.`email` = `addresses`.`user_id` ) right join `ubereats`.`user` on `user_data`.`email` = `user`.`email`  where `user`.`email`= ?;',
   GET_PROFILE1:

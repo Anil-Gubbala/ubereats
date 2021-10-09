@@ -43,6 +43,42 @@ function MyOrders() {
       .catch(() => {});
   };
 
+  const detailsDialog = (
+    <Modal show={show} onHide={handleClose} animation={false}>
+      <Modal.Header closeButton>
+        <Modal.Title>Order Details</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Row>{`Restaurant ID : ${orderInfo.restaurant_id}`}</Row>
+        {/* <Row>{`Status : ${orderInfo.status}`}</Row> */}
+        <Row>{`Order ID : ${orderInfo.order_id}`}</Row>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Dish Name</th>
+              <th>Count</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {dishesData.map((each) => (
+              <tr key={each.dish}>
+                <td>{each.dish}</td>
+                <td>{each.count}</td>
+                <td>{each.price}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant='secondary' onClick={handleClose}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+
   return (
     <Container>
       <Row>My Orders</Row>
@@ -65,7 +101,7 @@ function MyOrders() {
                 <td>{each.restaurant_id}</td>
                 <td>{each.date}</td>
                 <td>{ORDER_STATUS[each.status]}</td>
-                <td>{each.location}</td>
+                <td>{each.delivery === 0 ? each.location : 'Pick up'}</td>
                 <td>
                   <Button
                     name={each.id}
@@ -82,39 +118,7 @@ function MyOrders() {
           </tbody>
         </Table>
       </Row>
-      <Modal show={show} onHide={handleClose} animation={false}>
-        <Modal.Header closeButton>
-          <Modal.Title>Order Details</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Row>{`Restaurant : ${orderInfo.restaurant_id}`}</Row>
-          <Row>{`Status : ${orderInfo.status}`}</Row>
-          <Row>{`Order ID : ${orderInfo.order_id}`}</Row>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Dish Name</th>
-                <th>Count</th>
-                <th>Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dishesData.map((each) => (
-                <tr key={each.dish}>
-                  <td>{each.dish}</td>
-                  <td>{each.count}</td>
-                  <td>{each.price}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant='secondary' onClick={handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {detailsDialog}
     </Container>
   );
 }

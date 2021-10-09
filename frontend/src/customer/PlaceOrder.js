@@ -22,11 +22,23 @@ function PlaceOrder() {
   const cartState = useSelector((state) => state.cartReducer);
   const [totalCost, setTotalCost] = useState(0);
   const [status, setStatus] = useState(0); // 0- not placed, 1- order placed.
+  const [deliveryType, setDeliveryType] = useState(0);
+  const [restDelivery, setRestDelivery] = useState(0);
 
   const dispatch = useDispatch();
   const { clearCart } = bindActionCreators(actionCreators, dispatch);
 
   useEffect(() => {
+    if (cartState.restaurantId) {
+      get('/getRestaurantDelivery', { email: cartState.restaurantId }).then(
+        (result) => {
+          setRestDelivery(result[0].delivery);
+          if (deliveryType === 0 && result[0].delivery === 1) {
+            setDeliveryType(result[0].delivery);
+          }
+        }
+      );
+    }
     setTotalCost(0);
     Object.keys(cartState.dishes).forEach((key) => {
       setTotalCost(
@@ -49,6 +61,7 @@ function PlaceOrder() {
     post('/placeOrder', {
       restaurantId: cartState.restaurantId,
       addressId: deliveryAddress,
+      delivery: deliveryType,
     })
       .then(() => {
         clearCart();
@@ -176,22 +189,46 @@ function PlaceOrder() {
         </Table>
       </Row>
       <Row>
-        <FloatingLabel controlId='floatingSelect' label='Select Address'>
+        <FloatingLabel
+          style={{ marginTop: '8px' }}
+          controlId='floatingSelect'
+          label='Delivery Type'
+        >
           <Form.Select
-            aria-label='deliveryAddress'
-            value={deliveryAddress}
+            aria-label='deliveryType'
+            value={deliveryType}
             onChange={(e) => {
-              setDeliveryAddress(e.target.value);
+              setDeliveryType(parseInt(e.target.value, 10));
+              console.log(deliveryType);
             }}
-            name='deliveryAddress'
+            name='deliveryType'
           >
-            {addresses.map((each) => (
-              <option key={each.id} value={each.id}>
-                {each.location}
-              </option>
-            ))}
+            {restDelivery === 0 && <option value='0'>Home Delivery</option>}
+            <option value='1'>Pickup</option>
           </Form.Select>
         </FloatingLabel>
+        {deliveryType === 0 && (
+          <FloatingLabel
+            style={{ marginTop: '8px' }}
+            controlId='floatingSelect'
+            label='Select Address'
+          >
+            <Form.Select
+              aria-label='deliveryAddress'
+              value={deliveryAddress}
+              onChange={(e) => {
+                setDeliveryAddress(e.target.value);
+              }}
+              name='deliveryAddress'
+            >
+              {addresses.map((each) => (
+                <option key={each.id} value={each.id}>
+                  {each.location}
+                </option>
+              ))}
+            </Form.Select>
+          </FloatingLabel>
+        )}
         <br />
         <Row style={{ marginTop: '8px' }}>
           <Button variant='dark' onClick={handleShow}>

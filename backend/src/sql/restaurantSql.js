@@ -14,10 +14,12 @@ const RESTAURANT = {
   UPDATE_RESTAURANT:
     'UPDATE `ubereats`.`restaurant_login` SET `name` = ?, `location` = ?, `contact` = ?, `picture` = ? , `description` = ?, `start` = ? , `end` = ? , `latitude`=? ,`longitude`=?, `delivery`= ? WHERE `email` = ? ;',
   GET_RESTAURANT_ORDERS:
-    'SELECT `order`.`id`, `order`.`user_id`, `order`.`address_id`, `order`.`status`, `order`.`date`, addresses.location FROM `ubereats`.`order` join `ubereats`.`addresses` on  order.address_id = addresses.id where `order`.`restaurant_id`=?; ',
+    'SELECT `order`.`id`, `order`.`user_id`, `order`.`address_id`, `order`.`status`, `order`.`date`, addresses.location, order.delivery FROM `ubereats`.`order` join `ubereats`.`addresses` on  order.address_id = addresses.id where `order`.`restaurant_id`=?; ',
   UDPATE_ORDER_STATUS:
     'UPDATE `ubereats`.`order` SET `status` = ?  WHERE `id` = ? ;',
   DELETE_DISH:
     'DELETE FROM `ubereats`.`dishes` WHERE `dishes`.`email` = ? and `dishes`.`name` = ?;',
+  GET_RESTAURANT_DELIVERY:
+    'select delivery from ubereats.restaurant_login where email = ?',
 };
 module.exports = RESTAURANT;

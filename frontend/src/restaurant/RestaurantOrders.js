@@ -102,7 +102,7 @@ function RestaurantOrders() {
                   </Link>
                 </td>
                 <td>{each.date}</td>
-                <td>{each.location}</td>
+                <td>{each.delivery === 0 ? each.location : 'Pick up'}</td>
                 <td>{ORDER_STATUS[each.status]}</td>
                 <td>
                   <Button
