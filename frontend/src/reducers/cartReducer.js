@@ -20,6 +20,10 @@ const cartReducer = (state = initialState, action) => {
       return {
         ...initialState,
       };
+    case 'INSERT_NEW_REST':
+      return {
+        ...initialState,
+      };
     default:
       return state;
   }

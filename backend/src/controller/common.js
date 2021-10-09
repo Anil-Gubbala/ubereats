@@ -35,6 +35,31 @@ const addToCart = (req, res) => {
   }
 };
 
+const addNewToCart = (req, res) => {
+  const { restaurantId, dish, count, price } = req.body;
+  if (!req.session.user || !req.session.user.isCustomer) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(COMMON.CLEAR_CART, [], (err, result) => {
+      if (err) {
+        response.error(res, 500, err.code);
+        return;
+      }
+      db.query(
+        COMMON.ADD_TO_CART,
+        [req.session.user.email, restaurantId, dish, count, price, count],
+        (err1, result1) => {
+          if (err1) {
+            response.error(res, 500, err1.code);
+            return;
+          }
+          res.send();
+        }
+      );
+    });
+  }
+};
+
 const getCart = (req, res) => {
   if (!req.session.user || !req.session.user.isCustomer) {
     response.unauthorized(res, 'unauthorized access');
@@ -68,4 +93,5 @@ module.exports = {
   addToCart,
   getCart,
   getOrderDetails,
+  addNewToCart,
 };

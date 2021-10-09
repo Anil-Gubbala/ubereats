@@ -16,6 +16,7 @@ const {
   addToCart,
   getCart,
   getOrderDetails,
+  addNewToCart,
 } = require('./controller/common');
 
 const {
@@ -48,6 +49,7 @@ router.route('/deleteDish').post(deleteDish);
 // common
 router.route('/getRestaruantsList').get(getRestaruantsList);
 router.route('/addToCart').post(addToCart);
+router.route('/addNewToCart').post(addNewToCart);
 router.route('/getCart').get(getCart);
 router.route('/getOrderDetails').get(getOrderDetails);
 

@@ -17,6 +17,10 @@ export const signup = (payload) => (dispatch) => {
   dispatch({ type: 'SIGNUP', payload });
 };
 
+export const newRestWarning = (payload) => (dispatch) => {
+  dispatch({ type: 'SHOW_WARNING', payload });
+};
+
 export const addItem = (payload) => (dispatch, getState) => {
   const cart = getState().cartReducer;
   const { restaurantId, dish, price } = payload;
@@ -46,7 +50,8 @@ export const addItem = (payload) => (dispatch, getState) => {
         console.log(error);
       });
   } else {
-    alert('create new cart');
+    dispatch(newRestWarning({ ...payload, previousId: cart.restaurantId }));
+    // alert('create new cart');payload
     // clear cart.
     // call same function again.
   }
@@ -58,6 +63,26 @@ export const updateCart = (payload) => (dispatch) => {
 
 export const clearCart = () => (dispatch) => {
   dispatch({ type: 'CLEAR_CART' });
+};
+
+export const insertNewRest = (payload) => (dispatch) => {
+  // dispatch(clearCart());
+  // dispatch(addItem(payload));
+  const { restaurantId, dish, price } = payload;
+  const count = 1;
+  post('/addNewToCart', {
+    restaurantId,
+    dish,
+    count,
+    price,
+  })
+    .then(() => {
+      const dishes = { [dish]: [count, price] };
+      dispatch({ type: 'INSERT', payload: { restaurantId, dishes } });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 export const updateDeliveryMode = (payload) => (dispatch) => {

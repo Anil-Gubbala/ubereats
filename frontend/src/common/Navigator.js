@@ -33,6 +33,7 @@ function Navigator() {
   const currentState = useSelector((state) => state.loggedReducer);
   const cartState = useSelector((state) => state.cartReducer);
   const homeFilterState = useSelector((state) => state.homeFilterReducer);
+  const newRestWarningState = useSelector((state) => state.newRestReducer);
 
   const isSignedOut = !appCookies || !currentState[LOG_REDUCER.IS_LOGGEDIN];
   const isCustomerLogin =
@@ -58,6 +59,7 @@ function Navigator() {
     signout,
     updateDeliveryMode,
     updateVegType,
+    insertNewRest,
   } = bindActionCreators(actionCreators, dispatch);
 
   if (!appCookies) {
@@ -118,16 +120,28 @@ function Navigator() {
     }
   }, [currentState]);
 
+  const [cartReset, setCartReset] = useState(false);
+  const showCartResetDlg = () => {
+    setCartReset(true);
+  };
+  const hideCartResetDlg = () => {
+    setCartReset(false);
+  };
+  const resetCart = () => {
+    delete newRestWarningState['previousId'];
+    insertNewRest(newRestWarningState);
+    hideCartResetDlg();
+  };
+  useEffect(() => {
+    if (newRestWarningState.restaurantId) {
+      showCartResetDlg();
+    }
+  }, [newRestWarningState]);
+
   const [show, setShow] = useState(false);
 
-  const handleClose = () => {
-    console.log('close');
-    return setShow(false);
-  };
-  const handleShow = () => {
-    console.log('show');
-    return setShow(true);
-  };
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const openCartDialog = () => {
     if (!cartFlag) {
@@ -231,6 +245,23 @@ function Navigator() {
     </Modal>
   );
 
+  const resetCartDlg = (
+    <Modal show={cartReset} onHide={hideCartResetDlg}>
+      <Modal.Header closeButton>
+        <Modal.Title>Create new order ?</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>{`Your order contains items from restaurant id ${newRestWarningState.previousId}. create new order to add items from restaurant id ${newRestWarningState.restaurantId}`}</Modal.Body>
+      <Modal.Footer>
+        <Button variant='secondary' onClick={hideCartResetDlg}>
+          No
+        </Button>
+        <Button variant='primary' onClick={resetCart}>
+          Yes
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+
   return (
     <div>
       <Container fluid>
@@ -292,6 +323,7 @@ function Navigator() {
         </Row>
         {filters}
         {cart}
+        {resetCartDlg}
       </Container>
     </div>
   );
