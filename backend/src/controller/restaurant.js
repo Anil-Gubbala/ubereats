@@ -57,6 +57,7 @@ const createDish = (req, res) => {
         body.price,
         body.description,
         body.category,
+        body.type,
       ],
       (err, result) => {
         if (err) {
@@ -83,6 +84,7 @@ const updateDish = (req, res) => {
         body.price,
         body.description,
         body.category,
+        body.type,
         req.session.user.email,
         body.originalName,
       ],
@@ -108,6 +110,7 @@ const updateRestaurantInfo = (req, res) => {
     end,
     latitude,
     longitude,
+    delivery,
   } = req.body;
   if (!req.session.user || req.session.user.isCustomer) {
     response.unauthorized(res, 'unauthorized access');
@@ -124,6 +127,7 @@ const updateRestaurantInfo = (req, res) => {
         end,
         latitude,
         longitude,
+        delivery,
         req.session.user.email,
       ],
       (err, result) => {

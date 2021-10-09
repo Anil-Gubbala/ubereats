@@ -15,6 +15,7 @@ export const ORDER_STATUS = {
   3: 'Delivered',
   4: 'Ready for pickup',
   5: 'Picked up',
+  6: 'Cancelled',
 };
 
 export const LOG_REDUCER = {
@@ -29,6 +30,30 @@ export const DISH_CATEGORY = {
   2: 'Main Course',
   3: 'Desert',
   4: 'Beverage',
+};
+
+export const REST_ORDER_FILTER = {
+  0: 'All Orders',
+  1: 'New Order',
+  2: 'Delivered Orders',
+  3: 'Cancelled Orders',
+};
+
+export const REST_DELIVERY_MODE = {
+  0: 'Delivery & Pickup',
+  1: 'Delivery only',
+  2: 'Pickup only',
+};
+
+export const VEG = {
+  0: 'Non-Veg',
+  1: 'Veg',
+  2: 'Vegan',
+};
+
+export const ORDER_DELIVERY_MODE = {
+  1: 'Delivery',
+  2: 'Pickup',
 };
 
 export default CONSTANTS;

@@ -146,9 +146,64 @@ const updateUserInfo = (req, res) => {
   }
 };
 
+const addToFavorites = (req, res) => {
+  const { email } = req.body;
+  if (!req.session.user || !req.session.user.isCustomer) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(
+      CUSTOMER.FAVORITE_ADD,
+      [req.session.user.email, email],
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+          return;
+        }
+        res.send();
+      }
+    );
+  }
+};
+
+const removeFromFavorites = (req, res) => {
+  const { email } = req.body;
+  if (!req.session.user || !req.session.user.isCustomer) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(
+      CUSTOMER.FAVORITE_REMOVE,
+      [req.session.user.email, email],
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+          return;
+        }
+        res.send();
+      }
+    );
+  }
+};
+
+const getFavorites = (req, res) => {
+  if (!req.session.user || !req.session.user.isCustomer) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(CUSTOMER.FAVORITE_GET, [req.session.user.email], (err, result) => {
+      if (err) {
+        response.error(res, 500, err.code);
+        return;
+      }
+      res.send(result);
+    });
+  }
+};
+
 module.exports = {
   placeOrder,
   myOrders,
   getUserProfile,
   updateUserInfo,
+  removeFromFavorites,
+  addToFavorites,
+  getFavorites,
 };

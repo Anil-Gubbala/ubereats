@@ -5,20 +5,56 @@ import Button from 'react-bootstrap/Button';
 import CardGroup from 'react-bootstrap/CardGroup';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { get } from '../utils/serverCall';
 import { Link } from 'react-router-dom';
+import IconButton from '@mui/material/IconButton';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+
+import { get, post } from '../utils/serverCall';
 
 function CustomerHome() {
   const defaultValues = [];
 
   const [restaurantsInfo, setRestaurantsInfo] = useState(defaultValues);
+  const [favorites, setFavorites] = useState([]);
+
   useEffect(() => {
     get('/getRestaruantsList').then((data) => {
       setRestaurantsInfo(() => data);
     });
   }, []);
 
-  const handleView = () => {};
+  useEffect(() => {
+    get('/getFavorites').then((data) => {
+      const list = data.map((each) => each.restaurant_id);
+      setFavorites(() => list);
+    });
+  }, []);
+
+  const addToFavorites = (e) => {
+    const email = e.currentTarget.getAttribute('email');
+    post('/addToFavorites', {
+      email,
+    })
+      .then(() => {
+        setFavorites((prev) => [...prev, email]);
+      })
+      .catch(() => {});
+  };
+
+  const removeFromFavorites = (e) => {
+    const email = e.currentTarget.getAttribute('email');
+    post('/removeFromFavorites', {
+      email,
+    })
+      .then(() => {
+        setFavorites((prev) => {
+          prev.splice(prev.indexOf(email), 1);
+          return [...prev];
+        });
+      })
+      .catch(() => {});
+  };
 
   if (restaurantsInfo.length === 0) {
     return (
@@ -53,6 +89,23 @@ function CustomerHome() {
                 >
                   View Menu
                 </Link>
+                {favorites.indexOf(each.email) >= 0 ? (
+                  <IconButton
+                    aria-label='Remove Favorite'
+                    email={each.email}
+                    onClick={removeFromFavorites}
+                  >
+                    <StarIcon />
+                  </IconButton>
+                ) : (
+                  <IconButton
+                    aria-label='Add Favorite'
+                    email={each.email}
+                    onClick={addToFavorites}
+                  >
+                    <StarBorderIcon />
+                  </IconButton>
+                )}
               </Card.Body>
             </Card>
           </Col>

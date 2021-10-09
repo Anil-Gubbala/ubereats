@@ -60,4 +60,12 @@ export const clearCart = () => (dispatch) => {
   dispatch({ type: 'CLEAR_CART' });
 };
 
+export const updateDeliveryMode = (payload) => (dispatch) => {
+  dispatch({ type: 'DELIVERY', payload });
+};
+
+export const updateVegType = (payload) => (dispatch) => {
+  dispatch({ type: 'VEG', payload });
+};
+
 // export const cart = (payload) => (dispatch, getState) => {};

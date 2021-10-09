@@ -6,13 +6,13 @@ const RESTAURANT = {
   ALL_INFO:
     'SELECT `name`, `location`, `contact`, `picture`, `description`, `start`, `end` ,`latitude`,`longitude` FROM ubereats.restaurant_login WHERE email = ?;',
   DISHES:
-    'SELECT `email`, `name`, `ingredients`, `picture`, `price`, `description`, `category` FROM ubereats.dishes WHERE email = ?;',
+    'SELECT `email`, `name`, `ingredients`, `picture`, `price`, `description`, `category`,`type` FROM ubereats.dishes WHERE email = ?;',
   ADD_DISH:
-    'INSERT INTO `ubereats`.`dishes` (`email`,`name`,`ingredients`,`picture`,`price`,`description`,`category`)VALUES(?,?,?,?,?,?,?);',
+    'INSERT INTO `ubereats`.`dishes` (`email`,`name`,`ingredients`,`picture`,`price`,`description`,`category`, `type`)VALUES(?,?,?,?,?,?,?,?);',
   UPDATE_DISH:
-    'UPDATE `ubereats`.`dishes` SET`name` = ? ,`ingredients` = ?,`picture` = ?,`price` = ?,`description` = ?,`category` = ? WHERE `email` = ? AND `name` = ? ;',
+    'UPDATE `ubereats`.`dishes` SET`name` = ? ,`ingredients` = ?,`picture` = ?,`price` = ?,`description` = ?,`category` = ? , `type`=? WHERE `email` = ? AND `name` = ? ;',
   UPDATE_RESTAURANT:
-    'UPDATE `ubereats`.`restaurant_login` SET `name` = ?, `location` = ?, `contact` = ?, `picture` = ? , `description` = ?, `start` = ? , `end` = ? , `latitude`=? ,`longitude`=? WHERE `email` = ? ;',
+    'UPDATE `ubereats`.`restaurant_login` SET `name` = ?, `location` = ?, `contact` = ?, `picture` = ? , `description` = ?, `start` = ? , `end` = ? , `latitude`=? ,`longitude`=?, `delivery`= ? WHERE `email` = ? ;',
   GET_RESTAURANT_ORDERS:
     'SELECT `order`.`id`, `order`.`user_id`, `order`.`address_id`, `order`.`status`, `order`.`date` FROM `ubereats`.`order` where `order`.`restaurant_id`=?; ',
   UDPATE_ORDER_STATUS:

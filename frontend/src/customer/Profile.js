@@ -19,12 +19,13 @@ import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 function Profile() {
   const status = localStorage.getItem(CONSTANTS.STATUS);
   const cookieData = cookie.load(CONSTANTS.COOKIE);
+  const isCustomer = cookieData[CONSTANTS.COOKIE_KEY.ISCUSTOMER];
   const windowUrl = window.location.search;
   const params = new URLSearchParams(windowUrl);
   let email = '';
-  const [editMode, setEditMode] = useState(status === '0');
+  const [editMode, setEditMode] = useState(status === '0' && isCustomer);
 
-  if (cookieData.customer) {
+  if (isCustomer) {
     if (params.get('id')) {
       return <Redirect to='/profile' />;
     }
@@ -233,9 +234,16 @@ function Profile() {
             <Col>{formData.about}</Col>
           </Row>
           <Row>
-            <Button variant='primary' type='button' onClick={editProfile}>
-              Edit
-            </Button>
+            <Col>Primary Address:</Col>
+            <Col>{formData.location}</Col>
+          </Row>
+
+          <Row>
+            {isCustomer && (
+              <Button variant='primary' type='button' onClick={editProfile}>
+                Edit
+              </Button>
+            )}
           </Row>
         </Col>
       </Row>

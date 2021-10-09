@@ -17,15 +17,22 @@ import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
-import CONSTANTS, { LOG_REDUCER } from '../utils/consts';
+import CONSTANTS, {
+  LOG_REDUCER,
+  ORDER_DELIVERY_MODE,
+  VEG,
+} from '../utils/consts';
 import { actionCreators } from '../reducers/actionCreators';
 import { get } from '../utils/serverCall';
+import { Form, Offcanvas } from 'react-bootstrap';
+import Button from '@restart/ui/esm/Button';
 
 function Navigator() {
   const appCookies = cookie.load(CONSTANTS.COOKIE);
 
   const currentState = useSelector((state) => state.loggedReducer);
   const cartState = useSelector((state) => state.cartReducer);
+  const homeFilterState = useSelector((state) => state.homeFilterReducer);
 
   const isSignedOut = !appCookies || !currentState[LOG_REDUCER.IS_LOGGEDIN];
   const isCustomerLogin =
@@ -38,11 +45,20 @@ function Navigator() {
     !currentState[LOG_REDUCER.IS_CUSTOMER];
 
   const [cartFlag, setCartFlag] = useState(false);
+  const defaultFilter = {
+    vegType: 0,
+    delivery: 0,
+  };
+  const [filter, setFilter] = useState(defaultFilter);
   const dispatch = useDispatch();
-  const { updateCart, customer, restaurant, signout } = bindActionCreators(
-    actionCreators,
-    dispatch
-  );
+  const {
+    updateCart,
+    customer,
+    restaurant,
+    signout,
+    updateDeliveryMode,
+    updateVegType,
+  } = bindActionCreators(actionCreators, dispatch);
 
   if (!appCookies) {
     localStorage.clear();
@@ -104,8 +120,14 @@ function Navigator() {
 
   const [show, setShow] = useState(false);
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleClose = () => {
+    console.log('close');
+    return setShow(false);
+  };
+  const handleShow = () => {
+    console.log('show');
+    return setShow(true);
+  };
 
   const openCartDialog = () => {
     if (!cartFlag) {
@@ -114,6 +136,100 @@ function Navigator() {
       handleShow();
     }
   };
+
+  const [canvas, setCanvas] = useState(false);
+
+  const showCanvas = () => {
+    setCanvas(true);
+  };
+
+  const closeCanvas = () => {
+    setCanvas(false);
+  };
+
+  const handleFilterChange = (e) => {
+    setFilter((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    if (e.target.name === 'VegType') {
+      updateVegType({ [e.target.name]: e.target.value });
+    } else {
+      updateDeliveryMode({ [e.target.name]: e.target.value });
+    }
+  };
+
+  const filters = (
+    <Offcanvas show={canvas} onHide={closeCanvas}>
+      <Offcanvas.Header closeButton>
+        <Offcanvas.Title>Filters</Offcanvas.Title>
+      </Offcanvas.Header>
+      <Offcanvas.Body>
+        <Form.Group className='mb-3' controlId='filterDishType'>
+          <Form.Label>Dish Type: </Form.Label>
+          <Form.Select
+            aria-label='vegType'
+            value={filter.vegType}
+            onChange={handleFilterChange}
+            name='vegType'
+          >
+            {Object.keys(VEG).map((key) => (
+              <option key={key} value={key}>
+                {VEG[key]}
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
+        <Form.Group className='mb-3' controlId='filterDeliveryType'>
+          <Form.Label>Delivery Type: </Form.Label>
+          <Form.Select
+            aria-label='delivery'
+            value={filter.delivery}
+            onChange={handleFilterChange}
+            name='delivery'
+          >
+            {Object.keys(ORDER_DELIVERY_MODE).map((key) => (
+              <option key={key} value={key}>
+                {ORDER_DELIVERY_MODE[key]}
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
+      </Offcanvas.Body>
+    </Offcanvas>
+  );
+
+  const cart = (
+    <Modal show={show} onHide={handleClose} animation={false}>
+      <Modal.Header closeButton>
+        <Modal.Title>{cartState.restaurantId}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {!cartState.restaurantId && <Col>No items in cart.</Col>}
+        {cartState.restaurantId && (
+          <Col>
+            {Object.keys(cartState.dishes).map((key) => (
+              <Row key={key}>
+                <Col>{key}</Col>
+                {/* <Col>
+                      <button>-</button>
+                    </Col> */}
+                <Col>{cartState.dishes[key][0]} </Col>
+                {/* <Col>
+                      <button>+</button>
+                    </Col> */}
+                <Col> {`$${cartState.dishes[key][1]}`}</Col>
+              </Row>
+            ))}
+          </Col>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        {cartState.restaurantId && (
+          <Link to='/placeorder' className='nav-link' onClick={handleClose}>
+            Check out
+          </Link>
+        )}
+      </Modal.Footer>
+    </Modal>
+  );
 
   return (
     <div>
@@ -126,6 +242,11 @@ function Navigator() {
                 <Link to='/' className='nav-link'>
                   Home
                 </Link>
+                <Nav.Item>
+                  <Nav.Link title='Item' onClick={showCanvas}>
+                    Filters
+                  </Nav.Link>
+                </Nav.Item>
               </Nav>
               <Nav>
                 {isSignedOut && (
@@ -169,38 +290,8 @@ function Navigator() {
             </Container>
           </Navbar>
         </Row>
-        <Modal show={show} onHide={handleClose} animation={false}>
-          <Modal.Header closeButton>
-            <Modal.Title>{cartState.restaurantId}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {!cartState.restaurantId && <Col>No items in cart.</Col>}
-            {cartState.restaurantId && (
-              <Col>
-                {Object.keys(cartState.dishes).map((key) => (
-                  <Row key={key}>
-                    <Col>{key}</Col>
-                    {/* <Col>
-                      <button>-</button>
-                    </Col> */}
-                    <Col>{cartState.dishes[key][0]} </Col>
-                    {/* <Col>
-                      <button>+</button>
-                    </Col> */}
-                    <Col> {`$${cartState.dishes[key][1]}`}</Col>
-                  </Row>
-                ))}
-              </Col>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            {cartState.restaurantId && (
-              <Link to='/placeorder' className='nav-link' onClick={handleClose}>
-                Check out
-              </Link>
-            )}
-          </Modal.Footer>
-        </Modal>
+        {filters}
+        {cart}
       </Container>
     </div>
   );

@@ -18,14 +18,21 @@ const CUSTOMER = {
     'INSERT INTO `ubereats`.`user_data`  (`email`, `picture`, `contact`, `dob`, `nickname`,  `about`) VALUES(?,?,?,?,?,?) ON DUPLICATE KEY UPDATE  `picture` = ?, `contact` = ?, `dob` = ?, `nickname` = ?,  `about` = ?;',
   UPDATE_USER_ADDRESS:
     'INSERT INTO `ubereats`.`addresses`  (`user_id`, `location`,  `country`, `latitude`, `longitude` ) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE `location` = ? ,  `country`= ?, `latitude`=? , `longitude`=?;',
-  // UPDATE_USER_DATA:
-  //   'UPDATE `ubereats`.`user_data` SET `email` = ?, `picture` = ?, `contact` = ?, `dob` = ?, `nickname` = ?,  `about` = ?  WHERE `email` = ?;',
-  // UPDATE_USER_ADDRESS:
-  //   'UPDATE `ubereats`.`addresses` SET `user_id` = ?, `location` = ? ,  `country`= ?, `latitude`=? , `longitude`=? WHERE `user_id` = ?;',
-  // GET_ORDER_DISHES:
-  //   'SELECT  `order_dishes`.`dish`, `order_dishes`.`count`, `order_dishes`.`price` FROM `ubereats`.`order_dishes` where `ubereats`.`user_id`=? ;',
-  // GET_ORDERS:
-  //   'SELECT `order`.`id`, `order`.`restaurant_id`, `order`.`address_id`, `order`.`status`,`order_dishes`.`dish`, `order_dishes`.`count`, `order_dishes`.`price` FROM `ubereats`.`order` natural join `ubereats`.`order_dishes` where `order`.`user_id`= ? ; ',
+  FAVORITE_ADD:
+    'INSERT INTO `ubereats`.`favorite` (`user_id`, `restaurant_id`) VALUES (?, ?);',
+  FAVORITE_REMOVE:
+    'DELETE FROM `ubereats`.`favorite` WHERE user_id = ? and restaurant_id = ? ;',
+  FAVORITE_GET:
+    'SELECT restaurant_id FROM ubereats.favorite where user_id = ? ;',
 };
+
+// UPDATE_USER_DATA:
+//   'UPDATE `ubereats`.`user_data` SET `email` = ?, `picture` = ?, `contact` = ?, `dob` = ?, `nickname` = ?,  `about` = ?  WHERE `email` = ?;',
+// UPDATE_USER_ADDRESS:
+//   'UPDATE `ubereats`.`addresses` SET `user_id` = ?, `location` = ? ,  `country`= ?, `latitude`=? , `longitude`=? WHERE `user_id` = ?;',
+// GET_ORDER_DISHES:
+//   'SELECT  `order_dishes`.`dish`, `order_dishes`.`count`, `order_dishes`.`price` FROM `ubereats`.`order_dishes` where `ubereats`.`user_id`=? ;',
+// GET_ORDERS:
+//   'SELECT `order`.`id`, `order`.`restaurant_id`, `order`.`address_id`, `order`.`status`,`order_dishes`.`dish`, `order_dishes`.`count`, `order_dishes`.`price` FROM `ubereats`.`order` natural join `ubereats`.`order_dishes` where `order`.`user_id`= ? ; ',
 
 module.exports = CUSTOMER;

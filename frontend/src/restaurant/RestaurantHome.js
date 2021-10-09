@@ -21,7 +21,7 @@ import cookie from 'react-cookies';
 import { Redirect } from 'react-router';
 import { get, post } from '../utils/serverCall';
 import Dishes from './Dishes';
-import CONSTANTS from '../utils/consts';
+import CONSTANTS, { REST_DELIVERY_MODE } from '../utils/consts';
 import RedirectSignin from '../common/RedirectSignin';
 import RedirectInvalid from '../common/RedirectInvalid';
 import Location from '../account/Location';
@@ -50,6 +50,7 @@ function RestaurantHome() {
     email: params.get('id'),
     latitude: '',
     longitude: '',
+    delivery: 0,
   };
 
   const [restaurantInfo, setRestaurantInfo] = useState(defaultValues);
@@ -84,6 +85,114 @@ function RestaurantHome() {
   const handleDialogChange = (e) => {
     setDialogData({ ...dialogData, [e.target.name]: e.target.value });
   };
+
+  const updateRestDialog = (
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>Update Restaurant Info</DialogTitle>
+      <DialogContent>
+        <TextField
+          margin='dense'
+          id='rdname'
+          name='name'
+          label='Name'
+          fullWidth
+          variant='standard'
+          value={dialogData.name}
+          onChange={handleDialogChange}
+        />
+        <TextField
+          margin='dense'
+          id='rddescription'
+          name='description'
+          label='Description'
+          fullWidth
+          variant='standard'
+          value={dialogData.description}
+          onChange={handleDialogChange}
+        />
+        <TextField
+          margin='dense'
+          id='rdcontact'
+          name='contact'
+          label='Contact Information'
+          fullWidth
+          variant='standard'
+          value={dialogData.contact}
+          onChange={handleDialogChange}
+        />
+        <FloatingLabel controlId='start' label='Start Time' className='mb-3'>
+          <Form.Control
+            name='start'
+            type='time'
+            onChange={handleDialogChange}
+            required
+            value={dialogData.start}
+          />
+        </FloatingLabel>
+        <FloatingLabel controlId='end' label='End Time' className='mb-3'>
+          <Form.Control
+            name='end'
+            type='time'
+            onChange={handleDialogChange}
+            required
+            value={dialogData.end}
+          />
+        </FloatingLabel>
+        <Form.Select
+          name='delivery'
+          value={dialogData.delivery}
+          onChange={handleDialogChange}
+        >
+          {Object.keys(REST_DELIVERY_MODE).map((key) => (
+            <option key={key} value={key}>
+              {REST_DELIVERY_MODE[key]}
+            </option>
+          ))}
+        </Form.Select>
+
+        <Location
+          value={dialogData.location}
+          change={(e) => {
+            setDialogData((prev) => ({ ...prev, location: e }));
+          }}
+          select={(e) => {
+            geocodeByAddress(e).then((results) => {
+              setDialogData((prev) => ({
+                ...prev,
+                location: e,
+              }));
+              getLatLng(results[0])
+                .then(({ lat, lng }) => {
+                  setDialogData((prev) => ({
+                    ...prev,
+                    latitude: lat,
+                    longitude: lng,
+                  }));
+                })
+                .catch((error) => console.log(error));
+            });
+          }}
+        />
+        <Form.Group className='mb-3' controlId='nickname'>
+          <Col xs={6} md={4}>
+            <Image src={dialogData.picture} roundedCircle thumbnail='true' />
+          </Col>
+          <Col>
+            <FileUpload
+              onUpload={(e) => {
+                setDialogData({ ...dialogData, picture: e });
+              }}
+              id={`${dialogData.email}-restaurantPic`}
+            />
+          </Col>
+        </Form.Group>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Cancel</Button>
+        <Button onClick={handleSave}>Save</Button>
+      </DialogActions>
+    </Dialog>
+  );
   return (
     <Container>
       <Row>
@@ -124,112 +233,7 @@ function RestaurantHome() {
                     <Button onClick={handleClickOpen}>
                       Update Restaurant Info
                     </Button>
-                    <Dialog open={open} onClose={handleClose}>
-                      <DialogTitle>Update Restaurant Info</DialogTitle>
-                      <DialogContent>
-                        <TextField
-                          margin='dense'
-                          id='rdname'
-                          name='name'
-                          label='Name'
-                          fullWidth
-                          variant='standard'
-                          value={dialogData.name}
-                          onChange={handleDialogChange}
-                        />
-                        <TextField
-                          margin='dense'
-                          id='rddescription'
-                          name='description'
-                          label='Description'
-                          fullWidth
-                          variant='standard'
-                          value={dialogData.description}
-                          onChange={handleDialogChange}
-                        />
-                        <TextField
-                          margin='dense'
-                          id='rdcontact'
-                          name='contact'
-                          label='Contact Information'
-                          fullWidth
-                          variant='standard'
-                          value={dialogData.contact}
-                          onChange={handleDialogChange}
-                        />
-                        <FloatingLabel
-                          controlId='start'
-                          label='Start Time'
-                          className='mb-3'
-                        >
-                          <Form.Control
-                            name='start'
-                            type='time'
-                            onChange={handleDialogChange}
-                            required
-                            value={dialogData.start}
-                          />
-                        </FloatingLabel>
-                        <FloatingLabel
-                          controlId='end'
-                          label='End Time'
-                          className='mb-3'
-                        >
-                          <Form.Control
-                            name='end'
-                            type='time'
-                            onChange={handleDialogChange}
-                            required
-                            value={dialogData.end}
-                          />
-                        </FloatingLabel>
-
-                        <Location
-                          value={dialogData.location}
-                          change={(e) => {
-                            setDialogData((prev) => ({ ...prev, location: e }));
-                          }}
-                          select={(e) => {
-                            geocodeByAddress(e).then((results) => {
-                              setDialogData((prev) => ({
-                                ...prev,
-                                location: e,
-                              }));
-                              getLatLng(results[0])
-                                .then(({ lat, lng }) => {
-                                  setDialogData((prev) => ({
-                                    ...prev,
-                                    latitude: lat,
-                                    longitude: lng,
-                                  }));
-                                })
-                                .catch((error) => console.log(error));
-                            });
-                          }}
-                        />
-                        <Form.Group className='mb-3' controlId='nickname'>
-                          <Col xs={6} md={4}>
-                            <Image
-                              src={dialogData.picture}
-                              roundedCircle
-                              thumbnail='true'
-                            />
-                          </Col>
-                          <Col>
-                            <FileUpload
-                              onUpload={(e) => {
-                                setDialogData({ ...dialogData, picture: e });
-                              }}
-                              id={`${dialogData.email}-restaurantPic`}
-                            />
-                          </Col>
-                        </Form.Group>
-                      </DialogContent>
-                      <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={handleSave}>Save</Button>
-                      </DialogActions>
-                    </Dialog>
+                    {updateRestDialog}
                   </Stack>
                 </Row>
               </Col>

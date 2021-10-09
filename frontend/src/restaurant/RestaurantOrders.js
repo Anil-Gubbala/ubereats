@@ -9,6 +9,7 @@ import { get, post } from '../utils/serverCall';
 import CONSTANTS, { ORDER_STATUS } from '../utils/consts';
 import RedirectSignin from '../common/RedirectSignin';
 import RedirectInvalid from '../common/RedirectInvalid';
+import { Link } from 'react-router-dom';
 
 function RestaurantOrders() {
   const appCookies = cookie.load(CONSTANTS.COOKIE);
@@ -94,7 +95,11 @@ function RestaurantOrders() {
             {data.map((each, index) => (
               <tr key={each.id}>
                 <td>{each.id}</td>
-                <td>{each.user_id}</td>
+                <td>
+                  <Link to={`/profile?id=${each.user_id}`} className='nav-link'>
+                    {each.user_id}
+                  </Link>
+                </td>
                 <td>{each.date}</td>
                 <td>{ORDER_STATUS[each.status]}</td>
                 <td>
@@ -119,23 +124,25 @@ function RestaurantOrders() {
           <Modal.Title>Order Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Row>{`User : ${orderInfo.user_id}`}</Row>
-          <Row>{`Status : ${orderInfo.status}`}</Row>
+          {/* <Row>{`User : ${orderInfo.user_id}`}</Row> */}
           <Row>
-            <Form.Select
-              aria-label='Default select example'
-              value={orderStatus}
-              onChange={(e) => {
-                setOrderStatus(e.target.value);
-                setDisableUpdate(false);
-              }}
-            >
-              <option disabled={orderStatus > 0} value={0}>
-                One
-              </option>
-              <option value={1}>Two</option>
-              <option value={2}>Three</option>
-            </Form.Select>
+            <Col>Status:</Col>
+            <Col>
+              <Form.Select
+                aria-label='Default select example'
+                value={orderStatus}
+                onChange={(e) => {
+                  setOrderStatus(e.target.value);
+                  setDisableUpdate(false);
+                }}
+              >
+                <option disabled={orderStatus > 0} value={0}>
+                  One
+                </option>
+                <option value={1}>Two</option>
+                <option value={2}>Three</option>
+              </Form.Select>
+            </Col>
           </Row>
           <Row>{`Order ID : ${orderInfo.order_id}`}</Row>
           <Table striped bordered hover>

@@ -23,6 +23,9 @@ const {
   myOrders,
   getUserProfile,
   updateUserInfo,
+  addToFavorites,
+  removeFromFavorites,
+  getFavorites,
 } = require('./controller/customer');
 
 const router = express.Router();
@@ -53,5 +56,8 @@ router.route('/placeOrder').post(placeOrder);
 router.route('/myOrders').get(myOrders);
 router.route('/getUserProfile').get(getUserProfile);
 router.route('/updateUserInfo').post(updateUserInfo);
+router.route('/addToFavorites').post(addToFavorites);
+router.route('/removeFromFavorites').post(removeFromFavorites);
+router.route('/getFavorites').get(getFavorites);
 
 module.exports = router;
