@@ -1,6 +1,7 @@
 const initialState = {
   vegType: 0,
-  delivery: true,
+  delivery: 0,
+  favorite: 0,
 };
 
 const homeFilterReducer = (state = initialState, action) => {
@@ -12,6 +13,11 @@ const homeFilterReducer = (state = initialState, action) => {
         ...payload,
       };
     case 'DELIVERY':
+      return {
+        ...state,
+        ...payload,
+      };
+    case 'FAVORITE':
       return {
         ...state,
         ...payload,

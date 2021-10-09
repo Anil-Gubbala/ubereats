@@ -54,6 +54,7 @@ function MyOrders() {
               <th>Restaurant</th>
               <th>Date</th>
               <th>Status</th>
+              <th>Address</th>
               <th>Details</th>
             </tr>
           </thead>
@@ -64,6 +65,7 @@ function MyOrders() {
                 <td>{each.restaurant_id}</td>
                 <td>{each.date}</td>
                 <td>{ORDER_STATUS[each.status]}</td>
+                <td>{each.location}</td>
                 <td>
                   <Button
                     name={each.id}

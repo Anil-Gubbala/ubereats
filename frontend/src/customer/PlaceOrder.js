@@ -1,14 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Col, Container, Form, Row, Table } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
+import {
+  Card,
+  Container,
+  FloatingLabel,
+  Form,
+  Row,
+  Table,
+} from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
-import { post } from '../utils/serverCall';
 import { Link } from 'react-router-dom';
+import Modal from 'react-bootstrap/Modal';
+import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { post, get } from '../utils/serverCall';
+import CountriesList from '../utils/CountriesList';
+import Location from '../account/Location';
+import { actionCreators } from '../reducers/actionCreators';
+import { bindActionCreators } from 'redux';
 
 function PlaceOrder() {
   const cartState = useSelector((state) => state.cartReducer);
   const [totalCost, setTotalCost] = useState(0);
   const [status, setStatus] = useState(0); // 0- not placed, 1- order placed.
+
+  const dispatch = useDispatch();
+  const { clearCart } = bindActionCreators(actionCreators, dispatch);
+
   useEffect(() => {
     setTotalCost(0);
     Object.keys(cartState.dishes).forEach((key) => {
@@ -18,21 +35,95 @@ function PlaceOrder() {
     });
   }, [cartState]);
 
+  const [addresses, setAddresses] = useState([]);
+  const [deliveryAddress, setDeliveryAddress] = useState();
+
   useEffect(() => {
-    // get address list here.
-  });
+    get('/getAllAddresses').then((result) => {
+      setDeliveryAddress(result[0].id);
+      setAddresses(result);
+    });
+  }, []);
 
   const handlePlaceOrder = () => {
     post('/placeOrder', {
       restaurantId: cartState.restaurantId,
-      addressId: 'main',
+      addressId: deliveryAddress,
     })
-      .then((response) => {
+      .then(() => {
+        clearCart();
         setStatus(1);
-        console.log(response);
       })
       .catch(() => {});
   };
+
+  const defaultDialogData = {
+    location: '',
+    country: 'US',
+    latitude: '',
+    longitude: '',
+  };
+  const [dialogData, setDialogData] = useState(defaultDialogData);
+  const [show, setShow] = useState(false);
+  const handleClose = () => {
+    setDialogData(defaultDialogData);
+    setShow(false);
+  };
+  const handleShow = () => setShow(true);
+  const addNewAddress = () => {
+    post('/addNewAddress', { ...dialogData }).then((result) => {
+      setAddresses((prev) => [...prev, { id: result.insertId, ...dialogData }]);
+      console.log(result);
+      handleClose();
+    });
+  };
+  const eventHandler = (e) => {
+    setDialogData({ ...dialogData, [e.target.name]: e.target.value });
+  };
+
+  const addressDialog = (
+    <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Add New Address</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <FloatingLabel controlId='country' label='Country' className='mb-3'>
+          <CountriesList
+            name='country'
+            value={dialogData.country}
+            onChange={eventHandler}
+          />
+          <Location
+            value={dialogData.location}
+            change={(e) => {
+              setDialogData((prev) => ({ ...prev, location: e }));
+            }}
+            select={(e) => {
+              setDialogData((prev) => ({ ...prev, location: e }));
+              geocodeByAddress(e)
+                .then((results) => getLatLng(results[0]))
+                .then(({ lat, lng }) => {
+                  setDialogData((prev) => ({
+                    ...prev,
+                    latitude: lat,
+                    longitude: lng,
+                  }));
+                });
+            }}
+            country={dialogData.country}
+          />
+        </FloatingLabel>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant='secondary' onClick={handleClose}>
+          Close
+        </Button>
+        <Button variant='primary' onClick={addNewAddress}>
+          Add
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 
   if (status === 1) {
     return (
@@ -69,9 +160,9 @@ function PlaceOrder() {
               <tr key={key}>
                 <td>{key}</td>
                 <td>{cartState.dishes[key][0]}</td>
-                <td>{'$' + cartState.dishes[key][1]}</td>
+                <td>{`$${cartState.dishes[key][1]}`}</td>
                 <td>
-                  {'$' + cartState.dishes[key][0] * cartState.dishes[key][1]}
+                  {`$${cartState.dishes[key][0] * cartState.dishes[key][1]}`}
                 </td>
               </tr>
             ))}
@@ -79,20 +170,41 @@ function PlaceOrder() {
               <td>Bill Amount</td>
               <td>{}</td>
               <td>{}</td>
-              <td>{'$' + totalCost}</td>
+              <td>{`$${totalCost}`}</td>
             </tr>
           </tbody>
         </Table>
       </Row>
       <Row>
-        <Form.Label>Select Address: </Form.Label>
-        <Button variant='dark'>Add New Address</Button>
+        <FloatingLabel controlId='floatingSelect' label='Select Address'>
+          <Form.Select
+            aria-label='deliveryAddress'
+            value={deliveryAddress}
+            onChange={(e) => {
+              setDeliveryAddress(e.target.value);
+            }}
+            name='deliveryAddress'
+          >
+            {addresses.map((each) => (
+              <option key={each.id} value={each.id}>
+                {each.location}
+              </option>
+            ))}
+          </Form.Select>
+        </FloatingLabel>
+        <br />
+        <Row style={{ marginTop: '8px' }}>
+          <Button variant='dark' onClick={handleShow}>
+            Add New Address
+          </Button>
+        </Row>
       </Row>
-      <Row>
+      <Row style={{ marginTop: '8px' }}>
         <Button variant='dark' onClick={handlePlaceOrder}>
           Place Order
         </Button>
       </Row>
+      {addressDialog}
     </Container>
   );
 }

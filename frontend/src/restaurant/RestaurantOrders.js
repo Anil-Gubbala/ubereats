@@ -87,6 +87,7 @@ function RestaurantOrders() {
               <th>order ID</th>
               <th>user_id</th>
               <th>Date</th>
+              <th>Address</th>
               <th>Status</th>
               <th>Details</th>
             </tr>
@@ -101,6 +102,7 @@ function RestaurantOrders() {
                   </Link>
                 </td>
                 <td>{each.date}</td>
+                <td>{each.location}</td>
                 <td>{ORDER_STATUS[each.status]}</td>
                 <td>
                   <Button

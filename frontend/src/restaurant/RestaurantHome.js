@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/esm/Row';
 import Container from 'react-bootstrap/esm/Container';
-import Figure from 'react-bootstrap/Figure';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -14,19 +11,16 @@ import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import cookie from 'react-cookies';
 
-import { Redirect } from 'react-router';
+import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { FloatingLabel, Form, Image } from 'react-bootstrap';
 import { get, post } from '../utils/serverCall';
 import Dishes from './Dishes';
 import CONSTANTS, { REST_DELIVERY_MODE } from '../utils/consts';
 import RedirectSignin from '../common/RedirectSignin';
-import RedirectInvalid from '../common/RedirectInvalid';
 import Location from '../account/Location';
-import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
-import { FloatingLabel, Form, Image } from 'react-bootstrap';
 import FileUpload from '../common/FileUpload';
 
 function RestaurantHome() {
@@ -242,7 +236,7 @@ function RestaurantHome() {
         </Card>
       </Row>
       <Row>
-        <Dishes isCustomer={isCustomer}></Dishes>
+        <Dishes isCustomer={isCustomer} />
       </Row>
     </Container>
   );

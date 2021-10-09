@@ -6,24 +6,28 @@ const CUSTOMER = {
   CLEAR_CART:
     'DELETE FROM `ubereats`.`cart`WHERE user_id=? and restaurant_id=?;',
   GET_ORDERS:
-    'SELECT `order`.`id`, `order`.`restaurant_id`, `order`.`address_id`, `order`.`status` , `order`.`date` FROM `ubereats`.`order` where `order`.`user_id`=?; ',
+    'SELECT `order`.`id`, `order`.`restaurant_id`, `order`.`address_id`, `order`.`status` , `order`.`date`, `addresses`.`location` FROM `ubereats`.`order` join `ubereats`.`addresses` on `order`.`address_id`= `addresses`.`id` where `order`.`user_id`=?; ',
   GET_PROFILE:
     'SELECT `user`.`name` , `user`.`email`,     `user_data`.`picture`,     `user_data`.`contact`,     `user_data`.`dob`,     `user_data`.`nickname`, `user_data`.`about` , `addresses`.`location`, `addresses`.`country` ,`addresses`.`latitude`  ,`addresses`.`longitude`  FROM (`ubereats`.`user_data`  join `ubereats`.`addresses` on `user_data`.`email` = `addresses`.`user_id` ) right join `ubereats`.`user` on `user_data`.`email` = `user`.`email`  where `user`.`email`= ?;',
   GET_PROFILE1:
-    'SELECT * from ubereats.user where user.email= ? ; SELECT * from ubereats.user_data where user_data.email= ? ; Select * from ubereats.addresses where addresses.user_id = ? ;',
+    'SELECT * from ubereats.user where user.email= ? ; SELECT * from ubereats.user_data where user_data.email= ? ; Select * from ubereats.addresses where addresses.user_id = ? and addresses.active = 1;',
 
   UPDATE_USER:
     'UPDATE `ubereats`.`user` SET `name` = ?, `email` = ?, `status` = ? WHERE `email` = ?;',
   UPDATE_USER_DATA:
     'INSERT INTO `ubereats`.`user_data`  (`email`, `picture`, `contact`, `dob`, `nickname`,  `about`) VALUES(?,?,?,?,?,?) ON DUPLICATE KEY UPDATE  `picture` = ?, `contact` = ?, `dob` = ?, `nickname` = ?,  `about` = ?;',
   UPDATE_USER_ADDRESS:
-    'INSERT INTO `ubereats`.`addresses`  (`user_id`, `location`,  `country`, `latitude`, `longitude` ) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE `location` = ? ,  `country`= ?, `latitude`=? , `longitude`=?;',
+    'INSERT INTO `ubereats`.`addresses`  (`user_id`, `location`,  `country`, `latitude`, `longitude` , active ) VALUES(?,?,?,?,?, 1) ON DUPLICATE KEY UPDATE `location` = ? ,  `country`= ?, `latitude`=? , `longitude`=?;',
   FAVORITE_ADD:
     'INSERT INTO `ubereats`.`favorite` (`user_id`, `restaurant_id`) VALUES (?, ?);',
   FAVORITE_REMOVE:
     'DELETE FROM `ubereats`.`favorite` WHERE user_id = ? and restaurant_id = ? ;',
   FAVORITE_GET:
     'SELECT restaurant_id FROM ubereats.favorite where user_id = ? ;',
+  ADDRESSES_GET_ALL:
+    'select * from addresses where user_id= ?  order by active desc',
+  ADDRESSES_ADD_NEW:
+    'INSERT INTO `ubereats`.`addresses` (`user_id`,`location`, `country`, `latitude`, `longitude`) VALUES (?,?,?,?,?);',
 };
 
 // UPDATE_USER_DATA:

@@ -4,8 +4,11 @@ CREATE TABLE `addresses` (
   `country` varchar(10) NOT NULL,
   `latitude` float NOT NULL,
   `longitude` float NOT NULL,
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `active` int NOT NULL DEFAULT '0',
+  `id` int NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id_UNIQUE` (`user_id`,`location`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `cart` (
   `user_id` varchar(45) NOT NULL,
@@ -23,8 +26,15 @@ CREATE TABLE `dishes` (
   `picture` varchar(100) NOT NULL,
   `price` float NOT NULL,
   `description` varchar(150) NOT NULL,
-  `category` int NOT NULL,
+  `category` int NOT NULL DEFAULT '0',
+  `type` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`email`,`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `favorite` (
+  `user_id` varchar(45) NOT NULL,
+  `restaurant_id` varchar(45) NOT NULL,
+  PRIMARY KEY (`user_id`,`restaurant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `order` (

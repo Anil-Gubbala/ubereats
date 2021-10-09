@@ -198,6 +198,43 @@ const getFavorites = (req, res) => {
   }
 };
 
+const getAllAddresses = (req, res) => {
+  if (!req.session.user || !req.session.user.isCustomer) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(
+      CUSTOMER.ADDRESSES_GET_ALL,
+      [req.session.user.email],
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+          return;
+        }
+        res.send(result);
+      }
+    );
+  }
+};
+
+const addNewAddress = (req, res) => {
+  const { location, country, latitude, longitude } = req.body;
+  if (!req.session.user || !req.session.user.isCustomer) {
+    response.unauthorized(res, 'unauthorized access');
+  } else {
+    db.query(
+      CUSTOMER.ADDRESSES_ADD_NEW,
+      [req.session.user.email, location, country, latitude, longitude],
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+          return;
+        }
+        res.send(result);
+      }
+    );
+  }
+};
+
 module.exports = {
   placeOrder,
   myOrders,
@@ -206,4 +243,6 @@ module.exports = {
   removeFromFavorites,
   addToFavorites,
   getFavorites,
+  getAllAddresses,
+  addNewAddress,
 };

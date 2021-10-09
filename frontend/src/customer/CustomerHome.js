@@ -1,28 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import { Container } from 'react-bootstrap';
+import { Container, FormControl, InputGroup, Button } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
-import CardGroup from 'react-bootstrap/CardGroup';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Link } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { useSelector } from 'react-redux';
 
 import { get, post } from '../utils/serverCall';
 
 function CustomerHome() {
   const defaultValues = [];
-
   const [restaurantsInfo, setRestaurantsInfo] = useState(defaultValues);
   const [favorites, setFavorites] = useState([]);
+  const homeFilterState = useSelector((state) => state.homeFilterReducer);
+  const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    get('/getRestaruantsList').then((data) => {
+  // const defaultFilter = {
+  //   vegType: 0,
+  //   delivery: 0,
+  // };
+  // const [filter, setFilter] = useState(defaultFilter);
+
+  const getRestaurantList = () => {
+    get('/getRestaruantsList', { ...homeFilterState, search }).then((data) => {
       setRestaurantsInfo(() => data);
     });
-  }, []);
+  };
+
+  useEffect(() => {
+    // setFilter(homeFilterState);
+    getRestaurantList();
+    // or do direct db call here
+  }, [homeFilterState]);
+
+  // useEffect(() => {
+  //   get('/getRestaruantsList').then((data) => {
+  //     setRestaurantsInfo(() => data);
+  //   });
+  // }, []);
 
   useEffect(() => {
     get('/getFavorites').then((data) => {
@@ -71,6 +89,28 @@ function CustomerHome() {
   }
   return (
     <Container>
+      <Row>
+        <InputGroup className='mb-3' style={{ marginTop: '8px' }}>
+          <FormControl
+            placeholder='Search Restaurants'
+            aria-label='Search Restaurants'
+            aria-describedby='basic-addon2'
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
+          />
+          <Button
+            variant='outline-secondary'
+            id='button-addon2'
+            onClick={() => {
+              getRestaurantList();
+            }}
+          >
+            Search
+          </Button>
+        </InputGroup>
+      </Row>
       <Row className='g-4'>
         {restaurantsInfo.map((each) => (
           <Col key={each.name}>

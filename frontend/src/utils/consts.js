@@ -40,9 +40,8 @@ export const REST_ORDER_FILTER = {
 };
 
 export const REST_DELIVERY_MODE = {
-  0: 'Delivery & Pickup',
-  1: 'Delivery only',
-  2: 'Pickup only',
+  0: 'Delivery',
+  1: 'Pickup',
 };
 
 export const VEG = {
@@ -52,8 +51,8 @@ export const VEG = {
 };
 
 export const ORDER_DELIVERY_MODE = {
-  1: 'Delivery',
-  2: 'Pickup',
+  0: 'Delivery',
+  1: 'Pickup',
 };
 
 export default CONSTANTS;

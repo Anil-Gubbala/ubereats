@@ -15,8 +15,9 @@ app.use(
     secret: 'lab1',
     resave: false,
     saveUninitialized: false,
+    rolling: true,
     cookie: {
-      maxAge: 900000,
+      maxAge: 2 * 60 * 60 * 1000,
     },
   })
 );

@@ -93,4 +93,8 @@ export const updateVegType = (payload) => (dispatch) => {
   dispatch({ type: 'VEG', payload });
 };
 
+export const updateFavoriteMode = (payload) => (dispatch) => {
+  dispatch({ type: 'FAVORITE', payload });
+};
+
 // export const cart = (payload) => (dispatch, getState) => {};

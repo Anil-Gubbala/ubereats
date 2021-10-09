@@ -58,7 +58,7 @@ const signup = (req, res) => {
 
 const setSession = (req, res, email, isCustomer, status) => {
   res.cookie('ubereats273', JSON.stringify({ customer: isCustomer, email }), {
-    maxAge: 9000000,
+    maxAge: 2 * 60 * 60 * 1000,
     httpOnly: false,
   });
   req.session.user = {
@@ -81,7 +81,7 @@ const signin = (req, res) => {
         email: req.session.email,
       }),
       {
-        maxAge: 9000000,
+        maxAge: 2 * 60 * 60 * 1000,
         httpOnly: false,
       }
     );

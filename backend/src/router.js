@@ -27,6 +27,8 @@ const {
   addToFavorites,
   removeFromFavorites,
   getFavorites,
+  getAllAddresses,
+  addNewAddress,
 } = require('./controller/customer');
 
 const router = express.Router();
@@ -61,5 +63,7 @@ router.route('/updateUserInfo').post(updateUserInfo);
 router.route('/addToFavorites').post(addToFavorites);
 router.route('/removeFromFavorites').post(removeFromFavorites);
 router.route('/getFavorites').get(getFavorites);
+router.route('/getAllAddresses').get(getAllAddresses);
+router.route('/addNewAddress').post(addNewAddress);
 
 module.exports = router;

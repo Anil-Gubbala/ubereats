@@ -7,25 +7,22 @@ import Nav from 'react-bootstrap/Nav';
 import { useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Link } from 'react-router-dom';
-
 import Modal from 'react-bootstrap/Modal';
-
 import cookie from 'react-cookies';
-
 import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Button from 'react-bootstrap/Button';
 
+import { Form, Offcanvas } from 'react-bootstrap';
 import CONSTANTS, {
   LOG_REDUCER,
-  ORDER_DELIVERY_MODE,
+  REST_DELIVERY_MODE,
   VEG,
 } from '../utils/consts';
 import { actionCreators } from '../reducers/actionCreators';
 import { get } from '../utils/serverCall';
-import { Form, Offcanvas } from 'react-bootstrap';
-import Button from '@restart/ui/esm/Button';
 
 function Navigator() {
   const appCookies = cookie.load(CONSTANTS.COOKIE);
@@ -49,6 +46,7 @@ function Navigator() {
   const defaultFilter = {
     vegType: 0,
     delivery: 0,
+    favorite: 0,
   };
   const [filter, setFilter] = useState(defaultFilter);
   const dispatch = useDispatch();
@@ -60,6 +58,7 @@ function Navigator() {
     updateDeliveryMode,
     updateVegType,
     insertNewRest,
+    updateFavoriteMode,
   } = bindActionCreators(actionCreators, dispatch);
 
   if (!appCookies) {
@@ -128,7 +127,7 @@ function Navigator() {
     setCartReset(false);
   };
   const resetCart = () => {
-    delete newRestWarningState['previousId'];
+    delete newRestWarningState.previousId;
     insertNewRest(newRestWarningState);
     hideCartResetDlg();
   };
@@ -165,8 +164,10 @@ function Navigator() {
     setFilter((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     if (e.target.name === 'VegType') {
       updateVegType({ [e.target.name]: e.target.value });
-    } else {
+    } else if (e.target.name === 'delivery') {
       updateDeliveryMode({ [e.target.name]: e.target.value });
+    } else if (e.target.name === 'favorite') {
+      updateFavoriteMode({ [e.target.name]: e.target.value });
     }
   };
 
@@ -199,11 +200,23 @@ function Navigator() {
             onChange={handleFilterChange}
             name='delivery'
           >
-            {Object.keys(ORDER_DELIVERY_MODE).map((key) => (
+            {Object.keys(REST_DELIVERY_MODE).map((key) => (
               <option key={key} value={key}>
-                {ORDER_DELIVERY_MODE[key]}
+                {REST_DELIVERY_MODE[key]}
               </option>
             ))}
+          </Form.Select>
+        </Form.Group>
+        <Form.Group className='mb-3' controlId='filterFavorite'>
+          <Form.Label> Filter in : </Form.Label>
+          <Form.Select
+            aria-label='favorite'
+            value={filter.favorite}
+            onChange={handleFilterChange}
+            name='favorite'
+          >
+            <option value='0'>All Restaurants</option>
+            <option value='0'>Favorite Only</option>
           </Form.Select>
         </Form.Group>
       </Offcanvas.Body>
