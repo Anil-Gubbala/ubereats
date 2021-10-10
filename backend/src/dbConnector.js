@@ -37,21 +37,15 @@ const db = {
       return callback(null, result);
     });
   },
-  // connector.getConnection((err, connection) => {
-  //   if (err) {
-  //     console.log(err);
-  //     connection.release();
-  //     return callback(err);
-  //   }
-  //   return connection.query(query, values, (err1, results) => {
-  //     connection.release();
-  //     if (err1) {
-  //       console.log(err1);
-  //       return callback(err1);
-  //     }
-  //     return callback(null, results);
-  //   });
-  // }),
 };
+
+// const db = mysql.createConnection({
+//   user: 'auro',
+//   host: 'lab1237cmpe.cauvszlanaze.us-east-2.rds.amazonaws.com',
+//   password: 'gnQAMYArWg3rqfuntohZ',
+//   database: 'ubereats',
+//   port: '3306',
+//   multipleStatements: true,
+// });
 
 module.exports = db;

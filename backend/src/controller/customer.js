@@ -44,6 +44,7 @@ const placeOrder = (req, res) => {
 };
 
 const myOrders = (req, res) => {
+  console.log(req.session.user);
   const { filter, deliveryType } = req.query;
   if (!req.session.user || !req.session.user.isCustomer) {
     response.unauthorized(res, 'unauthorized access');

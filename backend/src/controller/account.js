@@ -128,7 +128,7 @@ const signout = (req, res) => {
     req.session.destroy();
     req.session = null;
     console.log(res.cookie);
-    res.clearCookie('customer', {
+    res.clearCookie('ubereats273', {
       path: '/',
     });
     res.send();

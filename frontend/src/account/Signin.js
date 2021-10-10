@@ -11,6 +11,7 @@ import { bindActionCreators } from 'redux';
 import { post } from '../utils/serverCall';
 import CONSTANTS, { COOKIE } from '../utils/consts';
 import { actionCreators } from '../reducers/actionCreators';
+import { Alert } from 'react-bootstrap';
 
 function Signin() {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ function Signin() {
 
   const [formData, setFormData] = useState(defaultValues);
   // const [success, setSuccess] = useState(false);
-  const [fail, setFail] = useState(false);
+  const [fail, setFail] = useState({ status: false, message: '' });
   useEffect(() => {
     setFormData({ ...formData, email: currentState.email });
     // console.log(currentState.email);
@@ -45,8 +46,8 @@ function Signin() {
         }
         // setSuccess(true);
       })
-      .catch(() => {
-        setFail(true);
+      .catch((result) => {
+        setFail({ status: true, message: result });
       });
   };
 
@@ -98,6 +99,7 @@ function Signin() {
           </Button>
         </Form>
       </Col>
+      {fail.status && <Alert variant='danger'>{fail.message}</Alert>}
     </Container>
   );
 }

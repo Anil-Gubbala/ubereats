@@ -44,6 +44,10 @@ app.use('/', router);
 //   console.log('Database connection established');
 // });
 
-app.listen(4000, () => {
-  console.log('running server');
-});
+if (!module.parent) {
+  app.listen(4000, () => {
+    console.log('running server');
+  });
+}
+
+module.exports = app;
