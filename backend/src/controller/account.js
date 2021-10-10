@@ -61,6 +61,8 @@ const setSession = (req, res, email, isCustomer, status) => {
     maxAge: 2 * 60 * 60 * 1000,
     httpOnly: false,
     SameSite: 'none',
+    sameSite: 'none',
+    secure: true,
   });
   req.session.user = {
     email,
@@ -84,6 +86,9 @@ const signin = (req, res) => {
       {
         maxAge: 2 * 60 * 60 * 1000,
         httpOnly: false,
+        SameSite: 'none',
+    sameSite: 'none',
+    secure: true,
       }
     );
     res.send(req.session.user);
