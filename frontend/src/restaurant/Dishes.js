@@ -23,7 +23,7 @@ import { Container } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import propTypes from 'prop-types';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { actionCreators } from '../reducers/actionCreators';
@@ -43,6 +43,7 @@ export default function Dishes(props) {
   const [dishes, setDishes] = useState([]);
   const [updateMode, setUpdateMode] = useState(false);
   const [updateIndex, setUpdateIndex] = useState(0);
+  const homeFilterState = useSelector((state) => state.homeFilterReducer);
   const dialogDefault = {
     name: '',
     ingredients: '',
@@ -61,11 +62,14 @@ export default function Dishes(props) {
   };
 
   useEffect(() => {
-    get('/getDishes', { id: params.get('id') }).then((response) => {
+    get('/getDishes', {
+      id: params.get('id'),
+      type: homeFilterState.vegType,
+    }).then((response) => {
       // const result = new Map(response.map((i) => [i.name, i]));
       setDishes(() => response);
     });
-  }, []);
+  }, [homeFilterState]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -212,7 +216,9 @@ export default function Dishes(props) {
                 onUpload={(e) => {
                   setDialogData({ ...dialogData, picture: e });
                 }}
-                id={`${params.get('id') + dialogData.name}`}
+                id={`${
+                  new Date().valueOf() + params.get('id') + dialogData.name
+                }`}
               />
             </Col>
           </Form.Group>

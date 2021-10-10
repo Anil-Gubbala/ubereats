@@ -90,7 +90,7 @@ function Profile() {
                   onUpload={(e) => {
                     setFormData({ ...formData, picture: e });
                   }}
-                  id={`${formData.email}-profilePic`}
+                  id={`${new Date().valueOf() + formData.email}-profilePic`}
                 />
               </Col>
             </Form.Group>

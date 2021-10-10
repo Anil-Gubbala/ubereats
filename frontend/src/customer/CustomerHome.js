@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Container, FormControl, InputGroup, Button } from 'react-bootstrap';
+import {
+  Container,
+  FormControl,
+  InputGroup,
+  Button,
+  Nav,
+} from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -17,6 +23,7 @@ function CustomerHome() {
   const [favorites, setFavorites] = useState([]);
   const homeFilterState = useSelector((state) => state.homeFilterReducer);
   const [search, setSearch] = useState('');
+  const [tab, setTab] = useState(0);
 
   // const defaultFilter = {
   //   vegType: 0,
@@ -24,17 +31,21 @@ function CustomerHome() {
   // };
   // const [filter, setFilter] = useState(defaultFilter);
 
-  const getRestaurantList = () => {
-    get('/getRestaruantsList', { ...homeFilterState, search }).then((data) => {
+  const getRestaurantList = (fav) => {
+    get('/getRestaruantsList', {
+      ...homeFilterState,
+      search,
+      favorite: fav,
+    }).then((data) => {
       setRestaurantsInfo(() => data);
     });
   };
 
   useEffect(() => {
     // setFilter(homeFilterState);
-    getRestaurantList();
+    getRestaurantList(tab);
     // or do direct db call here
-  }, [homeFilterState]);
+  }, [homeFilterState, tab]);
 
   // useEffect(() => {
   //   get('/getRestaruantsList').then((data) => {
@@ -74,21 +85,46 @@ function CustomerHome() {
       .catch(() => {});
   };
 
-  if (restaurantsInfo.length === 0) {
-    return (
-      <Container>
-        <Row>
-          <Card style={{ width: '18rem', margin: 'auto' }}>
-            <Card.Body>
-              <Card.Title>No Restaurants Available</Card.Title>
-            </Card.Body>
-          </Card>
-        </Row>
-      </Container>
-    );
-  }
+  // if (restaurantsInfo.length === 0) {
+  //   return (
+  //     <Container>
+  //       <Row>
+  //         <Card style={{ width: '18rem', margin: 'auto' }}>
+  //           <Card.Body>
+  //             <Card.Title>No Restaurants Available</Card.Title>
+  //           </Card.Body>
+  //         </Card>
+  //       </Row>
+  //     </Container>
+  //   );
+  // }
   return (
     <Container>
+      <Row>
+        <Nav variant='tabs' defaultActiveKey='all'>
+          <Nav.Item>
+            <Nav.Link
+              eventKey='all'
+              onClick={() => {
+                setTab(0);
+              }}
+            >
+              {' '}
+              ALL{' '}
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link
+              eventKey='favorite'
+              onClick={() => {
+                setTab(1);
+              }}
+            >
+              Favorites
+            </Nav.Link>
+          </Nav.Item>
+        </Nav>
+      </Row>
       <Row>
         <InputGroup className='mb-3' style={{ marginTop: '8px' }}>
           <FormControl
@@ -104,13 +140,22 @@ function CustomerHome() {
             variant='outline-secondary'
             id='button-addon2'
             onClick={() => {
-              getRestaurantList();
+              getRestaurantList(tab);
             }}
           >
             Search
           </Button>
         </InputGroup>
       </Row>
+      {restaurantsInfo.length === 0 && (
+        <Row>
+          <Card style={{ width: '18rem', margin: 'auto' }}>
+            <Card.Body>
+              <Card.Title>No Restaurants Available</Card.Title>
+            </Card.Body>
+          </Card>
+        </Row>
+      )}
       <Row xs={1} md={3} className='g-4'>
         {restaurantsInfo.map((each) => (
           <Col key={each.name}>

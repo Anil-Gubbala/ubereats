@@ -166,7 +166,7 @@ function Navigator() {
     } else if (e.target.name === 'delivery') {
       updateDeliveryMode({ [e.target.name]: parseInt(e.target.value, 10) });
     } else if (e.target.name === 'favorite') {
-      updateFavoriteMode({ [e.target.name]: parseInt(e.target.value, 10) });
+      // updateFavoriteMode({ [e.target.name]: parseInt(e.target.value, 10) });
     }
   };
 
@@ -210,7 +210,7 @@ function Navigator() {
             ))}
           </Form.Select>
         </Form.Group>
-        <Form.Group className='mb-3' controlId='filterFavorite'>
+        {/* <Form.Group className='mb-3' controlId='filterFavorite'>
           <Form.Label> Filter in : </Form.Label>
           <Form.Select
             aria-label='favorite'
@@ -221,7 +221,7 @@ function Navigator() {
             <option value='0'>All Restaurants</option>
             <option value='1'>Favorite Only</option>
           </Form.Select>
-        </Form.Group>
+        </Form.Group> */}
       </Offcanvas.Body>
     </Offcanvas>
   );
@@ -229,7 +229,7 @@ function Navigator() {
   const cart = (
     <Modal show={show} onHide={handleClose} animation={false}>
       <Modal.Header closeButton>
-        <Modal.Title>{cartState.restaurantId}</Modal.Title>
+        <Modal.Title>{`Restaurant ID: ${cartState.restaurantId}`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {!cartState.restaurantId && <Col>No items in cart.</Col>}
@@ -289,11 +289,13 @@ function Navigator() {
                 <Link to='/' className='nav-link'>
                   Home
                 </Link>
-                <Nav.Item>
-                  <Nav.Link title='Item' onClick={showCanvas}>
-                    Filters
-                  </Nav.Link>
-                </Nav.Item>
+                {!isSignedOut && isCustomerLogin && (
+                  <Nav.Item>
+                    <Nav.Link title='Item' onClick={showCanvas}>
+                      Filters
+                    </Nav.Link>
+                  </Nav.Item>
+                )}
               </Nav>
               <Nav>
                 {isSignedOut && (
@@ -327,8 +329,21 @@ function Navigator() {
                   </Link>
                 )}
                 {!isSignedOut && isCustomerLogin && (
-                  <IconButton aria-label='cart' onClick={openCartDialog}>
-                    <StyledBadge badgeContent={0} color='primary'>
+                  <IconButton
+                    className='nav-link'
+                    aria-label='cart'
+                    onClick={openCartDialog}
+                  >
+                    <StyledBadge
+                      badgeContent={Object.keys(cartState.dishes).reduce(
+                        (prev, next) => {
+                          const total = prev + cartState.dishes[next][0];
+                          return total;
+                        },
+                        0
+                      )}
+                      color='primary'
+                    >
                       <ShoppingCartIcon />
                     </StyledBadge>
                   </IconButton>

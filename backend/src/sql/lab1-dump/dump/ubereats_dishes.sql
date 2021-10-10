@@ -1,0 +1,46 @@
+-- MySQL dump 10.13  Distrib 8.0.26, for Linux (x86_64)
+--
+-- Host: lab1237cmpe.cauvszlanaze.us-east-2.rds.amazonaws.com    Database: ubereats
+-- ------------------------------------------------------
+-- Server version	8.0.23
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
+SET @@SESSION.SQL_LOG_BIN= 0;
+
+--
+-- GTID state at the beginning of the backup 
+--
+
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '';
+
+--
+-- Dumping data for table `dishes`
+--
+
+LOCK TABLES `dishes` WRITE;
+/*!40000 ALTER TABLE `dishes` DISABLE KEYS */;
+INSERT INTO `dishes` VALUES ('paradise.sanfrancisco@paradise.com','Chicken Biryani','chicken, rice, spices','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullChicken Biryani.jpeg',8,'hyderabadi',2,0),('paradise.sanfrancisco@paradise.com','Tandoori Chicken','chicken, spices, sauce','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullTandoori Chicken.jpeg',9,'arabian',0,0),('paradise.sanfrancisco@paradise.com','veg pulao','rice, paneer, spices','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullveg pulao.jpeg',7,'indian',2,2),('pickup1@email.com','ambrosia','fruit','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullambrosia.jpeg',3,'united states',1,0),('pickup1@email.com','chef salad','vegetables, meat','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullchef salad.jpeg',5,'italy',1,0),('pickup1@email.com','custard','milk','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullcustard.jpeg',4,'birds custard',3,2),('pickup1@email.com','dahi vada','dal','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nulldahi vada.jpeg',2,'with dahi',0,2),('pickup1@email.com','idli','rice, flour','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullidli.jpeg',1,'indian',2,1),('pickup1@email.com','jigarthanda','jigar','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nulljigarthanda.jpeg',5,'madurai special',4,1),('pickup1@email.com','naan','wheat flour','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullnaan.jpeg',2,'indian',2,2),('pickup1@email.com','paneer tikka','paneer','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullpaneer tikka.jpeg',3,'roasted paneer',0,1),('pickup1@email.com','pumpkin pie','pumpkin, choclate','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullpumpkin pie.jpeg',10,'with whip cream',3,0),('pickup1@email.com','sugar cane juice','sugar cane, water','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullsugar cane juice.jpeg',2,'summer special',4,1),('pickup2@email.com','angel food cake','egg, soda','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullangel food cake.jpeg',8,'birthdays',3,0),('pickup2@email.com','arab salad','vegetables','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullarab salad.jpeg',8,'arabian',0,1),('pickup2@email.com','badam milk','milk, almonds','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullbadam milk.jpeg',12,'healthy',4,2),('pickup2@email.com','caesar island','lettuce, cheese, olives','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullcaesar island.jpeg',12,'mexican',1,2),('pickup2@email.com','candy apples','maples, syrup','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullcandy apples.jpeg',15,'american',3,2),('pickup2@email.com','chapati','wheat flour','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullchapati.jpeg',2,'subcontinent',2,1),('pickup2@email.com','chole bhature','chick peas, spices','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullchole bhature.jpeg',4,'gravy style',2,1),('pickup2@email.com','crab rangoon','crab meet, garlic','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullcrab rangoon.jpeg',15,'stuffed creame cheese',0,0),('pickup2@email.com','fried mushrooms','mushrooms, batter','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullfried mushrooms.jpeg',10,'snack ',0,1),('pickup2@email.com','lassi','curd, milk ','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nulllassi.jpeg',3,'salt / sugar',4,2),('pickup3@email.com','celery victor','vegetables','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullcelery victor.jpeg',3,'american',1,2),('pickup3@email.com','chicken salad','chicken , onion, tomato','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullchicken salad.jpeg',9,'world wide',1,0),('pickup3@email.com','cookie','chocolate chips','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullcookie.jpeg',4,'american',3,1),('pickup3@email.com','Dosa','ground rice, urad dal','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullDosa.jpeg',9,'Indian ',2,1),('pickup3@email.com','fozen yogurt','yogurt , strawberry','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullfozen yogurt.jpeg',12,'no preservatives',3,1),('pickup3@email.com','idiappam','streamed rice noodles','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullidiappam.jpeg',5,'tamil nadu special',2,0),('pickup3@email.com','kuku sabzi','garlic, herbs, egg','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullkuku sabzi.jpeg',5,'Persian',0,0),('pickup3@email.com','martabak','omlette, pancake, vegetables, meat','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullmartabak.jpeg',9,'indonesian',0,0),('pickup3@email.com','masala chai','milk, tea powder','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullmasala chai.jpeg',4,'indian',4,2),('pickup3@email.com','shikanjvi','lemon, ginger , sugar','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullshikanjvi.jpeg',11,'lemonade',4,2),('pickup4@email.com','apple pie','apple, flour, sugar','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullapple pie.jpeg',9,'hot or cold',3,0),('pickup4@email.com','fattoush','bread, greens , vegetables','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullfattoush.jpeg',9,'levant',1,1),('pickup4@email.com','iced tea','orange, lemon, ice','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nulliced tea.jpeg',9,'thialand ',4,1),('pickup4@email.com','Kuzhakkattai','rice, jaggery, coconut','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullKuzhakkattai.jpeg',5,'festival special',2,1),('pickup4@email.com','samosa','potatoes, onions, flour','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullsamosa.jpeg',4,'south asian',0,1),('pickup5@email.com','butter cake','sugar, raspberries','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullbutter cake.jpeg',7,'cake',3,1),('pickup5@email.com','herring salad','beetroot, onion','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullherring salad.jpeg',4,'sweden',1,1),('pickup5@email.com','mango lassi','curd, mango, sugar','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullmango lassi.jpeg',8,'chilled',4,1),('pickup5@email.com','perkedel','potatoes, meat','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullperkedel.jpeg',9,'indonesian',0,0),('pickup5@email.com','pesarattu','moong dal, grains','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullpesarattu.jpeg',8,'andhra special',2,1),('pickup6@email.com','caipirinha','liquor , sugar, lime','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullcaipirinha.jpeg',9,'cocktail',4,1),('pickup6@email.com','khao yam','rice, fruit, vegetables','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullkhao yam.jpeg',7,'rice salad',1,1),('pickup6@email.com','pistachio pudding','pistachio nuts, almonds','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullpistachio pudding.jpeg',6,'pudding',3,1),('pickup6@email.com','pongal','rice, greens','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullpongal.jpeg',8,'south indian',2,1),('pickup6@email.com','saganaki','fried cheese','https://imageuploadlab1.s3-us-east-2.amazonaws.com/restaurant/nullsaganaki.jpeg',18,'indian',0,2);
+/*!40000 ALTER TABLE `dishes` ENABLE KEYS */;
+UNLOCK TABLES;
+SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2021-10-09 22:41:02

@@ -41,9 +41,11 @@ function PlaceOrder() {
     }
     setTotalCost(0);
     Object.keys(cartState.dishes).forEach((key) => {
-      setTotalCost(
-        (prev) => prev + cartState.dishes[key][0] * cartState.dishes[key][1]
-      );
+      setTotalCost((prev) => {
+        let total = prev + cartState.dishes[key][0] * cartState.dishes[key][1];
+        total = parseFloat(total).toFixed(2);
+        return total;
+      });
     });
   }, [cartState]);
 
@@ -157,7 +159,7 @@ function PlaceOrder() {
   }
   return (
     <Container>
-      <Row>{`Restaurant Name: ${cartState.restaurantId}`}</Row>
+      <Row>{`Restaurant ID: ${cartState.restaurantId}`}</Row>
       <Row>
         <Table striped bordered hover>
           <thead>

@@ -176,7 +176,7 @@ function RestaurantHome() {
               onUpload={(e) => {
                 setDialogData({ ...dialogData, picture: e });
               }}
-              id={`${dialogData.email}-restaurantPic`}
+              id={`${new Date().valueOf() + dialogData.email}restaurantPic`}
             />
           </Col>
         </Form.Group>

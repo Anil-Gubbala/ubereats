@@ -4,9 +4,12 @@ const RESTAURANT = {
   PASSWORD:
     'SELECT password, status FROM ubereats.restaurant_login WHERE email = ?;',
   ALL_INFO:
-    'SELECT `name`, `location`, `contact`, `picture`, `description`, `start`, `end` ,`latitude`,`longitude` FROM ubereats.restaurant_login WHERE email = ?;',
+    'SELECT `email`, `name`, `location`, `contact`, `picture`, `description`, `start`, `end` ,`latitude`,`longitude`,`delivery` FROM ubereats.restaurant_login WHERE email = ?;',
   DISHES:
     'SELECT `email`, `name`, `ingredients`, `picture`, `price`, `description`, `category`,`type` FROM ubereats.dishes WHERE email = ?;',
+  DISHES_WITH_FILTER:
+    'SELECT `email`, `name`, `ingredients`, `picture`, `price`, `description`, `category`,`type` FROM ubereats.dishes WHERE email = ? and type=?;',
+
   ADD_DISH:
     'INSERT INTO `ubereats`.`dishes` (`email`,`name`,`ingredients`,`picture`,`price`,`description`,`category`, `type`)VALUES(?,?,?,?,?,?,?,?);',
   UPDATE_DISH:

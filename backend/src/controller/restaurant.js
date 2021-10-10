@@ -25,14 +25,19 @@ const getRestaurantInfo = (req, res) => {
 };
 
 const getDishes = (req, res) => {
+  const { type } = req.query;
   if (!req.session.user) {
     response.unauthorized(res, 'unauthorized access');
   } else {
+    let query = RESTAURANT.DISHES;
     let { email } = req.session.user;
     if (req.session.user.isCustomer) {
       email = req.query.id;
+      if (type !== '-1') {
+        query = RESTAURANT.DISHES_WITH_FILTER;
+      }
     }
-    db.query(RESTAURANT.DISHES, email, (err, result) => {
+    db.query(query, [email, type], (err, result) => {
       if (err) {
         response.error(res, 500, err.code);
         return;

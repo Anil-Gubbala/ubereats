@@ -44,9 +44,9 @@ const getRestaruantsList = (req, res) => {
 
   let base = ` select distinct restaurant_login.email from ubereats.restaurant_login join ubereats.dishes on restaurant_login.email = dishes.email`;
   const fav = `  restaurant_login.email IN (select restaurant_id from favorite where user_id = '${req.session.user.email}') `;
-  const match = ` (location like '${search}' or dishes.name like '${search}' `;
+  const match = ` (location like '%${search}%' or dishes.name like '%${search}%') `;
 
-  if (vegType !== -1 || delivery !== -1 || favorite !== 0) {
+  if (vegType !== -1 || delivery !== -1 || favorite !== 0 || search !== '') {
     base += ' where ';
   }
   if (vegType !== -1) {

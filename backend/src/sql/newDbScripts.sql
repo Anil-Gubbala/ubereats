@@ -8,7 +8,7 @@ CREATE TABLE `addresses` (
   `id` int NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id_UNIQUE` (`user_id`,`location`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `cart` (
   `user_id` varchar(45) NOT NULL,
@@ -47,14 +47,14 @@ CREATE TABLE `order` (
   `restaurant_id` varchar(45) NOT NULL,
   `delivery` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `order_dishes` (
   `id` int NOT NULL,
   `dish` varchar(45) NOT NULL,
   `count` int NOT NULL,
   `price` float NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`,`dish`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `restaurant_login` (

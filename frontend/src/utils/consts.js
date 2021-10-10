@@ -45,7 +45,7 @@ export const REST_ORDER_FILTER = {
 };
 
 export const REST_DELIVERY_MODE = {
-  0: 'Delivery',
+  0: 'Delivery & Pickup',
   1: 'Pickup',
 };
 

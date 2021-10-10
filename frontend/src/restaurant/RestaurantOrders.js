@@ -50,6 +50,7 @@ function RestaurantOrders() {
   const [detailsDelivery, setDetailsDelivery] = useState(0);
   const [disableUpdate, setDisableUpdate] = useState(true);
   const [filter, setFilter] = useState(0);
+  const [totalCost, setTotalCost] = useState(0);
 
   const getRestaurantOrders = (type) => {
     get('/getRestaurantOrders', { filter: type })
@@ -74,6 +75,13 @@ function RestaurantOrders() {
           order_id: e.target.getAttribute('name'),
           index: e.target.getAttribute('index'),
         }));
+        setTotalCost(() =>
+          response.reduce((prev, next) => {
+            let total = parseFloat(prev) + next.count * next.price;
+            total = parseFloat(total.toFixed(2));
+            return total;
+          }, 0)
+        );
         setOrderStatus(e.target.getAttribute('status'));
         setDetailsDelivery(parseInt(e.target.getAttribute('delivery'), 10));
         setDishesData(response);
@@ -207,7 +215,7 @@ function RestaurantOrders() {
               <tr>
                 <th>Dish Name</th>
                 <th>Count</th>
-                <th>Price</th>
+                <th>Price ($)</th>
               </tr>
             </thead>
             <tbody>
@@ -218,6 +226,11 @@ function RestaurantOrders() {
                   <td>{each.price}</td>
                 </tr>
               ))}
+              <tr>
+                <td>Total</td>
+                <td></td>
+                <td>{totalCost}</td>
+              </tr>
             </tbody>
           </Table>
         </Modal.Body>
