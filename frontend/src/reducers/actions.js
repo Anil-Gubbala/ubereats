@@ -97,4 +97,8 @@ export const updateFavoriteMode = (payload) => (dispatch) => {
   dispatch({ type: 'FAVORITE', payload });
 };
 
+export const clearHomeFilters = () => (dispatch) => {
+  dispatch({ type: 'CLEAR_HOME_FILTERS' });
+};
+
 // export const cart = (payload) => (dispatch, getState) => {};

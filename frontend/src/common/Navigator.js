@@ -29,7 +29,6 @@ function Navigator() {
 
   const currentState = useSelector((state) => state.loggedReducer);
   const cartState = useSelector((state) => state.cartReducer);
-  const homeFilterState = useSelector((state) => state.homeFilterReducer);
   const newRestWarningState = useSelector((state) => state.newRestReducer);
 
   const isSignedOut = !appCookies || !currentState[LOG_REDUCER.IS_LOGGEDIN];
@@ -44,8 +43,8 @@ function Navigator() {
 
   const [cartFlag, setCartFlag] = useState(false);
   const defaultFilter = {
-    vegType: 0,
-    delivery: 0,
+    vegType: -1,
+    delivery: -1,
     favorite: 0,
   };
   const [filter, setFilter] = useState(defaultFilter);
@@ -162,12 +161,12 @@ function Navigator() {
 
   const handleFilterChange = (e) => {
     setFilter((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    if (e.target.name === 'VegType') {
-      updateVegType({ [e.target.name]: e.target.value });
+    if (e.target.name === 'vegType') {
+      updateVegType({ [e.target.name]: parseInt(e.target.value, 10) });
     } else if (e.target.name === 'delivery') {
-      updateDeliveryMode({ [e.target.name]: e.target.value });
+      updateDeliveryMode({ [e.target.name]: parseInt(e.target.value, 10) });
     } else if (e.target.name === 'favorite') {
-      updateFavoriteMode({ [e.target.name]: e.target.value });
+      updateFavoriteMode({ [e.target.name]: parseInt(e.target.value, 10) });
     }
   };
 
@@ -185,6 +184,9 @@ function Navigator() {
             onChange={handleFilterChange}
             name='vegType'
           >
+            <option key={-1} value={-1}>
+              All
+            </option>
             {Object.keys(VEG).map((key) => (
               <option key={key} value={key}>
                 {VEG[key]}
@@ -200,6 +202,7 @@ function Navigator() {
             onChange={handleFilterChange}
             name='delivery'
           >
+            <option value={-1}>All</option>
             {Object.keys(REST_DELIVERY_MODE).map((key) => (
               <option key={key} value={key}>
                 {REST_DELIVERY_MODE[key]}
@@ -216,7 +219,7 @@ function Navigator() {
             name='favorite'
           >
             <option value='0'>All Restaurants</option>
-            <option value='0'>Favorite Only</option>
+            <option value='1'>Favorite Only</option>
           </Form.Select>
         </Form.Group>
       </Offcanvas.Body>

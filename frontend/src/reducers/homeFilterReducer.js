@@ -1,7 +1,7 @@
 const initialState = {
-  vegType: 0,
-  delivery: 0,
-  favorite: 0,
+  vegType: -1, // 0:nonveg, 1: veg, 2: vegan
+  delivery: -1, // 0:delivery, 1: pick up
+  favorite: 0, // 0: all , 1: favorite
 };
 
 const homeFilterReducer = (state = initialState, action) => {
@@ -21,6 +21,10 @@ const homeFilterReducer = (state = initialState, action) => {
       return {
         ...state,
         ...payload,
+      };
+    case 'CLEAR_HOME_FILTERS':
+      return {
+        ...initialState,
       };
     default:
       return state;

@@ -11,7 +11,10 @@ import { actionCreators } from '../reducers/actionCreators';
 
 function Signout() {
   const dispatch = useDispatch();
-  const { signout, clearCart } = bindActionCreators(actionCreators, dispatch);
+  const { signout, clearCart, clearHomeFilters } = bindActionCreators(
+    actionCreators,
+    dispatch
+  );
   const [logout, setLogout] = useState(false);
 
   useEffect(() => {
@@ -21,6 +24,7 @@ function Signout() {
         localStorage.clear();
         signout();
         clearCart();
+        clearHomeFilters();
         setLogout(true);
       })
       .catch(() => {

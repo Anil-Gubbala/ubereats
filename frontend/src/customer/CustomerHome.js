@@ -111,7 +111,7 @@ function CustomerHome() {
           </Button>
         </InputGroup>
       </Row>
-      <Row className='g-4'>
+      <Row xs={1} md={3} className='g-4'>
         {restaurantsInfo.map((each) => (
           <Col key={each.name}>
             <Card style={{ width: '18rem' }}>
