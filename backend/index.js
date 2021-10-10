@@ -24,7 +24,7 @@ app.use(
 
 app.use(
   cors({
-    origin: '3.142.131.218:3000',
+    origin: 'http://3.142.131.218:3000',
     methods: ['GET', 'POST', 'PUT'],
     credentials: true,
   })
