@@ -6,7 +6,7 @@
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@mui/icons-material": "^5.0.1",
-    "@mui/material": "^5.0.1", 4: 0xcedc57 v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, bool) [/home/ec2-user/.nvm/versions/node/v16.11.0/bin/node]
+    "@mui/material": "^5.0.1", 
 
     "axios": "^0.21.4",
     "bootstrap": "^5.1.0",
