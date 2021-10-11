@@ -116,6 +116,9 @@ function Navigator() {
     if (isCustomerLogin) {
       getCart();
     }
+    if (isSignedOut) {
+      setFilter(defaultFilter);
+    }
   }, [currentState]);
 
   const [cartReset, setCartReset] = useState(false);
