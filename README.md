@@ -1,6 +1,9 @@
 # ubereats
 CMPE 273-lab1
 
+# Prerequisite
+need to install npm & node 
+
 # To start Frontend (3000)
 cd frontend
 
