@@ -1,7 +1,7 @@
 import Button from 'react-bootstrap/Button';
 import React, { useState, useEffect } from 'react';
-import Col from 'react-bootstrap/esm/Col';
-import Container from 'react-bootstrap/esm/Container';
+import Col from 'react-bootstrap/Col';
+import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import { Redirect } from 'react-router';
 import cookie from 'react-cookies';
