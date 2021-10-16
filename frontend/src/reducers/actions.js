@@ -1,4 +1,3 @@
-import { ConstructionOutlined } from '@mui/icons-material';
 import { post } from '../utils/serverCall';
 
 export const customer = (payload) => (dispatch) => {
