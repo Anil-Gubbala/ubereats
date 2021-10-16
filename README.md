@@ -1,13 +1,20 @@
 # ubereats
 CMPE 273-lab1
 
-# Frontend (3000)
+# Prerequisite
+need to install npm & node 
+
+# To start Frontend (3000)
+cd frontend
+
 npm install
 
 npm start
 
 
-# backend (4000)
+# To start backend (4000)
+cd backend 
+
 npm install
 
 node index.js
