@@ -42,7 +42,9 @@ function PlaceOrder() {
     setTotalCost(0);
     Object.keys(cartState.dishes).forEach((key) => {
       setTotalCost((prev) => {
-        let total = parseFloat(prev) + cartState.dishes[key][0] * cartState.dishes[key][1];
+        let total =
+          parseFloat(prev) +
+          cartState.dishes[key][0] * cartState.dishes[key][1];
         total = parseFloat(total).toFixed(2);
         return total;
       });

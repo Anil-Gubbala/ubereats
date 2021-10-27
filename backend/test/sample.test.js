@@ -11,31 +11,6 @@ chai.use(chaiHttp);
 console.log(require('chai').request);
 const agent = require('chai').request.agent(app);
 
-// describe('Handshake Testing', () => {
-//   it('GET /signin - Authenticate User with Invalid Credentials', (done) => {
-//     agent
-//       .post('/signin')
-//       .send({ email: 'user1@email.com', customer: 'true', password: 'asdf' })
-//       .then((response) => {
-//         console.log(response.status);
-//         agent
-//           .get('/myOrders')
-//           .then((response1) => {
-//             done();
-//             console.log(response1.status);
-//           })
-//           .catch((e) => {
-//             done();
-//           });
-//         // expect(response.status).to.equal(401);
-//         // expect(response.body.message).to.equal('Invalid Credentials');
-//       })
-//       .catch((e) => {
-//         done(e);
-//       });
-//   });
-// });
-
 describe('/POST signin', () => {
   it('it should Signin successfully', (done) => {
     agent
@@ -53,6 +28,36 @@ describe('/POST signin', () => {
 describe('/GET orders', () => {
   it('it should retrun placed orders', (done) => {
     agent.get('/myOrders').end((err1, res1) => {
+      res1.should.have.status(200);
+      res1.should.be.a('object');
+      done();
+    });
+  });
+});
+
+describe('/GET user data', () => {
+  it('it should retrun user details', (done) => {
+    agent.get('/getUserProfile').end((err1, res1) => {
+      res1.should.have.status(200);
+      res1.should.be.a('object');
+      done();
+    });
+  });
+});
+
+describe('/GET restaurant list', () => {
+  it('it should retrun restaurant list', (done) => {
+    agent.get('/getUserProfile').end((err1, res1) => {
+      res1.should.have.status(200);
+      res1.should.be.a('object');
+      done();
+    });
+  });
+});
+
+describe('/GET cart items', () => {
+  it('it should retrun items in the cart', (done) => {
+    agent.get('/getCart').end((err1, res1) => {
       res1.should.have.status(200);
       res1.should.be.a('object');
       done();

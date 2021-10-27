@@ -60,6 +60,7 @@ const setSession = (req, res, email, isCustomer, status) => {
   res.cookie('ubereats273', JSON.stringify({ customer: isCustomer, email }), {
     maxAge: 2 * 60 * 60 * 1000,
     httpOnly: false,
+    sameSite: 'none',
   });
   req.session.user = {
     email,
