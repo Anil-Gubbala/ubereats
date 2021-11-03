@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Container,
-  FormControl,
-  InputGroup,
-  Button,
-  Nav,
-} from 'react-bootstrap';
+import { Container, FormControl, InputGroup, Button, Nav } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -13,9 +7,11 @@ import { Link } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { get, post } from '../utils/serverCall';
+import { apiActionCreators } from '../reducers/actionCreators';
+import { bindActionCreators } from 'redux';
 
 function CustomerHome() {
   const defaultValues = [];
@@ -24,6 +20,9 @@ function CustomerHome() {
   const homeFilterState = useSelector((state) => state.homeFilterReducer);
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState(0);
+  const dispatch = useDispatch();
+  const { doGet } = bindActionCreators(apiActionCreators, dispatch);
+  const getRestaruantsListApi = useSelector((state) => state.getRestaruantsListApi);
 
   // const defaultFilter = {
   //   vegType: 0,
@@ -32,14 +31,27 @@ function CustomerHome() {
   // const [filter, setFilter] = useState(defaultFilter);
 
   const getRestaurantList = (fav) => {
-    get('/getRestaruantsList', {
+    doGet('/getRestaruantsList', {
       ...homeFilterState,
       search,
       favorite: fav,
-    }).then((data) => {
-      setRestaurantsInfo(() => data);
     });
+    // get('/getRestaruantsList', {
+    //   ...homeFilterState,
+    //   search,
+    //   favorite: fav,
+    // }).then((data) => {
+    //   setRestaurantsInfo(() => data);
+    // });
   };
+
+  useEffect(() => {
+    if (getRestaruantsListApi.status === 1) {
+      if (getRestaruantsListApi.error === '') {
+        setRestaurantsInfo(() => getRestaruantsListApi.response);
+      }
+    }
+  }, [getRestaruantsListApi]);
 
   useEffect(() => {
     // setFilter(homeFilterState);
@@ -101,10 +113,10 @@ function CustomerHome() {
   return (
     <Container>
       <Row>
-        <Nav variant='tabs' defaultActiveKey='all'>
+        <Nav variant="tabs" defaultActiveKey="all">
           <Nav.Item>
             <Nav.Link
-              eventKey='all'
+              eventKey="all"
               onClick={() => {
                 setTab(0);
               }}
@@ -115,7 +127,7 @@ function CustomerHome() {
           </Nav.Item>
           <Nav.Item>
             <Nav.Link
-              eventKey='favorite'
+              eventKey="favorite"
               onClick={() => {
                 setTab(1);
               }}
@@ -126,19 +138,19 @@ function CustomerHome() {
         </Nav>
       </Row>
       <Row>
-        <InputGroup className='mb-3' style={{ marginTop: '8px' }}>
+        <InputGroup className="mb-3" style={{ marginTop: '8px' }}>
           <FormControl
-            placeholder='Search Restaurants'
-            aria-label='Search Restaurants'
-            aria-describedby='basic-addon2'
+            placeholder="Search Restaurants"
+            aria-label="Search Restaurants"
+            aria-describedby="basic-addon2"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
             }}
           />
           <Button
-            variant='outline-secondary'
-            id='button-addon2'
+            variant="outline-secondary"
+            id="button-addon2"
             onClick={() => {
               getRestaurantList(tab);
             }}
@@ -156,38 +168,27 @@ function CustomerHome() {
           </Card>
         </Row>
       )}
-      <Row xs={1} md={3} className='g-4'>
+      <Row xs={1} md={3} className="g-4">
         {restaurantsInfo.map((each) => (
           <Col key={each.name}>
             <Card style={{ width: '18rem' }}>
-              <Card.Img
-                style={{ height: '140px' }}
-                variant='top'
-                src={each.picture}
-              />
+              <Card.Img style={{ height: '140px' }} variant="top" src={each.picture} />
               <Card.Body>
                 <Card.Title>{each.name}</Card.Title>
                 <Card.Text>{each.description}</Card.Text>
-                <Link
-                  to={`/restaurant?id=${each.email}`}
-                  className='pure-menu-link'
-                >
+                <Link to={`/restaurant?id=${each.email}`} className="pure-menu-link">
                   View Menu
                 </Link>
                 {favorites.indexOf(each.email) >= 0 ? (
                   <IconButton
-                    aria-label='Remove Favorite'
+                    aria-label="Remove Favorite"
                     email={each.email}
                     onClick={removeFromFavorites}
                   >
                     <StarIcon />
                   </IconButton>
                 ) : (
-                  <IconButton
-                    aria-label='Add Favorite'
-                    email={each.email}
-                    onClick={addToFavorites}
-                  >
+                  <IconButton aria-label="Add Favorite" email={each.email} onClick={addToFavorites}>
                     <StarBorderIcon />
                   </IconButton>
                 )}

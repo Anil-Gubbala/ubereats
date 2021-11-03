@@ -10,13 +10,15 @@ import { bindActionCreators } from 'redux';
 
 import { post } from '../utils/serverCall';
 import CONSTANTS, { COOKIE } from '../utils/consts';
-import { actionCreators } from '../reducers/actionCreators';
+import { actionCreators, apiActionCreators } from '../reducers/actionCreators';
 import { Alert } from 'react-bootstrap';
 
 function Signin() {
   const dispatch = useDispatch();
-  const currentState = useSelector((state) => state.loggedReducer);
+  // const currentState = useSelector((state) => state.loggedReducer);
   const { customer, restaurant } = bindActionCreators(actionCreators, dispatch);
+  const { doPost } = bindActionCreators(apiActionCreators, dispatch);
+  const signinState = useSelector((state) => state.signinApi);
   const defaultValues = {
     customer: true,
     email: '',
@@ -26,30 +28,48 @@ function Signin() {
   const [formData, setFormData] = useState(defaultValues);
   // const [success, setSuccess] = useState(false);
   const [fail, setFail] = useState({ status: false, message: '' });
-  useEffect(() => {
-    setFormData({ ...formData, email: currentState.email });
-    // console.log(currentState.email);
-  }, [currentState]);
+  // useEffect(() => {
+  //   setFormData({ ...formData, email: currentState.email });
+  //   // console.log(currentState.email);
+  // }, [currentState]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    post('/signin', formData)
-      .then((data) => {
+    doPost('/signin', formData);
+    // .then((data) => {
+    //   if (formData.customer) {
+    //     localStorage.setItem(CONSTANTS.STR_KEY, CONSTANTS.STR_USER);
+    //     localStorage.setItem(CONSTANTS.STATUS, data.status);
+    //     customer(formData.email);
+    //   } else {
+    //     localStorage.setItem(CONSTANTS.STR_KEY, CONSTANTS.STR_RESTAURANT);
+    //     localStorage.setItem(CONSTANTS.STATUS, data.status);
+    //     restaurant(formData.email);
+    //   }
+    //   // setSuccess(true);
+    // })
+    // .catch((result) => {
+    //   setFail({ status: true, message: result });
+    // });
+  };
+
+  useEffect(() => {
+    if (signinState.status === 1) {
+      if (signinState.error === '') {
         if (formData.customer) {
           localStorage.setItem(CONSTANTS.STR_KEY, CONSTANTS.STR_USER);
-          localStorage.setItem(CONSTANTS.STATUS, data.status);
+          localStorage.setItem(CONSTANTS.STATUS, signinState.response.status);
           customer(formData.email);
         } else {
           localStorage.setItem(CONSTANTS.STR_KEY, CONSTANTS.STR_RESTAURANT);
-          localStorage.setItem(CONSTANTS.STATUS, data.status);
+          localStorage.setItem(CONSTANTS.STATUS, signinState.response.status);
           restaurant(formData.email);
         }
-        // setSuccess(true);
-      })
-      .catch((result) => {
-        setFail({ status: true, message: result });
-      });
-  };
+      } else {
+        setFail({ status: true, message: signinState.error });
+      }
+    }
+  }, [signinState]);
 
   const eventHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -57,49 +77,49 @@ function Signin() {
   const checkBoxHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: !e.target.checked });
   };
-
+  console.log(localStorage.getItem(CONSTANTS.STR_KEY));
   if (localStorage.getItem(CONSTANTS.STR_KEY)) {
-    return <Redirect to='/home'></Redirect>;
+    return <Redirect to="/home"></Redirect>;
   }
   return (
     <Container>
       <Col>
         <Form onSubmit={handleSubmit}>
-          <Form.Group className='mb-3' controlId='formEmail'>
+          <Form.Group className="mb-3" controlId="formEmail">
             <Form.Label>Email address</Form.Label>
             <Form.Control
-              name='email'
+              name="email"
               onChange={eventHandler}
-              type='email'
-              placeholder='Enter email'
+              type="email"
+              placeholder="Enter email"
               required
               value={formData.email ? formData.email : ''}
             />
           </Form.Group>
-          <Form.Group className='mb-3' controlId='formPassword'>
+          <Form.Group className="mb-3" controlId="formPassword">
             <Form.Label>Password</Form.Label>
             <Form.Control
-              name='password'
-              type='password'
+              name="password"
+              type="password"
               onChange={eventHandler}
-              placeholder='Password'
+              placeholder="Password"
               required
             />
           </Form.Group>
-          <Form.Group className='mb-3' controlId='formCheckbox'>
+          <Form.Group className="mb-3" controlId="formCheckbox">
             <Form.Check
-              name='customer'
-              type='checkbox'
-              label='Login as Restaurant owner'
+              name="customer"
+              type="checkbox"
+              label="Login as Restaurant owner"
               onChange={checkBoxHandler}
             />
           </Form.Group>
-          <Button variant='primary' type='submit'>
+          <Button variant="primary" type="submit">
             Submit
           </Button>
         </Form>
       </Col>
-      {fail.status && <Alert variant='danger'>{fail.message}</Alert>}
+      {fail.status && <Alert variant="danger">{fail.message}</Alert>}
     </Container>
   );
 }

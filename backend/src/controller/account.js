@@ -1,7 +1,7 @@
-const bcrypt = require('bcrypt');
-const db = require('../dbConnector');
-const RESTAURANT = require('../sql/restaurantSql');
-const USER = require('../sql/userSql');
+const bcrypt = require("bcrypt");
+const db = require("../dbConnector");
+const RESTAURANT = require("../sql/restaurantSql");
+const USER = require("../sql/userSql");
 
 const saltRounds = 10;
 
@@ -19,7 +19,7 @@ const registerRestaurant = (req, res, hash) => {
         sendError(
           res,
           409,
-          err1.errno === 1062 ? 'email already registered' : err1.code
+          err1.errno === 1062 ? "email already registered" : err1.code
         );
       } else {
         res.status(200).send({ success: true });
@@ -34,7 +34,7 @@ const registerUser = (req, res, hash) => {
       sendError(
         res,
         409,
-        err1.errno === 1062 ? 'email already registered' : err1.code
+        err1.errno === 1062 ? "email already registered" : err1.code
       );
     } else {
       res.status(200).send({ success: true });
@@ -48,7 +48,7 @@ const signup = (req, res) => {
       sendError(res, 404, err.code);
       return;
     }
-    if (req.body.accountType === '1') {
+    if (req.body.accountType === "1") {
       registerRestaurant(req, res, hash);
     } else {
       registerUser(req, res, hash);
@@ -57,10 +57,10 @@ const signup = (req, res) => {
 };
 
 const setSession = (req, res, email, isCustomer, status) => {
-  res.cookie('ubereats273', JSON.stringify({ customer: isCustomer, email }), {
+  res.cookie("ubereats273", JSON.stringify({ customer: isCustomer, email }), {
     maxAge: 2 * 60 * 60 * 1000,
     httpOnly: false,
-    sameSite: 'none',
+    // sameSite: 'none',
   });
   req.session.user = {
     email,
@@ -76,7 +76,7 @@ const setSession = (req, res, email, isCustomer, status) => {
 const signin = (req, res) => {
   if (req.session.user) {
     res.cookie(
-      'ubereats273',
+      "ubereats273",
       JSON.stringify({
         customer: req.session.user.isCustomer,
         email: req.session.email,
@@ -114,7 +114,7 @@ const signin = (req, res) => {
           } else {
             res
               .status(404)
-              .send({ err: 'Wrong username/password combination!' });
+              .send({ err: "Wrong username/password combination!" });
           }
         }
       );
@@ -129,8 +129,8 @@ const signout = (req, res) => {
     req.session.destroy();
     req.session = null;
     console.log(res.cookie);
-    res.clearCookie('ubereats273', {
-      path: '/',
+    res.clearCookie("ubereats273", {
+      path: "/",
     });
     res.send();
   } else {

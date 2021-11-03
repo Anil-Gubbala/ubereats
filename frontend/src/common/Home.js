@@ -19,7 +19,7 @@ function Home() {
   if (isLoggedIn === CONSTANTS.STR_RESTAURANT) {
     return <RestaurantHome></RestaurantHome>;
   }
-  return <Redirect to='/signin'></Redirect>;
+  return <Redirect to="/signin"></Redirect>;
 }
 
 export default Home;

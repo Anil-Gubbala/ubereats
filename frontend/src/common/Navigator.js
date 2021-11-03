@@ -16,31 +16,20 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Button from 'react-bootstrap/Button';
 
 import { Form, Offcanvas } from 'react-bootstrap';
-import CONSTANTS, {
-  LOG_REDUCER,
-  REST_DELIVERY_MODE,
-  VEG,
-} from '../utils/consts';
-import { actionCreators } from '../reducers/actionCreators';
+import CONSTANTS, { LOG_REDUCER, REST_DELIVERY_MODE, VEG } from '../utils/consts';
+import { actionCreators, apiActionCreators } from '../reducers/actionCreators';
 import { get } from '../utils/serverCall';
 
 function Navigator() {
   const appCookies = cookie.load(CONSTANTS.COOKIE);
-
   const currentState = useSelector((state) => state.loggedReducer);
   const cartState = useSelector((state) => state.cartReducer);
   const newRestWarningState = useSelector((state) => state.newRestReducer);
-
   const isSignedOut = !appCookies || !currentState[LOG_REDUCER.IS_LOGGEDIN];
   const isCustomerLogin =
-    appCookies &&
-    currentState[LOG_REDUCER.IS_LOGGEDIN] &&
-    currentState[LOG_REDUCER.IS_CUSTOMER];
+    appCookies && currentState[LOG_REDUCER.IS_LOGGEDIN] && currentState[LOG_REDUCER.IS_CUSTOMER];
   const isRestaurantLogin =
-    appCookies &&
-    currentState[LOG_REDUCER.IS_LOGGEDIN] &&
-    !currentState[LOG_REDUCER.IS_CUSTOMER];
-
+    appCookies && currentState[LOG_REDUCER.IS_LOGGEDIN] && !currentState[LOG_REDUCER.IS_CUSTOMER];
   const [cartFlag, setCartFlag] = useState(false);
   const defaultFilter = {
     vegType: -1,
@@ -53,12 +42,18 @@ function Navigator() {
     updateCart,
     customer,
     restaurant,
-    signout,
+    dispatchSignout,
     updateDeliveryMode,
     updateVegType,
     insertNewRest,
     updateFavoriteMode,
   } = bindActionCreators(actionCreators, dispatch);
+
+  const { doGet } = bindActionCreators(apiActionCreators, dispatch);
+  const getCartApi = useSelector((state) => state.getCartApi);
+
+  const { test } = bindActionCreators(apiActionCreators, dispatch);
+  let delayCartDialog = false;
 
   if (!appCookies) {
     localStorage.clear();
@@ -72,28 +67,57 @@ function Navigator() {
     },
   }));
 
-  const getCart = (callback) => {
-    get('/getCart')
-      .then((response) => {
-        if (response.length > 0) {
-          const dishes = response.reduce(
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const getCart = () => {
+    doGet('/getCart');
+    // .then((response) => {
+    //   if (response.length > 0) {
+    //     const dishes = response.reduce(
+    //       (obj, item) => ({
+    //         ...obj,
+    //         [item.dish]: [item.count, item.price],
+    //       }),
+    //       {}
+    //     );
+    //     updateCart({ restaurantId: response[0].restaurant_id, dishes });
+    //     setCartFlag(true);
+    //     if (callback) {
+    //       callback();
+    //     }
+    //   } else {
+    //     setCartFlag(true);
+    //   }
+    // })
+    // .catch(() => {});
+  };
+
+  useEffect(() => {
+    if (getCartApi.status === 1) {
+      if (getCartApi.error === '') {
+        if (getCartApi.response.length > 0) {
+          const dishes = getCartApi.response.reduce(
             (obj, item) => ({
               ...obj,
               [item.dish]: [item.count, item.price],
             }),
             {}
           );
-          updateCart({ restaurantId: response[0].restaurant_id, dishes });
+          updateCart({ restaurantId: getCartApi.response[0].restaurant_id, dishes });
           setCartFlag(true);
-          if (callback) {
-            callback();
+          if (delayCartDialog) {
+            handleShow();
           }
         } else {
           setCartFlag(true);
         }
-      })
-      .catch(() => {});
-  };
+      } else {
+        console.log(getCartApi.error);
+      }
+    }
+  }, [getCartApi]);
 
   useEffect(() => {
     if (!appCookies) {
@@ -102,13 +126,11 @@ function Navigator() {
     if (localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_USER) {
       customer();
       // getCart();
-    } else if (
-      localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_RESTAURANT
-    ) {
+    } else if (localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_RESTAURANT) {
       // getCart();
       restaurant();
     } else {
-      signout();
+      dispatchSignout();
     }
   }, []);
 
@@ -139,15 +161,12 @@ function Navigator() {
     }
   }, [newRestWarningState]);
 
-  const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
   const openCartDialog = () => {
     if (!cartFlag) {
-      getCart(handleShow);
+      delayCartDialog = true;
+      getCart();
     } else {
+      delayCartDialog = false;
       handleShow();
     }
   };
@@ -179,13 +198,13 @@ function Navigator() {
         <Offcanvas.Title>Filters</Offcanvas.Title>
       </Offcanvas.Header>
       <Offcanvas.Body>
-        <Form.Group className='mb-3' controlId='filterDishType'>
+        <Form.Group className="mb-3" controlId="filterDishType">
           <Form.Label>Dish Type: </Form.Label>
           <Form.Select
-            aria-label='vegType'
+            aria-label="vegType"
             value={filter.vegType}
             onChange={handleFilterChange}
-            name='vegType'
+            name="vegType"
           >
             <option key={-1} value={-1}>
               All
@@ -197,13 +216,13 @@ function Navigator() {
             ))}
           </Form.Select>
         </Form.Group>
-        <Form.Group className='mb-3' controlId='filterDeliveryType'>
+        <Form.Group className="mb-3" controlId="filterDeliveryType">
           <Form.Label>Delivery Type: </Form.Label>
           <Form.Select
-            aria-label='delivery'
+            aria-label="delivery"
             value={filter.delivery}
             onChange={handleFilterChange}
-            name='delivery'
+            name="delivery"
           >
             <option value={-1}>All</option>
             {Object.keys(REST_DELIVERY_MODE).map((key) => (
@@ -256,7 +275,7 @@ function Navigator() {
       </Modal.Body>
       <Modal.Footer>
         {cartState.restaurantId && (
-          <Link to='/placeorder' className='nav-link' onClick={handleClose}>
+          <Link to="/placeorder" className="nav-link" onClick={handleClose}>
             Check out
           </Link>
         )}
@@ -271,10 +290,10 @@ function Navigator() {
       </Modal.Header>
       <Modal.Body>{`Your order contains items from restaurant id ${newRestWarningState.previousId}. create new order to add items from restaurant id ${newRestWarningState.restaurantId}`}</Modal.Body>
       <Modal.Footer>
-        <Button variant='secondary' onClick={hideCartResetDlg}>
+        <Button variant="secondary" onClick={hideCartResetDlg}>
           No
         </Button>
-        <Button variant='primary' onClick={resetCart}>
+        <Button variant="primary" onClick={resetCart}>
           Yes
         </Button>
       </Modal.Footer>
@@ -285,16 +304,25 @@ function Navigator() {
     <div>
       <Container fluid>
         <Row>
-          <Navbar bg='dark' variant='dark'>
+          <Navbar bg="dark" variant="dark">
             <Container>
+              <Nav className="me-auto">
+                <Button
+                  onClick={() => {
+                    test('/test', 'second');
+                  }}
+                >
+                  test
+                </Button>
+              </Nav>
               <Navbar.Brand>Uber Eats</Navbar.Brand>
-              <Nav className='me-auto'>
-                <Link to='/' className='nav-link'>
+              <Nav className="me-auto">
+                <Link to="/" className="nav-link">
                   Home
                 </Link>
                 {!isSignedOut && isCustomerLogin && (
                   <Nav.Item>
-                    <Nav.Link title='Item' onClick={showCanvas}>
+                    <Nav.Link title="Item" onClick={showCanvas}>
                       Filters
                     </Nav.Link>
                   </Nav.Item>
@@ -302,50 +330,43 @@ function Navigator() {
               </Nav>
               <Nav>
                 {isSignedOut && (
-                  <Link to='/signup' className='nav-link'>
+                  <Link to="/signup" className="nav-link">
                     Sign up
                   </Link>
                 )}
                 {isSignedOut && (
-                  <Link to='/signin' className='nav-link'>
+                  <Link to="/signin" className="nav-link">
                     Sign in
                   </Link>
                 )}
                 {!isSignedOut && (
-                  <Link to='/signout' className='nav-link'>
+                  <Link to="/signout" className="nav-link">
                     Sign out
                   </Link>
                 )}
                 {!isSignedOut && isCustomerLogin && (
-                  <Link to='/myOrders' className='nav-link'>
+                  <Link to="/myOrders" className="nav-link">
                     My Orders
                   </Link>
                 )}
                 {!isSignedOut && isCustomerLogin && (
-                  <Link to='/profile' className='nav-link'>
+                  <Link to="/profile" className="nav-link">
                     Profile
                   </Link>
                 )}
                 {!isSignedOut && isRestaurantLogin && (
-                  <Link to='/restaurantOrders' className='nav-link'>
+                  <Link to="/restaurantOrders" className="nav-link">
                     Orders
                   </Link>
                 )}
                 {!isSignedOut && isCustomerLogin && (
-                  <IconButton
-                    className='nav-link'
-                    aria-label='cart'
-                    onClick={openCartDialog}
-                  >
+                  <IconButton className="nav-link" aria-label="cart" onClick={openCartDialog}>
                     <StyledBadge
-                      badgeContent={Object.keys(cartState.dishes).reduce(
-                        (prev, next) => {
-                          const total = prev + cartState.dishes[next][0];
-                          return total;
-                        },
-                        0
-                      )}
-                      color='primary'
+                      badgeContent={Object.keys(cartState.dishes).reduce((prev, next) => {
+                        const total = prev + cartState.dishes[next][0];
+                        return total;
+                      }, 0)}
+                      color="primary"
                     >
                       <ShoppingCartIcon />
                     </StyledBadge>

@@ -8,11 +8,11 @@ export const restaurant = (payload) => (dispatch) => {
   dispatch({ type: 'RESTAURANT', payload });
 };
 
-export const signout = () => (dispatch) => {
+export const dispatchSignout = () => (dispatch) => {
   dispatch({ type: 'SIGNOUT' });
 };
 
-export const signup = (payload) => (dispatch) => {
+export const dispatchSignup = (payload) => (dispatch) => {
   dispatch({ type: 'SIGNUP', payload });
 };
 
