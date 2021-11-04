@@ -1,13 +1,13 @@
-const db = require('../dbConnector');
-const COMMON = require('../sql/commonSql');
-const CUSTOMER = require('../sql/customer');
-const RESTAURANT = require('../sql/restaurantSql');
-const { response } = require('../utils/response');
+const db = require("../dbConnector");
+const COMMON = require("../sql/commonSql");
+const CUSTOMER = require("../sql/customer");
+const RESTAURANT = require("../sql/restaurantSql");
+const { response } = require("../utils/response");
 
 const placeOrder = (req, res) => {
   const { restaurantId, addressId, delivery } = req.body;
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       CUSTOMER.CART_INSERT,
@@ -47,7 +47,7 @@ const myOrders = (req, res) => {
   console.log(req.session.user);
   const { filter, deliveryType } = req.query;
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       CUSTOMER.GET_ORDERS,
@@ -65,7 +65,7 @@ const myOrders = (req, res) => {
 
 const getUserProfile = (req, res) => {
   if (!req.session.user) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     const email = req.session.user.isCustomer
       ? req.session.user.email
@@ -95,7 +95,7 @@ const updateUserInfo = (req, res) => {
     longitude,
   } = req.body;
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       CUSTOMER.UPDATE_USER,
@@ -156,7 +156,7 @@ const updateUserInfo = (req, res) => {
 const addToFavorites = (req, res) => {
   const { email } = req.body;
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       CUSTOMER.FAVORITE_ADD,
@@ -166,7 +166,7 @@ const addToFavorites = (req, res) => {
           response.error(res, 500, err.code);
           return;
         }
-        res.send();
+        res.send({ email });
       }
     );
   }
@@ -175,7 +175,7 @@ const addToFavorites = (req, res) => {
 const removeFromFavorites = (req, res) => {
   const { email } = req.body;
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       CUSTOMER.FAVORITE_REMOVE,
@@ -185,7 +185,7 @@ const removeFromFavorites = (req, res) => {
           response.error(res, 500, err.code);
           return;
         }
-        res.send();
+        res.send({ email });
       }
     );
   }
@@ -193,7 +193,7 @@ const removeFromFavorites = (req, res) => {
 
 const getFavorites = (req, res) => {
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(CUSTOMER.FAVORITE_GET, [req.session.user.email], (err, result) => {
       if (err) {
@@ -207,7 +207,7 @@ const getFavorites = (req, res) => {
 
 const getAllAddresses = (req, res) => {
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       CUSTOMER.ADDRESSES_GET_ALL,
@@ -226,7 +226,7 @@ const getAllAddresses = (req, res) => {
 const addNewAddress = (req, res) => {
   const { location, country, latitude, longitude } = req.body;
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       CUSTOMER.ADDRESSES_ADD_NEW,
@@ -244,7 +244,7 @@ const addNewAddress = (req, res) => {
 
 const getRestaurantDelivery = (req, res) => {
   if (!req.session.user) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       RESTAURANT.GET_RESTAURANT_DELIVERY,

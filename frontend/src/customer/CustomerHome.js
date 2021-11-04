@@ -21,9 +21,11 @@ function CustomerHome() {
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState(0);
   const dispatch = useDispatch();
-  const { doGet } = bindActionCreators(apiActionCreators, dispatch);
-  const getRestaruantsListApi = useSelector((state) => state.getRestaruantsListApi);
-
+  const { doGet, doPost } = bindActionCreators(apiActionCreators, dispatch);
+  const getRestaurantsListApi = useSelector((state) => state.getRestaurantsListApi);
+  const getFavoritesApi = useSelector((state) => state.getFavoritesApi);
+  const addToFavoritesApi = useSelector((state) => state.addToFavoritesApi);
+  const removeFromFavoritesApi = useSelector((state) => state.removeFromFavoritesApi);
   // const defaultFilter = {
   //   vegType: 0,
   //   delivery: 0,
@@ -31,7 +33,7 @@ function CustomerHome() {
   // const [filter, setFilter] = useState(defaultFilter);
 
   const getRestaurantList = (fav) => {
-    doGet('/getRestaruantsList', {
+    doGet('/getRestaurantsList', {
       ...homeFilterState,
       search,
       favorite: fav,
@@ -46,12 +48,12 @@ function CustomerHome() {
   };
 
   useEffect(() => {
-    if (getRestaruantsListApi.status === 1) {
-      if (getRestaruantsListApi.error === '') {
-        setRestaurantsInfo(() => getRestaruantsListApi.response);
+    if (getRestaurantsListApi.status === 1) {
+      if (getRestaurantsListApi.error === '') {
+        setRestaurantsInfo(() => getRestaurantsListApi.response);
       }
     }
-  }, [getRestaruantsListApi]);
+  }, [getRestaurantsListApi]);
 
   useEffect(() => {
     // setFilter(homeFilterState);
@@ -66,36 +68,71 @@ function CustomerHome() {
   // }, []);
 
   useEffect(() => {
-    get('/getFavorites').then((data) => {
-      const list = data.map((each) => each.restaurant_id);
-      setFavorites(() => list);
-    });
+    doGet('/getFavorites');
+    // get('/getFavorites').then((data) => {
+    //   const list = data.map((each) => each.restaurant_id);
+    //   setFavorites(() => list);
+    // });
   }, []);
+
+  useEffect(() => {
+    if (getFavoritesApi.status === 1) {
+      if (getFavoritesApi.error === '') {
+        const list = getFavoritesApi.response.map((each) => each.restaurant_id);
+        setFavorites(() => list);
+      }
+    }
+  }, [getFavoritesApi]);
 
   const addToFavorites = (e) => {
     const email = e.currentTarget.getAttribute('email');
-    post('/addToFavorites', {
+    doPost('/addToFavorites', {
       email,
-    })
-      .then(() => {
-        setFavorites((prev) => [...prev, email]);
-      })
-      .catch(() => {});
+    });
+    // post('/addToFavorites', {
+    //   email,
+    // })
+    //   .then(() => {
+    //     setFavorites((prev) => [...prev, email]);
+    //   })
+    //   .catch(() => {});
   };
+
+  useEffect(() => {
+    if (addToFavoritesApi.status === 1) {
+      if (addToFavoritesApi.error === '') {
+        setFavorites((prev) => [...prev, addToFavoritesApi.response.email]);
+      }
+    }
+  }, [addToFavoritesApi]);
 
   const removeFromFavorites = (e) => {
     const email = e.currentTarget.getAttribute('email');
-    post('/removeFromFavorites', {
+    doPost('/removeFromFavorites', {
       email,
-    })
-      .then(() => {
+    });
+    // post('/removeFromFavorites', {
+    //   email,
+    // })
+    //   .then(() => {
+    //     setFavorites((prev) => {
+    //       prev.splice(prev.indexOf(email), 1);
+    //       return [...prev];
+    //     });
+    //   })
+    //   .catch(() => {});
+  };
+
+  useEffect(() => {
+    if (removeFromFavoritesApi.status === 1) {
+      if (removeFromFavoritesApi.error === '') {
         setFavorites((prev) => {
-          prev.splice(prev.indexOf(email), 1);
+          prev.splice(prev.indexOf(removeFromFavoritesApi.response.email), 1);
           return [...prev];
         });
-      })
-      .catch(() => {});
-  };
+      }
+    }
+  }, [removeFromFavoritesApi]);
 
   // if (restaurantsInfo.length === 0) {
   //   return (

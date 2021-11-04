@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Card,
-  Container,
-  FloatingLabel,
-  Form,
-  Row,
-  Table,
-} from 'react-bootstrap';
+import { Card, Container, FloatingLabel, Form, Row, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
@@ -15,7 +8,7 @@ import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 import { post, get } from '../utils/serverCall';
 import CountriesList from '../utils/CountriesList';
 import Location from '../account/Location';
-import { actionCreators } from '../reducers/actionCreators';
+import { actionCreators, apiActionCreators } from '../reducers/actionCreators';
 import { bindActionCreators } from 'redux';
 
 function PlaceOrder() {
@@ -26,53 +19,90 @@ function PlaceOrder() {
   const [restDelivery, setRestDelivery] = useState(0);
 
   const dispatch = useDispatch();
+  const { doGet, doPost } = bindActionCreators(apiActionCreators, dispatch);
   const { clearCart } = bindActionCreators(actionCreators, dispatch);
+  const getRestaurantDeliveryApi = useSelector((state) => state.getRestaurantDeliveryApi);
+  const getAllAddressesApi = useSelector((state) => state.getAllAddressesApi);
+  const placeOrderApi = useSelector((state) => state.placeOrderApi);
+  const addNewAddressApi = useSelector((state) => state.addNewAddressApi);
 
   useEffect(() => {
     if (cartState.restaurantId) {
-      get('/getRestaurantDelivery', { email: cartState.restaurantId }).then(
-        (result) => {
-          setRestDelivery(result[0].delivery);
-          if (deliveryType === 0 && result[0].delivery === 1) {
-            setDeliveryType(result[0].delivery);
-          }
-        }
-      );
+      doGet('/getRestaurantDelivery', { email: cartState.restaurantId });
+      // get('/getRestaurantDelivery', { email: cartState.restaurantId }).then((result) => {
+      //   setRestDelivery(result[0].delivery);
+      //   if (deliveryType === 0 && result[0].delivery === 1) {
+      //     setDeliveryType(result[0].delivery);
+      //   }
+      // });
     }
     setTotalCost(0);
     Object.keys(cartState.dishes).forEach((key) => {
       setTotalCost((prev) => {
-        let total =
-          parseFloat(prev) +
-          cartState.dishes[key][0] * cartState.dishes[key][1];
+        let total = parseFloat(prev) + cartState.dishes[key][0] * cartState.dishes[key][1];
         total = parseFloat(total).toFixed(2);
         return total;
       });
     });
   }, [cartState]);
 
+  useEffect(() => {
+    if (getRestaurantDeliveryApi.status === 1) {
+      if (getRestaurantDeliveryApi.error === '') {
+        setRestDelivery(getRestaurantDeliveryApi.response[0].delivery);
+        if (deliveryType === 0 && getRestaurantDeliveryApi.response[0].delivery === 1) {
+          setDeliveryType(getRestaurantDeliveryApi.response[0].delivery);
+        }
+      }
+    }
+  }, [getRestaurantDeliveryApi]);
+
   const [addresses, setAddresses] = useState([]);
   const [deliveryAddress, setDeliveryAddress] = useState();
 
   useEffect(() => {
-    get('/getAllAddresses').then((result) => {
-      setDeliveryAddress(result[0].id);
-      setAddresses(result);
-    });
+    doGet('/getAllAddresses');
+    // get('/getAllAddresses').then((result) => {
+    //   setDeliveryAddress(result[0].id);
+    //   setAddresses(result);
+    // });
   }, []);
 
+  useEffect(() => {
+    if (getAllAddressesApi.status === 1) {
+      if (getAllAddressesApi.error === '') {
+        setDeliveryAddress(getAllAddressesApi.response[0].id);
+        setAddresses(getAllAddressesApi.response);
+      }
+    }
+  }, [getAllAddressesApi]);
+
   const handlePlaceOrder = () => {
-    post('/placeOrder', {
+    doPost('/placeOrder', {
       restaurantId: cartState.restaurantId,
       addressId: deliveryAddress,
       delivery: deliveryType,
-    })
-      .then(() => {
+    });
+    // post('/placeOrder', {
+    //   restaurantId: cartState.restaurantId,
+    //   addressId: deliveryAddress,
+    //   delivery: deliveryType,
+    // })
+    //   .then(() => {
+    //     clearCart();
+    //     setStatus(1);
+    //   })
+    //   .catch(() => {});
+  };
+
+  useEffect(() => {
+    if (placeOrderApi.status === 1) {
+      if (placeOrderApi.error === '') {
         clearCart();
         setStatus(1);
-      })
-      .catch(() => {});
-  };
+      }
+    }
+  }, [placeOrderApi]);
 
   const defaultDialogData = {
     location: '',
@@ -88,12 +118,26 @@ function PlaceOrder() {
   };
   const handleShow = () => setShow(true);
   const addNewAddress = () => {
-    post('/addNewAddress', { ...dialogData }).then((result) => {
-      setAddresses((prev) => [...prev, { id: result.insertId, ...dialogData }]);
-      console.log(result);
-      handleClose();
-    });
+    doPost('/addNewAddress', { ...dialogData });
+    // post('/addNewAddress', { ...dialogData }).then((result) => {
+    //   setAddresses((prev) => [...prev, { id: result.insertId, ...dialogData }]);
+    //   console.log(result);
+    //   handleClose();
+    // });
   };
+
+  useEffect(() => {
+    if (addNewAddressApi.status === 1) {
+      if (addNewAddressApi.error === '') {
+        setAddresses((prev) => [
+          ...prev,
+          { id: addNewAddressApi.response.insertId, ...dialogData },
+        ]);
+        handleClose();
+      }
+    }
+  }, [addNewAddressApi]);
+
   const eventHandler = (e) => {
     setDialogData({ ...dialogData, [e.target.name]: e.target.value });
   };
@@ -104,12 +148,8 @@ function PlaceOrder() {
         <Modal.Title>Add New Address</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <FloatingLabel controlId='country' label='Country' className='mb-3'>
-          <CountriesList
-            name='country'
-            value={dialogData.country}
-            onChange={eventHandler}
-          />
+        <FloatingLabel controlId="country" label="Country" className="mb-3">
+          <CountriesList name="country" value={dialogData.country} onChange={eventHandler} />
           <Location
             value={dialogData.location}
             change={(e) => {
@@ -132,10 +172,10 @@ function PlaceOrder() {
         </FloatingLabel>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant='secondary' onClick={handleClose}>
+        <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
-        <Button variant='primary' onClick={addNewAddress}>
+        <Button variant="primary" onClick={addNewAddress}>
           Add
         </Button>
       </Modal.Footer>
@@ -149,7 +189,7 @@ function PlaceOrder() {
           <Card style={{ width: '18rem', margin: 'auto' }}>
             <Card.Body>
               <Card.Title>Placed Order succesfully</Card.Title>
-              <Link to='/myOrders' className='nav-link'>
+              <Link to="/myOrders" className="nav-link">
                 Go to my orders page
               </Link>
               {/* <Card.Link href='/signin'>Go to login page</Card.Link> */}
@@ -178,9 +218,7 @@ function PlaceOrder() {
                 <td>{key}</td>
                 <td>{cartState.dishes[key][0]}</td>
                 <td>{`$${cartState.dishes[key][1]}`}</td>
-                <td>
-                  {`$${cartState.dishes[key][0] * cartState.dishes[key][1]}`}
-                </td>
+                <td>{`$${cartState.dishes[key][0] * cartState.dishes[key][1]}`}</td>
               </tr>
             ))}
             <tr>
@@ -195,35 +233,35 @@ function PlaceOrder() {
       <Row>
         <FloatingLabel
           style={{ marginTop: '8px' }}
-          controlId='floatingSelect'
-          label='Delivery Type'
+          controlId="floatingSelect"
+          label="Delivery Type"
         >
           <Form.Select
-            aria-label='deliveryType'
+            aria-label="deliveryType"
             value={deliveryType}
             onChange={(e) => {
               setDeliveryType(parseInt(e.target.value, 10));
               console.log(deliveryType);
             }}
-            name='deliveryType'
+            name="deliveryType"
           >
-            {restDelivery === 0 && <option value='0'>Home Delivery</option>}
-            <option value='1'>Pickup</option>
+            {restDelivery === 0 && <option value="0">Home Delivery</option>}
+            <option value="1">Pickup</option>
           </Form.Select>
         </FloatingLabel>
         {deliveryType === 0 && (
           <FloatingLabel
             style={{ marginTop: '8px' }}
-            controlId='floatingSelect'
-            label='Select Address'
+            controlId="floatingSelect"
+            label="Select Address"
           >
             <Form.Select
-              aria-label='deliveryAddress'
+              aria-label="deliveryAddress"
               value={deliveryAddress}
               onChange={(e) => {
                 setDeliveryAddress(e.target.value);
               }}
-              name='deliveryAddress'
+              name="deliveryAddress"
             >
               {addresses.map((each) => (
                 <option key={each.id} value={each.id}>
@@ -235,13 +273,13 @@ function PlaceOrder() {
         )}
         <br />
         <Row style={{ marginTop: '8px' }}>
-          <Button variant='dark' onClick={handleShow}>
+          <Button variant="dark" onClick={handleShow}>
             Add New Address
           </Button>
         </Row>
       </Row>
       <Row style={{ marginTop: '8px' }}>
-        <Button variant='dark' onClick={handlePlaceOrder}>
+        <Button variant="dark" onClick={handlePlaceOrder}>
           Place Order
         </Button>
       </Row>

@@ -1,6 +1,6 @@
-const db = require('../dbConnector');
-const COMMON = require('../sql/commonSql');
-const { response } = require('../utils/response');
+const db = require("../dbConnector");
+const COMMON = require("../sql/commonSql");
+const { response } = require("../utils/response");
 
 // const searchString = (wordList, colName) => {
 //   let query = '';
@@ -35,7 +35,7 @@ const { response } = require('../utils/response');
 //   }
 // };
 
-const getRestaruantsList = (req, res) => {
+const getRestaurantsList = (req, res) => {
   const { search } = req.query;
 
   const delivery = parseInt(req.query.delivery, 10);
@@ -46,8 +46,8 @@ const getRestaruantsList = (req, res) => {
   const fav = `  restaurant_login.email IN (select restaurant_id from favorite where user_id = '${req.session.user.email}') `;
   const match = ` (location like '%${search}%' or dishes.name like '%${search}%') `;
 
-  if (vegType !== -1 || delivery !== -1 || favorite !== 0 || search !== '') {
-    base += ' where ';
+  if (vegType !== -1 || delivery !== -1 || favorite !== 0 || search !== "") {
+    base += " where ";
   }
   if (vegType !== -1) {
     base += ` dishes.type = ${vegType} `;
@@ -65,7 +65,7 @@ const getRestaruantsList = (req, res) => {
       base += fav;
     }
   }
-  if (search !== '') {
+  if (search !== "") {
     if (delivery !== -1 || vegType !== -1 || favorite !== 0) {
       base += ` and ${match}`;
     } else {
@@ -75,7 +75,7 @@ const getRestaruantsList = (req, res) => {
 
   const final = `select * from ubereats.restaurant_login where email IN (${base})`;
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(final, (err, result) => {
       if (err) {
@@ -100,7 +100,7 @@ const getRestaruantsList = (req, res) => {
 const addToCart = (req, res) => {
   const { restaurantId, dish, count, price } = req.body;
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       COMMON.ADD_TO_CART,
@@ -119,7 +119,7 @@ const addToCart = (req, res) => {
 const addNewToCart = (req, res) => {
   const { restaurantId, dish, count, price } = req.body;
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(COMMON.CLEAR_CART, [], (err, result) => {
       if (err) {
@@ -143,7 +143,7 @@ const addNewToCart = (req, res) => {
 
 const getCart = (req, res) => {
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(COMMON.GET_CART, [req.session.user.email], (err, result) => {
       if (err) {
@@ -157,7 +157,7 @@ const getCart = (req, res) => {
 
 const getOrderDetails = (req, res) => {
   if (!req.session.user) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(COMMON.GET_ORDER_DETAILS, [req.query.id], (err, result) => {
       if (err) {
@@ -170,7 +170,7 @@ const getOrderDetails = (req, res) => {
 };
 
 module.exports = {
-  getRestaruantsList,
+  getRestaurantsList,
   addToCart,
   getCart,
   getOrderDetails,

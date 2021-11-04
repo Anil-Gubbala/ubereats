@@ -18,7 +18,7 @@ function Signin() {
   // const currentState = useSelector((state) => state.loggedReducer);
   const { customer, restaurant } = bindActionCreators(actionCreators, dispatch);
   const { doPost } = bindActionCreators(apiActionCreators, dispatch);
-  const signinState = useSelector((state) => state.signinApi);
+  const signinApi = useSelector((state) => state.signinApi);
   const defaultValues = {
     customer: true,
     email: '',
@@ -54,22 +54,22 @@ function Signin() {
   };
 
   useEffect(() => {
-    if (signinState.status === 1) {
-      if (signinState.error === '') {
+    if (signinApi.status === 1) {
+      if (signinApi.error === '') {
         if (formData.customer) {
           localStorage.setItem(CONSTANTS.STR_KEY, CONSTANTS.STR_USER);
-          localStorage.setItem(CONSTANTS.STATUS, signinState.response.status);
+          localStorage.setItem(CONSTANTS.STATUS, signinApi.response.status);
           customer(formData.email);
         } else {
           localStorage.setItem(CONSTANTS.STR_KEY, CONSTANTS.STR_RESTAURANT);
-          localStorage.setItem(CONSTANTS.STATUS, signinState.response.status);
+          localStorage.setItem(CONSTANTS.STATUS, signinApi.response.status);
           restaurant(formData.email);
         }
       } else {
-        setFail({ status: true, message: signinState.error });
+        setFail({ status: true, message: signinApi.error });
       }
     }
-  }, [signinState]);
+  }, [signinApi]);
 
   const eventHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

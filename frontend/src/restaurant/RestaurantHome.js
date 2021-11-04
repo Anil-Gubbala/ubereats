@@ -22,6 +22,9 @@ import CONSTANTS, { REST_DELIVERY_MODE } from '../utils/consts';
 import RedirectSignin from '../common/RedirectSignin';
 import Location from '../account/Location';
 import FileUpload from '../common/FileUpload';
+import { useDispatch, useSelector } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { apiActionCreators } from '../reducers/actionCreators';
 
 function RestaurantHome() {
   const appCookies = cookie.load(CONSTANTS.COOKIE);
@@ -29,6 +32,11 @@ function RestaurantHome() {
   if (!appCookies) {
     return <RedirectSignin />;
   }
+
+  const dispatch = useDispatch();
+  const { doGet, doPost } = bindActionCreators(apiActionCreators, dispatch);
+  const restaurantInfoApi = useSelector((state) => state.restaurantInfoApi);
+  const updateRestaurantInfoApi = useSelector((state) => state.updateRestaurantInfoApi);
 
   const windowUrl = window.location.search;
   const params = new URLSearchParams(windowUrl);
@@ -49,10 +57,19 @@ function RestaurantHome() {
 
   const [restaurantInfo, setRestaurantInfo] = useState(defaultValues);
   useEffect(() => {
-    get('/restaurantInfo', { id: params.get('id') }).then((data) => {
-      setRestaurantInfo((prev) => ({ ...prev, ...data[0] }));
-    });
+    doGet('/restaurantInfo', { id: params.get('id') });
+    // get('/restaurantInfo', { id: params.get('id') }).then((data) => {
+    //   setRestaurantInfo((prev) => ({ ...prev, ...data[0] }));
+    // });
   }, []);
+
+  useEffect(() => {
+    if (restaurantInfoApi.status === 1) {
+      if (restaurantInfoApi.error === '') {
+        setRestaurantInfo((prev) => ({ ...prev, ...restaurantInfoApi.response[0] }));
+      }
+    }
+  }, [restaurantInfoApi]);
 
   const [open, setOpen] = React.useState(false);
   const [dialogData, setDialogData] = useState(restaurantInfo);
@@ -68,13 +85,23 @@ function RestaurantHome() {
   };
 
   const handleSave = () => {
-    post('/updateRestaurantInfo', dialogData)
-      .then(() => {
+    doPost('/updateRestaurantInfo', dialogData);
+    // post('/updateRestaurantInfo', dialogData)
+    //   .then(() => {
+    //     setRestaurantInfo(dialogData);
+    //     handleClose();
+    //   })
+    //   .catch(() => {});
+  };
+
+  useEffect(() => {
+    if (updateRestaurantInfoApi.status === 1) {
+      if (updateRestaurantInfoApi.error === '') {
         setRestaurantInfo(dialogData);
         handleClose();
-      })
-      .catch(() => {});
-  };
+      }
+    }
+  }, [updateRestaurantInfoApi]);
 
   const handleDialogChange = (e) => {
     setDialogData({ ...dialogData, [e.target.name]: e.target.value });
@@ -85,58 +112,54 @@ function RestaurantHome() {
       <DialogTitle>Update Restaurant Info</DialogTitle>
       <DialogContent>
         <TextField
-          margin='dense'
-          id='rdname'
-          name='name'
-          label='Name'
+          margin="dense"
+          id="rdname"
+          name="name"
+          label="Name"
           fullWidth
-          variant='standard'
+          variant="standard"
           value={dialogData.name}
           onChange={handleDialogChange}
         />
         <TextField
-          margin='dense'
-          id='rddescription'
-          name='description'
-          label='Description'
+          margin="dense"
+          id="rddescription"
+          name="description"
+          label="Description"
           fullWidth
-          variant='standard'
+          variant="standard"
           value={dialogData.description}
           onChange={handleDialogChange}
         />
         <TextField
-          margin='dense'
-          id='rdcontact'
-          name='contact'
-          label='Contact Information'
+          margin="dense"
+          id="rdcontact"
+          name="contact"
+          label="Contact Information"
           fullWidth
-          variant='standard'
+          variant="standard"
           value={dialogData.contact}
           onChange={handleDialogChange}
         />
-        <FloatingLabel controlId='start' label='Start Time' className='mb-3'>
+        <FloatingLabel controlId="start" label="Start Time" className="mb-3">
           <Form.Control
-            name='start'
-            type='time'
+            name="start"
+            type="time"
             onChange={handleDialogChange}
             required
             value={dialogData.start}
           />
         </FloatingLabel>
-        <FloatingLabel controlId='end' label='End Time' className='mb-3'>
+        <FloatingLabel controlId="end" label="End Time" className="mb-3">
           <Form.Control
-            name='end'
-            type='time'
+            name="end"
+            type="time"
             onChange={handleDialogChange}
             required
             value={dialogData.end}
           />
         </FloatingLabel>
-        <Form.Select
-          name='delivery'
-          value={dialogData.delivery}
-          onChange={handleDialogChange}
-        >
+        <Form.Select name="delivery" value={dialogData.delivery} onChange={handleDialogChange}>
           {Object.keys(REST_DELIVERY_MODE).map((key) => (
             <option key={key} value={key}>
               {REST_DELIVERY_MODE[key]}
@@ -167,9 +190,9 @@ function RestaurantHome() {
             });
           }}
         />
-        <Form.Group className='mb-3' controlId='nickname'>
+        <Form.Group className="mb-3" controlId="nickname">
           <Col xs={6} md={4}>
-            <Image src={dialogData.picture} roundedCircle thumbnail='true' />
+            <Image src={dialogData.picture} roundedCircle thumbnail="true" />
           </Col>
           <Col>
             <FileUpload
@@ -192,41 +215,39 @@ function RestaurantHome() {
       <Row>
         <Card>
           <CardMedia
-            component='img'
-            height='140'
+            component="img"
+            height="140"
             image={restaurantInfo.picture}
-            alt='green iguana'
+            alt="green iguana"
           />
           <Row>
             <Col>
               <Stack spacing={2}>
-                <Stack spacing={2} direction='row'>
-                  <Typography gutterBottom variant='h5' component='div'>
+                <Stack spacing={2} direction="row">
+                  <Typography gutterBottom variant="h5" component="div">
                     {restaurantInfo.name}
                   </Typography>
                   <Typography
                     style={{ marginTop: 'auto', marginBottom: 'auto' }}
-                    variant='body2'
-                    color='text.secondary'
+                    variant="body2"
+                    color="text.secondary"
                   >
                     {restaurantInfo.start} - {restaurantInfo.end}
                   </Typography>
                 </Stack>
-                <Typography variant='body2' color='text.secondary'>
+                <Typography variant="body2" color="text.secondary">
                   {restaurantInfo.location}
                 </Typography>
-                <Typography variant='subtitle2' gutterBottom component='div'>
+                <Typography variant="subtitle2" gutterBottom component="div">
                   {restaurantInfo.description}
                 </Typography>
               </Stack>
             </Col>
             {!isCustomer && (
-              <Col md='auto'>
+              <Col md="auto">
                 <Row style={{ padding: '8px' }}>
                   <Stack spacing={2}>
-                    <Button onClick={handleClickOpen}>
-                      Update Restaurant Info
-                    </Button>
+                    <Button onClick={handleClickOpen}>Update Restaurant Info</Button>
                     {updateRestDialog}
                   </Stack>
                 </Row>

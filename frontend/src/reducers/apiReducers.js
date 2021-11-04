@@ -21,7 +21,7 @@ export const signupApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -42,7 +42,7 @@ export const signinApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -63,7 +63,7 @@ export const signoutApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -84,7 +84,7 @@ export const getRestaurantInfoApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -105,7 +105,7 @@ export const getDishesApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -126,7 +126,7 @@ export const createDishApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 export const updateDishApi = (state = defaultResponse, action) => {
@@ -146,7 +146,7 @@ export const updateDishApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -167,7 +167,7 @@ export const updateRestaurantInfoApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -188,7 +188,7 @@ export const getRestaurantOrdersApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -209,7 +209,7 @@ export const updateOrderStatusApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -230,11 +230,11 @@ export const deleteDishApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
-export const getRestaruantsListApi = (state = defaultResponse, action) => {
+export const getRestaurantsListApi = (state = defaultResponse, action) => {
   switch (action.type) {
     case 'GET_RESTAURANTS_LIST_API_SUCCESS':
       return {
@@ -251,7 +251,7 @@ export const getRestaruantsListApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -272,7 +272,7 @@ export const addToCartApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -293,7 +293,7 @@ export const addNewToCartApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -314,7 +314,7 @@ export const getCartApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -335,7 +335,7 @@ export const getOrderDetailsApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -356,7 +356,7 @@ export const placeOrderApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -377,7 +377,7 @@ export const myOrdersApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -398,7 +398,7 @@ export const getUserProfileApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -419,7 +419,7 @@ export const updateUserInfoApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -440,7 +440,7 @@ export const addToFavoritesApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -461,7 +461,7 @@ export const removeFromFavoritesApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -482,7 +482,7 @@ export const getFavoritesApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -503,7 +503,7 @@ export const getAllAddressesApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -524,7 +524,7 @@ export const getRestaurantDeliveryApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 
@@ -545,7 +545,7 @@ export const addNewAddressApi = (state = defaultResponse, action) => {
         status: 1,
       };
     default:
-      return defaultResponse;
+      return state;
   }
 };
 

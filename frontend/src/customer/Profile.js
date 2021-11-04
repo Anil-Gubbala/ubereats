@@ -15,6 +15,9 @@ import FileUpload from '../common/FileUpload';
 import CountriesList from '../utils/CountriesList';
 import Location from '../account/Location';
 import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { useDispatch, useSelector } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { actionCreators, apiActionCreators } from '../reducers/actionCreators';
 
 function Profile() {
   const status = localStorage.getItem(CONSTANTS.STATUS);
@@ -24,10 +27,14 @@ function Profile() {
   const params = new URLSearchParams(windowUrl);
   let email = '';
   const [editMode, setEditMode] = useState(status === '0' && isCustomer);
+  const dispatch = useDispatch();
+  const { doGet, doPost } = bindActionCreators(apiActionCreators, dispatch);
+  const getUserProfileApi = useSelector((state) => state.getUserProfileApi);
+  const updateUserInfoApi = useSelector((state) => state.updateUserInfoApi);
 
   if (isCustomer) {
     if (params.get('id')) {
-      return <Redirect to='/profile' />;
+      return <Redirect to="/profile" />;
     }
   } else {
     email = params.get('id');
@@ -49,15 +56,29 @@ function Profile() {
   const [formData, setFormData] = useState(defaultFormData);
 
   useEffect(() => {
-    get('/getUserProfile', {
+    doGet('/getUserProfile', {
       email,
-    }).then((response) => {
-      const user = response[0][0];
-      const userData = response[1][0];
-      const addresses = response[2][0];
-      setFormData((prev) => ({ ...prev, ...user, ...userData, ...addresses }));
     });
+    // get('/getUserProfile', {
+    //   email,
+    // }).then((response) => {
+    //   const user = response[0][0];
+    //   const userData = response[1][0];
+    //   const addresses = response[2][0];
+    //   setFormData((prev) => ({ ...prev, ...user, ...userData, ...addresses }));
+    // });
   }, []);
+
+  useEffect(() => {
+    if (getUserProfileApi.status === 1) {
+      if (getUserProfileApi.error === '') {
+        const user = getUserProfileApi.response[0][0];
+        const userData = getUserProfileApi.response[1][0];
+        const addresses = getUserProfileApi.response[2][0];
+        setFormData((prev) => ({ ...prev, ...user, ...userData, ...addresses }));
+      }
+    }
+  }, [getUserProfileApi]);
 
   const eventHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -65,12 +86,23 @@ function Profile() {
 
   const handleUpdateProfile = (e) => {
     e.preventDefault();
-    post('/updateUserInfo', formData).then(() => {
-      setEditMode(false);
-      // setViewMode(true);
-      localStorage.removeItem(CONSTANTS.STATUS);
-    });
+    doPost('/updateUserInfo', formData);
+    // post('/updateUserInfo', formData).then(() => {
+    //   setEditMode(false);
+    //   // setViewMode(true);
+    //   localStorage.removeItem(CONSTANTS.STATUS);
+    // });
   };
+
+  useEffect(() => {
+    if (updateUserInfoApi.status === 1) {
+      if (updateUserInfoApi.error === '') {
+        setEditMode(false);
+        // setViewMode(true);
+        localStorage.removeItem(CONSTANTS.STATUS);
+      }
+    }
+  }, [updateUserInfoApi]);
 
   const editProfile = () => {
     setEditMode(true);
@@ -81,9 +113,9 @@ function Profile() {
       <Container>
         <Col>
           <Form onSubmit={handleUpdateProfile}>
-            <Form.Group className='mb-3' controlId='nickname'>
+            <Form.Group className="mb-3" controlId="nickname">
               <Col xs={6} md={4}>
-                <Image src={formData.picture} roundedCircle thumbnail='true' />
+                <Image src={formData.picture} roundedCircle thumbnail="true" />
               </Col>
               <Col>
                 <FileUpload
@@ -94,69 +126,53 @@ function Profile() {
                 />
               </Col>
             </Form.Group>
-            <FloatingLabel
-              controlId='email'
-              label='Email Address'
-              className='mb-3'
-            >
+            <FloatingLabel controlId="email" label="Email Address" className="mb-3">
               <Form.Control
-                name='email'
+                name="email"
                 onChange={eventHandler}
-                type='email'
+                type="email"
                 required
                 value={formData.email}
               />
             </FloatingLabel>
-            <FloatingLabel controlId='name' label='Name' className='mb-3'>
+            <FloatingLabel controlId="name" label="Name" className="mb-3">
               <Form.Control
-                name='name'
-                type='input'
+                name="name"
+                type="input"
                 onChange={eventHandler}
                 required
                 value={formData.name}
               />
             </FloatingLabel>
-            <FloatingLabel
-              controlId='dob'
-              label='Date of Birth'
-              className='mb-3'
-            >
+            <FloatingLabel controlId="dob" label="Date of Birth" className="mb-3">
               <Form.Control
-                name='dob'
-                type='date'
+                name="dob"
+                type="date"
                 onChange={eventHandler}
                 required
                 value={formData.dob.split('T')[0]}
               />
             </FloatingLabel>
-            <FloatingLabel
-              controlId='nickname'
-              label='Nickname'
-              className='mb-3'
-            >
+            <FloatingLabel controlId="nickname" label="Nickname" className="mb-3">
               <Form.Control
-                name='nickname'
-                type='input'
+                name="nickname"
+                type="input"
                 onChange={eventHandler}
                 required
                 value={formData.nickname}
               />
             </FloatingLabel>
-            <FloatingLabel controlId='about' label='About' className='mb-3'>
+            <FloatingLabel controlId="about" label="About" className="mb-3">
               <Form.Control
-                as='textarea'
-                name='about'
+                as="textarea"
+                name="about"
                 onChange={eventHandler}
                 required
                 value={formData.about}
               />
             </FloatingLabel>
-            <FloatingLabel controlId='country' label='Country' className='mb-3'>
-              <CountriesList
-                name='country'
-                value={formData.country}
-                onChange={eventHandler}
-              />
+            <FloatingLabel controlId="country" label="Country" className="mb-3">
+              <CountriesList name="country" value={formData.country} onChange={eventHandler} />
               <Location
                 value={formData.location}
                 change={(e) => {
@@ -177,17 +193,17 @@ function Profile() {
                 country={formData.country}
               />
             </FloatingLabel>
-            <FloatingLabel controlId='contact' label='Phone' className='mb-3'>
+            <FloatingLabel controlId="contact" label="Phone" className="mb-3">
               <Form.Control
-                name='contact'
-                type='input'
+                name="contact"
+                type="input"
                 onChange={eventHandler}
                 required
                 value={formData.contact}
               />
             </FloatingLabel>
 
-            <Button variant='primary' type='submit'>
+            <Button variant="primary" type="submit">
               Submit
             </Button>
           </Form>
@@ -205,7 +221,7 @@ function Profile() {
               'https://imageuploadlab1.s3.us-east-2.amazonaws.com/profile/customer.jpeg'
             }
             roundedCircle
-            thumbnail='true'
+            thumbnail="true"
           />
         </Col>
         <Col>
@@ -240,7 +256,7 @@ function Profile() {
 
           <Row>
             {isCustomer && (
-              <Button variant='primary' type='button' onClick={editProfile}>
+              <Button variant="primary" type="button" onClick={editProfile}>
                 Edit
               </Button>
             )}

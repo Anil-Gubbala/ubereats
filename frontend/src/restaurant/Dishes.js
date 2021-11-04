@@ -26,7 +26,7 @@ import propTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { actionCreators } from '../reducers/actionCreators';
+import { actionCreators, apiActionCreators } from '../reducers/actionCreators';
 
 import { get, post } from '../utils/serverCall';
 import { restaurant } from '../reducers/actions';
@@ -44,6 +44,11 @@ export default function Dishes(props) {
   const [updateMode, setUpdateMode] = useState(false);
   const [updateIndex, setUpdateIndex] = useState(0);
   const homeFilterState = useSelector((state) => state.homeFilterReducer);
+  const { doGet, doPost } = bindActionCreators(apiActionCreators, dispatch);
+  const getDishesApi = useSelector((state) => state.getDishesApi);
+  const updateDishApi = useSelector((state) => state.updateDishApi);
+  const createDishApi = useSelector((state) => state.createDishApi);
+  const deleteDishApi = useSelector((state) => state.deleteDishApi);
   const dialogDefault = {
     name: '',
     ingredients: '',
@@ -54,6 +59,8 @@ export default function Dishes(props) {
     type: '',
   };
 
+  let deleteDishIndex = 0;
+
   const defaultCart = { restaurantId: '', dishes: {} };
   const [cart, setCart] = useState(defaultCart);
   const [dialogData, setDialogData] = useState(dialogDefault);
@@ -62,14 +69,26 @@ export default function Dishes(props) {
   };
 
   useEffect(() => {
-    get('/getDishes', {
+    doGet('/getDishes', {
       id: params.get('id'),
       type: homeFilterState.vegType,
-    }).then((response) => {
-      // const result = new Map(response.map((i) => [i.name, i]));
-      setDishes(() => response);
     });
+    // get('/getDishes', {
+    //   id: params.get('id'),
+    //   type: homeFilterState.vegType,
+    // }).then((response) => {
+    //   // const result = new Map(response.map((i) => [i.name, i]));
+    //   setDishes(() => response);
+    // });
   }, [homeFilterState]);
+
+  useEffect(() => {
+    if (getDishesApi.status === 1) {
+      if (getDishesApi.error === '') {
+        setDishes(() => getDishesApi.response);
+      }
+    }
+  }, [getDishesApi]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -85,28 +104,56 @@ export default function Dishes(props) {
 
   const createDish = () => {
     if (updateMode) {
-      post('/updateDish', {
+      doPost('/updateDish', {
         ...dialogData,
         originalName: dishes[updateIndex].name,
-      })
-        .then(() => {
-          setDishes((prev) => {
-            const updated = [...prev];
-            updated[updateIndex] = dialogData;
-            return updated;
-          });
-          closeDialog();
-        })
-        .catch(() => {});
+      });
+      // post('/updateDish', {
+      //   ...dialogData,
+      //   originalName: dishes[updateIndex].name,
+      // })
+      //   .then(() => {
+      //     setDishes((prev) => {
+      //       const updated = [...prev];
+      //       updated[updateIndex] = dialogData;
+      //       return updated;
+      //     });
+      //     closeDialog();
+      //   })
+      //   .catch(() => {});
     } else {
-      post('/createDish', dialogData)
-        .then(() => {
-          setDishes((prev) => [...prev, dialogData]);
-          closeDialog();
-        })
-        .catch(() => {});
+      doPost('/createDish', dialogData);
+      // post('/createDish', dialogData)
+      //   .then(() => {
+      //     setDishes((prev) => [...prev, dialogData]);
+      //     closeDialog();
+      //   })
+      //   .catch(() => {});
     }
   };
+
+  useEffect(() => {
+    if (updateDishApi.status === 1) {
+      if (updateDishApi.error === '') {
+        setDishes((prev) => {
+          const updated = [...prev];
+          updated[updateIndex] = dialogData;
+          return updated;
+        });
+        closeDialog();
+      }
+    }
+  }, [updateDishApi]);
+
+  useEffect(() => {
+    if (createDishApi.status === 1) {
+      if (createDishApi.error === '') {
+        setDishes((prev) => [...prev, dialogData]);
+        closeDialog();
+      }
+    }
+  }, [createDishApi]);
+
   const handleClose = () => {
     closeDialog();
   };
@@ -126,16 +173,28 @@ export default function Dishes(props) {
   };
 
   const deleteDish = (e) => {
-    const index = e.target.getAttribute('index');
-    post('/deleteDish', { name: dishes[index].name })
-      .then(() => {
+    deleteDishIndex = e.target.getAttribute('index');
+    doPost('/deleteDish', { name: dishes[deleteDishIndex].name });
+    // post('/deleteDish', { name: dishes[index].name })
+    //   .then(() => {
+    //     setDishes((prev) => {
+    //       prev.splice(parseInt(index, 10), 1);
+    //       return [...prev];
+    //     });
+    //   })
+    //   .catch(() => {});
+  };
+
+  useEffect(() => {
+    if (deleteDishApi.status === 1) {
+      if (deleteDishApi.error === '') {
         setDishes((prev) => {
-          prev.splice(parseInt(index, 10), 1);
+          prev.splice(parseInt(deleteDishIndex, 10), 1);
           return [...prev];
         });
-      })
-      .catch(() => {});
-  };
+      }
+    }
+  }, [deleteDishApi]);
 
   const addDishDialog = (
     <Dialog open={open} onClose={handleClose}>
@@ -143,45 +202,45 @@ export default function Dishes(props) {
       <DialogContent>
         <Stack>
           <TextField
-            id='dialogName'
-            name='name'
-            label='Dish Name'
-            variant='standard'
+            id="dialogName"
+            name="name"
+            label="Dish Name"
+            variant="standard"
             value={dialogData.name}
             onChange={handleDialogChange}
           />
           <TextField
-            id='dialogIngredients'
-            name='ingredients'
-            label='Ingredients'
-            variant='standard'
+            id="dialogIngredients"
+            name="ingredients"
+            label="Ingredients"
+            variant="standard"
             value={dialogData.ingredients}
             onChange={handleDialogChange}
           />
 
-          <InputLabel htmlFor='dialogAmount'>Price</InputLabel>
+          <InputLabel htmlFor="dialogAmount">Price</InputLabel>
           <Input
-            id='dialogAmount'
-            name='price'
-            startAdornment={<InputAdornment position='start'>$</InputAdornment>}
+            id="dialogAmount"
+            name="price"
+            startAdornment={<InputAdornment position="start">$</InputAdornment>}
             value={dialogData.price}
             onChange={handleDialogChange}
           />
           <TextField
-            id='dialogDescription'
-            name='description'
-            label='Description'
-            variant='standard'
+            id="dialogDescription"
+            name="description"
+            label="Description"
+            variant="standard"
             value={dialogData.description}
             onChange={handleDialogChange}
           />
           <br />
-          <FloatingLabel controlId='floatingSelect' label='Dish Category'>
+          <FloatingLabel controlId="floatingSelect" label="Dish Category">
             <Form.Select
-              aria-label='Category'
+              aria-label="Category"
               value={dialogData.category}
               onChange={handleDialogChange}
-              name='category'
+              name="category"
             >
               {Object.keys(DISH_CATEGORY).map((key) => (
                 <option key={key} value={key}>
@@ -191,12 +250,12 @@ export default function Dishes(props) {
             </Form.Select>
           </FloatingLabel>
           <br />
-          <FloatingLabel controlId='floatingSelect' label='Dish Type'>
+          <FloatingLabel controlId="floatingSelect" label="Dish Type">
             <Form.Select
-              aria-label='type'
+              aria-label="type"
               value={dialogData.type}
               onChange={handleDialogChange}
-              name='type'
+              name="type"
             >
               {Object.keys(VEG).map((key) => (
                 <option key={key} value={key}>
@@ -206,19 +265,17 @@ export default function Dishes(props) {
             </Form.Select>
           </FloatingLabel>
         </Stack>
-        <Stack alignItems='center' spacing={2}>
-          <Form.Group className='mb-3' controlId='nickname'>
+        <Stack alignItems="center" spacing={2}>
+          <Form.Group className="mb-3" controlId="nickname">
             <Col xs={6} md={4}>
-              <Image src={dialogData.picture} roundedCircle thumbnail='true' />
+              <Image src={dialogData.picture} roundedCircle thumbnail="true" />
             </Col>
             <Col>
               <FileUpload
                 onUpload={(e) => {
                   setDialogData({ ...dialogData, picture: e });
                 }}
-                id={`${
-                  new Date().valueOf() + params.get('id') + dialogData.name
-                }`}
+                id={`${new Date().valueOf() + params.get('id') + dialogData.name}`}
               />
             </Col>
           </Form.Group>
@@ -234,7 +291,7 @@ export default function Dishes(props) {
   return (
     <Container style={{ marginTop: '16px' }}>
       {!props.isCustomer && (
-        <Button variant='outlined' onClick={handleClickOpen}>
+        <Button variant="outlined" onClick={handleClickOpen}>
           Add Dishes
         </Button>
       )}
@@ -249,29 +306,24 @@ export default function Dishes(props) {
         {dishes.map((each, index) => (
           <Grid item xs={2} sm={4} md={4} key={each.name}>
             <Card sx={{ maxWidth: 345 }}>
-              <CardMedia
-                component='img'
-                height='140'
-                image={each.picture}
-                alt='green iguana'
-              />
+              <CardMedia component="img" height="140" image={each.picture} alt="green iguana" />
               <CardContent>
-                <Typography gutterBottom variant='h5' component='div'>
+                <Typography gutterBottom variant="h5" component="div">
                   {each.name}
                 </Typography>
-                <Typography variant='body2' color='text.secondary'>
+                <Typography variant="body2" color="text.secondary">
                   {each.description}
                 </Typography>
-                <Typography variant='body2' color='text.secondary'>
+                <Typography variant="body2" color="text.secondary">
                   {`$${each.price}`}
                 </Typography>
               </CardContent>
               {!props.isCustomer && (
                 <CardActions>
-                  <Button size='small' index={index} onClick={handleDishEdit}>
+                  <Button size="small" index={index} onClick={handleDishEdit}>
                     Edit
                   </Button>
-                  <Button size='small' index={index} onClick={deleteDish}>
+                  <Button size="small" index={index} onClick={deleteDish}>
                     Delete
                   </Button>
                 </CardActions>
@@ -281,7 +333,7 @@ export default function Dishes(props) {
                   <Button
                     dish={each.name}
                     price={each.price}
-                    size='small'
+                    size="small"
                     index={index}
                     onClick={addToCart}
                   >
