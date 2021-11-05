@@ -23,7 +23,7 @@ function MyOrders() {
   const handleShow = () => setShow(true);
   const dispatch = useDispatch();
   const { doGet } = bindActionCreators(apiActionCreators, dispatch);
-  const getMyOrdersApi = useSelector((state) => state.getMyOrdersApi);
+  const myOrdersApi = useSelector((state) => state.myOrdersApi);
   const getOrderDetailsApi = useSelector((state) => state.getOrderDetailsApi);
 
   const [filter, setFilter] = useState(0);
@@ -40,12 +40,12 @@ function MyOrders() {
   };
 
   useEffect(() => {
-    if (getMyOrdersApi.status === 1) {
-      if (getMyOrdersApi.error === '') {
-        setData(getMyOrdersApi.response);
+    if (myOrdersApi.status === 1) {
+      if (myOrdersApi.error === '') {
+        setData(myOrdersApi.response);
       }
     }
-  }, [getMyOrdersApi]);
+  }, [myOrdersApi]);
 
   useEffect(() => {
     getMyOrders(deliveryType, filter);
@@ -89,7 +89,7 @@ function MyOrders() {
         handleShow();
       }
     }
-  }, [getMyOrdersApi]);
+  }, [getOrderDetailsApi]);
 
   const detailsDialog = (
     <Modal show={show} onHide={handleClose} animation={false}>

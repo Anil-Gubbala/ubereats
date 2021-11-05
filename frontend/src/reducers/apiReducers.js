@@ -41,6 +41,10 @@ export const signinApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'SIGNIN_API_LOGOUT':
+      return {
+        ...defaultResponse,
+      };
     default:
       return state;
   }

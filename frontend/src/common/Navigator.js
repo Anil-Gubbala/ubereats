@@ -25,11 +25,11 @@ function Navigator() {
   const currentState = useSelector((state) => state.loggedReducer);
   const cartState = useSelector((state) => state.cartReducer);
   const newRestWarningState = useSelector((state) => state.newRestReducer);
-  const isSignedOut = !appCookies || !currentState[LOG_REDUCER.IS_LOGGEDIN];
-  const isCustomerLogin =
-    appCookies && currentState[LOG_REDUCER.IS_LOGGEDIN] && currentState[LOG_REDUCER.IS_CUSTOMER];
-  const isRestaurantLogin =
-    appCookies && currentState[LOG_REDUCER.IS_LOGGEDIN] && !currentState[LOG_REDUCER.IS_CUSTOMER];
+
+  const isSignedOut = !localStorage.getItem(CONSTANTS.TOKEN);
+  const isCustomerLogin = localStorage.getItem(CONSTANTS.IS_CUSTOMER);
+  const isRestaurantLogin = !isCustomerLogin;
+
   const [cartFlag, setCartFlag] = useState(false);
   const defaultFilter = {
     vegType: -1,
@@ -55,9 +55,9 @@ function Navigator() {
   const { test } = bindActionCreators(apiActionCreators, dispatch);
   let delayCartDialog = false;
 
-  if (!appCookies) {
-    localStorage.clear();
-  }
+  // if (!appCookies) {
+  //   localStorage.clear();
+  // }
   const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
       right: -3,
@@ -120,9 +120,9 @@ function Navigator() {
   }, [getCartApi]);
 
   useEffect(() => {
-    if (!appCookies) {
-      localStorage.removeItem(CONSTANTS.STR_KEY);
-    }
+    // if (!appCookies) {
+    //   localStorage.removeItem(CONSTANTS.STR_KEY);
+    // }
     if (localStorage.getItem(CONSTANTS.STR_KEY) === CONSTANTS.STR_USER) {
       customer();
       // getCart();

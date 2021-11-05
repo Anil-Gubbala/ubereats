@@ -31,41 +31,42 @@ const {
   addNewAddress,
   getRestaurantDelivery,
 } = require("./controller/customer");
+const { checkAuth } = require("./utils/auth");
 
 const router = express.Router();
 
 // Account
 router.route("/signup").post(signup);
 router.route("/signin").post(signin);
-router.route("/signout").get(signout);
+router.route("/signout").get(checkAuth, signout);
 
 // Restaurant
-router.route("/restaurantInfo").get(getRestaurantInfo);
-router.route("/getDishes").get(getDishes);
-router.route("/createDish").post(createDish);
-router.route("/updateDish").post(updateDish);
-router.route("/updateRestaurantInfo").post(updateRestaurantInfo);
-router.route("/getRestaurantOrders").get(getRestaurantOrders);
-router.route("/updateOrderStatus").post(updateOrderStatus);
-router.route("/deleteDish").post(deleteDish);
+router.route("/restaurantInfo").get(checkAuth, getRestaurantInfo);
+router.route("/getDishes").get(checkAuth, getDishes);
+router.route("/createDish").post(checkAuth, createDish);
+router.route("/updateDish").post(checkAuth, updateDish);
+router.route("/updateRestaurantInfo").post(checkAuth, updateRestaurantInfo);
+router.route("/getRestaurantOrders").get(checkAuth, getRestaurantOrders);
+router.route("/updateOrderStatus").post(checkAuth, updateOrderStatus);
+router.route("/deleteDish").post(checkAuth, deleteDish);
 
 // common
-router.route("/getRestaurantsList").get(getRestaurantsList);
-router.route("/addToCart").post(addToCart);
-router.route("/addNewToCart").post(addNewToCart);
-router.route("/getCart").get(getCart);
-router.route("/getOrderDetails").get(getOrderDetails);
+router.route("/getRestaurantsList").get(checkAuth, getRestaurantsList);
+router.route("/addToCart").post(checkAuth, addToCart);
+router.route("/addNewToCart").post(checkAuth, addNewToCart);
+router.route("/getCart").get(checkAuth, getCart);
+router.route("/getOrderDetails").get(checkAuth, getOrderDetails);
 
 // customer
-router.route("/placeOrder").post(placeOrder);
-router.route("/myOrders").get(myOrders);
-router.route("/getUserProfile").get(getUserProfile);
-router.route("/updateUserInfo").post(updateUserInfo);
-router.route("/addToFavorites").post(addToFavorites);
-router.route("/removeFromFavorites").post(removeFromFavorites);
-router.route("/getFavorites").get(getFavorites);
-router.route("/getAllAddresses").get(getAllAddresses);
-router.route("/addNewAddress").post(addNewAddress);
-router.route("/getRestaurantDelivery").get(getRestaurantDelivery);
+router.route("/placeOrder").post(checkAuth, placeOrder);
+router.route("/myOrders").get(checkAuth, myOrders);
+router.route("/getUserProfile").get(checkAuth, getUserProfile);
+router.route("/updateUserInfo").post(checkAuth, updateUserInfo);
+router.route("/addToFavorites").post(checkAuth, addToFavorites);
+router.route("/removeFromFavorites").post(checkAuth, removeFromFavorites);
+router.route("/getFavorites").get(checkAuth, getFavorites);
+router.route("/getAllAddresses").get(checkAuth, getAllAddresses);
+router.route("/addNewAddress").post(checkAuth, addNewAddress);
+router.route("/getRestaurantDelivery").get(checkAuth, getRestaurantDelivery);
 
 module.exports = router;

@@ -3,9 +3,12 @@ const CONSTANTS = {
   COOKIE_KEY: { ISCUSTOMER: 'customer', EMAIL: 'email' },
   SERVERURL: 'http://localhost:4000',
   STR_KEY: 'ubereats',
+  EMAIL: 'uber_email',
+  IS_CUSTOMER: 'uber_is_customer',
   STR_USER: '1',
   STR_RESTAURANT: '2',
   STATUS: 'uberstatus',
+  TOKEN: 'uberJWT',
 };
 
 export const DELIVERY_STATUS = {

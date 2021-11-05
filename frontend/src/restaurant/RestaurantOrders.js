@@ -16,8 +16,9 @@ import { bindActionCreators } from 'redux';
 
 function RestaurantOrders() {
   const appCookies = cookie.load(CONSTANTS.COOKIE);
-  const isCustomer = appCookies && appCookies[CONSTANTS.COOKIE_KEY.ISCUSTOMER];
-  if (!appCookies) {
+  const isCustomer = localStorage.getItem(CONSTANTS.IS_CUSTOMER);
+  const jwtToken = localStorage.test(CONSTANTS.TOKEN);
+  if (!jwtToken) {
     return <RedirectSignin />;
   }
   if (isCustomer) {

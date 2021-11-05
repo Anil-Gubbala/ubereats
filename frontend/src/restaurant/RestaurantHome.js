@@ -28,10 +28,14 @@ import { apiActionCreators } from '../reducers/actionCreators';
 
 function RestaurantHome() {
   const appCookies = cookie.load(CONSTANTS.COOKIE);
-  const isCustomer = appCookies && appCookies[CONSTANTS.COOKIE_KEY.ISCUSTOMER];
-  if (!appCookies) {
-    return <RedirectSignin />;
+  const isCustomer = localStorage.getItem(CONSTANTS.IS_CUSTOMER);
+  const jwtToken = localStorage.test(CONSTANTS.TOKEN);
+  if (!jwtToken) {
+    return <RedirectSignin></RedirectSignin>;
   }
+  // if (!appCookies) {
+  //   return <RedirectSignin />;
+  // }
 
   const dispatch = useDispatch();
   const { doGet, doPost } = bindActionCreators(apiActionCreators, dispatch);

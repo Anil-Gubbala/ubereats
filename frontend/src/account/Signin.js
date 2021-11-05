@@ -25,6 +25,7 @@ function Signin() {
     password: '',
   };
 
+  const [redirect, setRedirect] = useState(false);
   const [formData, setFormData] = useState(defaultValues);
   // const [success, setSuccess] = useState(false);
   const [fail, setFail] = useState({ status: false, message: '' });
@@ -56,13 +57,17 @@ function Signin() {
   useEffect(() => {
     if (signinApi.status === 1) {
       if (signinApi.error === '') {
+        localStorage.setItem(CONSTANTS.TOKEN, signinApi.response.token);
+        setRedirect(true);
         if (formData.customer) {
-          localStorage.setItem(CONSTANTS.STR_KEY, CONSTANTS.STR_USER);
-          localStorage.setItem(CONSTANTS.STATUS, signinApi.response.status);
+          localStorage.setItem(CONSTANTS.EMAIL, signinApi.response.user.email);
+          localStorage.setItem(CONSTANTS.IS_CUSTOMER, true);
+          localStorage.setItem(CONSTANTS.STATUS, signinApi.response.user.status);
           customer(formData.email);
         } else {
-          localStorage.setItem(CONSTANTS.STR_KEY, CONSTANTS.STR_RESTAURANT);
-          localStorage.setItem(CONSTANTS.STATUS, signinApi.response.status);
+          localStorage.setItem(CONSTANTS.EMAIL, signinApi.response.user.email);
+          localStorage.setItem(CONSTANTS.IS_CUSTOMER, false);
+          localStorage.setItem(CONSTANTS.STATUS, signinApi.response.user.status);
           restaurant(formData.email);
         }
       } else {
@@ -77,8 +82,7 @@ function Signin() {
   const checkBoxHandler = (e) => {
     setFormData({ ...formData, [e.target.name]: !e.target.checked });
   };
-  console.log(localStorage.getItem(CONSTANTS.STR_KEY));
-  if (localStorage.getItem(CONSTANTS.STR_KEY)) {
+  if (redirect || localStorage.getItem(CONSTANTS.TOKEN)) {
     return <Redirect to="/home"></Redirect>;
   }
   return (
