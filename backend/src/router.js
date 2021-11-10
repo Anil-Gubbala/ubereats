@@ -32,6 +32,7 @@ const {
   getRestaurantDelivery,
 } = require("./controller/customer");
 const { checkAuth } = require("./utils/auth");
+const { makeRequest } = require("./kafka/client");
 
 const router = express.Router();
 
@@ -68,5 +69,13 @@ router.route("/getFavorites").get(checkAuth, getFavorites);
 router.route("/getAllAddresses").get(checkAuth, getAllAddresses);
 router.route("/addNewAddress").post(checkAuth, addNewAddress);
 router.route("/getRestaurantDelivery").get(checkAuth, getRestaurantDelivery);
+
+router.route("/kafka").get((req, res) => {
+  makeRequest("request-topic", { test: "test" }, (error, response) => {
+    console.log("callback response");
+    res.send(response);
+  });
+  console.log("inside kafka");
+});
 
 module.exports = router;
