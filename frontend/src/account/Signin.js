@@ -24,7 +24,7 @@ function Signin() {
     email: '',
     password: '',
   };
-
+  const [signinflag, setSigninflag] = useState(false);
   const [redirect, setRedirect] = useState(false);
   const [formData, setFormData] = useState(defaultValues);
   // const [success, setSuccess] = useState(false);
@@ -36,6 +36,7 @@ function Signin() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setSigninflag(true);
     doPost('/signin', formData);
     // .then((data) => {
     //   if (formData.customer) {
@@ -55,8 +56,9 @@ function Signin() {
   };
 
   useEffect(() => {
-    if (signinApi.status === 1) {
+    if (signinflag && signinApi.status === 1) {
       if (signinApi.error === '') {
+        setSigninflag(false);
         localStorage.setItem(CONSTANTS.TOKEN, signinApi.response.token);
         setRedirect(true);
         if (formData.customer) {

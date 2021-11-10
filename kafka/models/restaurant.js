@@ -9,7 +9,7 @@ const RestaurantSchema = new Schema({
     unique: true,
   },
   name: { type: String, required: true },
-  status: { type: Number, required: true },
+  status: { type: Number, required: true, default: 0 },
   password: {
     type: String,
     required: true,
@@ -17,12 +17,12 @@ const RestaurantSchema = new Schema({
   location: { type: String, required: true },
   latitude: { type: Number, required: true },
   longitude: { type: Number, required: true },
-  picture: { type: String, required: true },
-  contact: { type: Number, required: true },
-  description: { type: String, required: true },
-  start: { type: Date, required: true },
-  end: { type: Date, required: true },
-  delivery: { type: Number, required: true },
+  picture: { type: String },
+  contact: { type: Number },
+  description: { type: String },
+  start: { type: Date },
+  end: { type: Date },
+  delivery: { type: Number },
 });
 
 const RestaurantModel = mongoose.model("restaurant", RestaurantSchema);

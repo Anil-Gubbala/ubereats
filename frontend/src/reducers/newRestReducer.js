@@ -15,6 +15,8 @@ const newRestReducer = (state = initialState, action) => {
         price: action.payload.price,
         previousId: action.payload.previousId,
       };
+    case 'RESET':
+      return { ...initialState };
     default:
       return state;
   }

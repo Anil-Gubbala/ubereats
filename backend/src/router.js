@@ -75,7 +75,6 @@ router.route("/kafka").get((req, res) => {
     console.log("callback response");
     res.send(response);
   });
-  console.log("inside kafka");
 });
 
 module.exports = router;

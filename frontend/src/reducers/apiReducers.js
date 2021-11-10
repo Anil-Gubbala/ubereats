@@ -20,6 +20,8 @@ export const signupApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -45,6 +47,8 @@ export const signinApi = (state = defaultResponse, action) => {
       return {
         ...defaultResponse,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -66,6 +70,8 @@ export const signoutApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -87,6 +93,8 @@ export const getRestaurantInfoApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -108,6 +116,8 @@ export const getDishesApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -129,6 +139,8 @@ export const createDishApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -149,6 +161,8 @@ export const updateDishApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -170,6 +184,8 @@ export const updateRestaurantInfoApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -191,6 +207,8 @@ export const getRestaurantOrdersApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -212,6 +230,8 @@ export const updateOrderStatusApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -233,6 +253,8 @@ export const deleteDishApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -254,6 +276,8 @@ export const getRestaurantsListApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -275,6 +299,8 @@ export const addToCartApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -296,6 +322,8 @@ export const addNewToCartApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -317,6 +345,8 @@ export const getCartApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -338,6 +368,8 @@ export const getOrderDetailsApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -359,6 +391,8 @@ export const placeOrderApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -380,6 +414,8 @@ export const myOrdersApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -401,6 +437,8 @@ export const getUserProfileApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -422,6 +460,8 @@ export const updateUserInfoApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -443,6 +483,8 @@ export const addToFavoritesApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -464,6 +506,8 @@ export const removeFromFavoritesApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -485,6 +529,8 @@ export const getFavoritesApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -506,6 +552,8 @@ export const getAllAddressesApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -527,6 +575,8 @@ export const getRestaurantDeliveryApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }
@@ -548,6 +598,8 @@ export const addNewAddressApi = (state = defaultResponse, action) => {
         error: action.payload,
         status: 1,
       };
+    case 'RESET':
+      return { ...defaultResponse };
     default:
       return state;
   }

@@ -9,16 +9,16 @@ const UserSchema = new Schema({
     unique: true,
   },
   name: { type: String, required: true },
-  status: { type: Number, required: true },
+  status: { type: Number, required: true, default: 0 },
   password: {
     type: String,
     required: true,
   },
-  picture: { type: String, required: true },
-  contact: { type: Number, required: true },
-  dob: { type: Date, required: true },
-  nickname: { type: String, required: true },
-  about: { type: String, required: true },
+  picture: { type: String },
+  contact: { type: Number },
+  dob: { type: Date },
+  nickname: { type: String },
+  about: { type: String },
 });
 
 const UserModel = mongoose.model("user", UserSchema);

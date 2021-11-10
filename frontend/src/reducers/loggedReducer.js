@@ -31,6 +31,8 @@ const loggedReducer = (state = initialState, action) => {
         [LOG_REDUCER.IS_CUSTOMER]: true,
         [LOG_REDUCER.EMAIL]: action.payload,
       };
+    case 'RESET':
+      return { ...initialState };
     default:
       return state;
   }

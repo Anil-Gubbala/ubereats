@@ -29,7 +29,7 @@ import { apiActionCreators } from '../reducers/actionCreators';
 function RestaurantHome() {
   const appCookies = cookie.load(CONSTANTS.COOKIE);
   const isCustomer = localStorage.getItem(CONSTANTS.IS_CUSTOMER);
-  const jwtToken = localStorage.test(CONSTANTS.TOKEN);
+  const jwtToken = localStorage.getItem(CONSTANTS.TOKEN);
   if (!jwtToken) {
     return <RedirectSignin></RedirectSignin>;
   }

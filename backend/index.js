@@ -2,13 +2,29 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-const mysql = require("mysql");
-const router = require("./src/router");
-const db = require("./src/dbConnector");
+// const mysql = require("mysql");
 const passport = require("passport");
+const mongoose = require("mongoose");
+const router = require("./src/router");
+// const db = require("./src/dbConnector");
 
-const startServer = require("./src/server");
-const { auth, checkAuth } = require("./src/utils/auth");
+// const startServer = require("./src/server");
+const { auth } = require("./src/utils/auth");
+const { mongoDB } = require("./src/utils/const");
+
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+};
+
+// mongoose.connect(mongoDB, options, (err) => {
+//   if (err) {
+//     console.log(err);
+//     console.log(`MongoDB Connection Failed`);
+//   } else {
+//     console.log(`MongoDB Connected`);
+//   }
+// });
 
 const app = express();
 app.use(

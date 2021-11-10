@@ -7,6 +7,13 @@ const getActionSuccess = (path) => {
   return `${name}_API_SUCCESS`;
 };
 
+const getActionClear = (path) => {
+  let name = path.split('/')[1];
+  name = name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  name = name.toUpperCase();
+  return `${name}_API_CLEAR`;
+};
+
 const getActionError = (path) => {
   let name = path.split('/')[1];
   name = name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
@@ -32,4 +39,8 @@ export const doPost = (path, data) => (dispatch) => {
     .catch((error) => {
       dispatch({ type: getActionError(path), payload: error });
     });
+};
+
+export const doClear = (path) => (dispatch) => {
+  dispatch({ type: 'RESET' });
 };

@@ -16,7 +16,7 @@ function Signout() {
     dispatch
   );
   const [logout, setLogout] = useState(false);
-  const { doGet } = bindActionCreators(apiActionCreators, dispatch);
+  const { doGet, doClear } = bindActionCreators(apiActionCreators, dispatch);
   const signoutState = useSelector((state) => state.signoutApi);
 
   useEffect(() => {
@@ -39,6 +39,7 @@ function Signout() {
     if (signoutState.status === 1) {
       if (signoutState.error === '') {
         localStorage.clear();
+        doClear();
         dispatchSignout();
         clearCart();
         clearHomeFilters();

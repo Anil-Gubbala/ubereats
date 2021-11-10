@@ -18,8 +18,10 @@ import CountriesList from '../utils/CountriesList';
 
 function Signup() {
   const dispatch = useDispatch();
+  // let flag = false;
+  const [flag, setFlag] = useState(false);
   const { dispatchSignup } = bindActionCreators(actionCreators, dispatch);
-  const { doPost } = bindActionCreators(apiActionCreators, dispatch);
+  const { doPost, doClear } = bindActionCreators(apiActionCreators, dispatch);
   const signupState = useSelector((state) => state.signupApi);
 
   // const [address, setAddress] = useState('');
@@ -47,6 +49,7 @@ function Signup() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setFlag(true);
     doPost('/signup', formData);
     // post('/signup', formData)
     //   .then(() => {
@@ -58,8 +61,10 @@ function Signup() {
     //   });
   };
   useEffect(() => {
-    if (signupState.status === 1) {
+    console.log('inside signupState');
+    if (flag && signupState.status === 1) {
       if (signupState.error === '') {
+        setFlag(false);
         dispatchSignup(formData.email);
         setSuccess(true);
       } else {
@@ -67,6 +72,11 @@ function Signup() {
       }
     }
   }, [signupState]);
+
+  // useEffect(() => {
+  //   console.log('inside signupState clear');
+  //   doClear('/signup');
+  // }, []);
 
   if (success) {
     return (

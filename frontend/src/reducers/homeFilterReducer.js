@@ -26,6 +26,8 @@ const homeFilterReducer = (state = initialState, action) => {
       return {
         ...initialState,
       };
+    case 'RESET':
+      return { ...initialState };
     default:
       return state;
   }

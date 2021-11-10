@@ -51,7 +51,7 @@ KafkaRPC.prototype.makeRequest = function (topicName, content, callback) {
 
   // make sure we have a response topic
   self.setupResponseQueue(self.producer, topicName, () => {
-    console.log("in response");
+    // console.log("in response");
     // put the request on a topic
 
     const payloads = [
@@ -65,12 +65,12 @@ KafkaRPC.prototype.makeRequest = function (topicName, content, callback) {
         partition: 0,
       },
     ];
-    console.log("in response1");
-    console.log(self.producer.ready);
+    // console.log("in response1");
+    // console.log(self.producer.ready);
     self.producer.send(payloads, (err, data) => {
-      console.log("in response2");
+      // console.log("in response2");
       if (err) console.log(err);
-      console.log(data);
+      // console.log(data);
     });
   });
 };
@@ -79,14 +79,14 @@ KafkaRPC.prototype.setupResponseQueue = function (producer, topicName, next) {
   // don't mess around if we have a queue
   if (this.response_queue) return next();
 
-  console.log("1");
+  // console.log("1");
 
   self = this;
 
   // subscribe to messages
   const consumer = self.connection.getConsumer("response_topic");
   consumer.on("message", (message) => {
-    console.log("msg received");
+    // console.log("msg received");
     if (!IsJsonString(message.value)) {
       return;
     }
@@ -107,7 +107,7 @@ KafkaRPC.prototype.setupResponseQueue = function (producer, topicName, next) {
     }
   });
   self.response_queue = true;
-  console.log("returning next");
+  // console.log("returning next");
   return next();
 };
 
