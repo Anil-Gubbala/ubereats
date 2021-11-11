@@ -78,7 +78,7 @@ function CustomerHome() {
   useEffect(() => {
     if (getFavoritesApi.status === 1) {
       if (getFavoritesApi.error === '') {
-        const list = getFavoritesApi.response.map((each) => each.restaurant_id);
+        const list = getFavoritesApi.response;
         setFavorites(() => list);
       }
     }

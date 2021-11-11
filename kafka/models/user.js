@@ -19,6 +19,25 @@ const UserSchema = new Schema({
   dob: { type: Date },
   nickname: { type: String },
   about: { type: String },
+  favorites: {
+    type: Array,
+    items: { type: String, uniqueItems: true },
+  },
+  primaryAddress: {
+    country: { type: String },
+    location: { type: String },
+    latitude: { type: Number },
+    longitude: { type: Number },
+  },
+  addresses: [
+    {
+      country: { type: String },
+      location: { type: String },
+      latitude: { type: Number },
+      longitude: { type: Number },
+      // active: { type: Number, default: 0 },
+    },
+  ],
 });
 
 const UserModel = mongoose.model("user", UserSchema);

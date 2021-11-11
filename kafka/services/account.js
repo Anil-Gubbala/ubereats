@@ -5,9 +5,12 @@ const { doInsert, doExec } = require("../utils/doQuery");
 const getPassword = (msg, callback) => {
   const { isCustomer, email } = msg.data;
   if (isCustomer) {
-    doExec(UserModel.findOne({ email }, ["password"]), callback);
+    doExec(UserModel.findOne({ email }, ["password", "status"]), callback);
   } else {
-    doExec(RestaurantModel.findOne({ email }, ["password"]), callback);
+    doExec(
+      RestaurantModel.findOne({ email }, ["password", "status"]),
+      callback
+    );
   }
 };
 

@@ -42,7 +42,7 @@ router.route("/signin").post(signin);
 router.route("/signout").get(checkAuth, signout);
 
 // Restaurant
-router.route("/restaurantInfo").get(checkAuth, getRestaurantInfo);
+router.route("/getRestaurantInfo").get(checkAuth, getRestaurantInfo);
 router.route("/getDishes").get(checkAuth, getDishes);
 router.route("/createDish").post(checkAuth, createDish);
 router.route("/updateDish").post(checkAuth, updateDish);

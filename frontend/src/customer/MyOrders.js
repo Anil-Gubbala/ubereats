@@ -13,9 +13,9 @@ function MyOrders() {
   const [data, setData] = useState([]);
   const [dishesData, setDishesData] = useState([]);
   const defaultOrderInfo = {
-    restaurant_id: '',
+    restaurantId: '',
     status: '',
-    order_id: '',
+    orderId: '',
   };
   const [orderInfo, setOrderInfo] = useState(defaultOrderInfo);
   const [show, setShow] = useState(false);
@@ -55,9 +55,9 @@ function MyOrders() {
     const id = e.target.getAttribute('name');
     setOrderInfo((prev) => ({
       ...prev,
-      restaurant_id: e.target.getAttribute('restaurant'),
+      restaurantId: e.target.getAttribute('restaurant'),
       status: e.target.getAttribute('status'),
-      order_id: e.target.getAttribute('name'),
+      orderId: e.target.getAttribute('name'),
     }));
     doGet('/getOrderDetails', { id });
     // get('/getOrderDetails', { id })
@@ -97,9 +97,9 @@ function MyOrders() {
         <Modal.Title>Order Details</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Row>{`Restaurant ID : ${orderInfo.restaurant_id}`}</Row>
+        <Row>{`Restaurant ID : ${orderInfo.restaurantId}`}</Row>
         {/* <Row>{`Status : ${orderInfo.status}`}</Row> */}
-        <Row>{`Order ID : ${orderInfo.order_id}`}</Row>
+        <Row>{`Order ID : ${orderInfo.orderId}`}</Row>
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -202,18 +202,18 @@ function MyOrders() {
           </thead>
           <tbody>
             {data.map((each) => (
-              <tr key={each.id}>
-                <td>{each.id}</td>
-                <td>{each.restaurant_id}</td>
+              <tr key={each._id}>
+                <td>{each._id}</td>
+                <td>{each.restaurantId}</td>
                 <td>{each.date}</td>
                 <td>
                   {each.delivery === 0 ? DELIVERY_STATUS[each.status] : PICKUP_STATUS[each.status]}
                 </td>
-                <td>{each.delivery === 0 ? each.location : 'Pick up'}</td>
+                <td>{each.delivery === 0 ? each.address : 'Pick up'}</td>
                 <td>
                   <Button
-                    name={each.id}
-                    restaurant={each.restaurant_id}
+                    name={each._id}
+                    restaurant={each.restaurantId}
                     status={each.status}
                     variant="link"
                     onClick={showDetails}

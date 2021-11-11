@@ -49,9 +49,9 @@ function PlaceOrder() {
   useEffect(() => {
     if (getRestaurantDeliveryApi.status === 1) {
       if (getRestaurantDeliveryApi.error === '') {
-        setRestDelivery(getRestaurantDeliveryApi.response[0].delivery);
-        if (deliveryType === 0 && getRestaurantDeliveryApi.response[0].delivery === 1) {
-          setDeliveryType(getRestaurantDeliveryApi.response[0].delivery);
+        setRestDelivery(getRestaurantDeliveryApi.response.delivery);
+        if (deliveryType === 0 && getRestaurantDeliveryApi.response.delivery === 1) {
+          setDeliveryType(getRestaurantDeliveryApi.response.delivery);
         }
       }
     }
@@ -71,8 +71,11 @@ function PlaceOrder() {
   useEffect(() => {
     if (getAllAddressesApi.status === 1) {
       if (getAllAddressesApi.error === '') {
-        setDeliveryAddress(getAllAddressesApi.response[0].id);
-        setAddresses(getAllAddressesApi.response);
+        setDeliveryAddress(getAllAddressesApi.response.primaryAddress.location);
+        setAddresses([
+          ...getAllAddressesApi.response.addresses,
+          getAllAddressesApi.response.primaryAddress,
+        ]);
       }
     }
   }, [getAllAddressesApi]);
@@ -80,7 +83,7 @@ function PlaceOrder() {
   const handlePlaceOrder = () => {
     doPost('/placeOrder', {
       restaurantId: cartState.restaurantId,
-      addressId: deliveryAddress,
+      address: deliveryAddress,
       delivery: deliveryType,
     });
     // post('/placeOrder', {
@@ -263,8 +266,8 @@ function PlaceOrder() {
               }}
               name="deliveryAddress"
             >
-              {addresses.map((each) => (
-                <option key={each.id} value={each.id}>
+              {addresses.map((each, index) => (
+                <option key={index} value={each.location}>
                   {each.location}
                 </option>
               ))}

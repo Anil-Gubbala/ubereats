@@ -27,7 +27,7 @@ function Navigator() {
   const newRestWarningState = useSelector((state) => state.newRestReducer);
 
   const isSignedOut = !localStorage.getItem(CONSTANTS.TOKEN);
-  const isCustomerLogin = localStorage.getItem(CONSTANTS.IS_CUSTOMER);
+  const isCustomerLogin = JSON.parse(localStorage.getItem(CONSTANTS.IS_CUSTOMER));
   const isRestaurantLogin = !isCustomerLogin;
 
   const [cartFlag, setCartFlag] = useState(false);
@@ -97,15 +97,15 @@ function Navigator() {
   useEffect(() => {
     if (getCartApi.status === 1) {
       if (getCartApi.error === '') {
-        if (getCartApi.response.length > 0) {
-          const dishes = getCartApi.response.reduce(
+        if (getCartApi.response.dishes) {
+          const dishes = getCartApi.response.dishes.reduce(
             (obj, item) => ({
               ...obj,
               [item.dish]: [item.count, item.price],
             }),
             {}
           );
-          updateCart({ restaurantId: getCartApi.response[0].restaurant_id, dishes });
+          updateCart({ restaurantId: getCartApi.response.restaurantId, dishes });
           setCartFlag(true);
           if (delayCartDialog) {
             handleShow();

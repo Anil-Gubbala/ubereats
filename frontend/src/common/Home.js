@@ -8,7 +8,7 @@ import Profile from '../customer/Profile';
 
 function Home() {
   const isLoggedIn = localStorage.getItem(CONSTANTS.TOKEN);
-  const isCustomer = localStorage.getItem(CONSTANTS.IS_CUSTOMER);
+  const isCustomer = JSON.parse(localStorage.getItem(CONSTANTS.IS_CUSTOMER));
   const status = localStorage.getItem(CONSTANTS.STATUS);
 
   if (!isLoggedIn) {

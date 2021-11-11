@@ -55,8 +55,8 @@ export default function Dishes(props) {
     picture: '',
     price: '',
     description: '',
-    category: '',
-    type: '',
+    category: '0',
+    type: '0',
   };
 
   let deleteDishIndex = 0;

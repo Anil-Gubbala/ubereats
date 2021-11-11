@@ -1,6 +1,7 @@
 const db = require("../dbConnector");
 const COMMON = require("../sql/commonSql");
 const { response } = require("../utils/response");
+const { kafkaRequest, topics } = require("./kafkaRequest");
 
 // const searchString = (wordList, colName) => {
 //   let query = '';
@@ -41,60 +42,74 @@ const getRestaurantsList = (req, res) => {
   const delivery = parseInt(req.query.delivery, 10);
   const vegType = parseInt(req.query.vegType, 10);
   const favorite = parseInt(req.query.favorite, 10);
+  const { email } = req.user;
 
-  let base = ` select distinct restaurant_login.email from ubereats.restaurant_login join ubereats.dishes on restaurant_login.email = dishes.email`;
-  const fav = `  restaurant_login.email IN (select restaurant_id from favorite where user_id = '${req.user.email}') `;
-  const match = ` (location like '%${search}%' or dishes.name like '%${search}%') `;
-
-  if (vegType !== -1 || delivery !== -1 || favorite !== 0 || search !== "") {
-    base += " where ";
-  }
-  if (vegType !== -1) {
-    base += ` dishes.type = ${vegType} `;
-    if (delivery !== -1) {
-      base += ` and restaurant_login.delivery = ${delivery} `;
-    }
-  } else if (delivery !== -1) {
-    base += ` restaurant_login.delivery = ${delivery} `;
-  }
-
-  if (favorite === 1) {
-    if (delivery !== -1 || vegType !== -1) {
-      base += ` and ${fav}`;
-    } else {
-      base += fav;
-    }
-  }
-  if (search !== "") {
-    if (delivery !== -1 || vegType !== -1 || favorite !== 0) {
-      base += ` and ${match}`;
-    } else {
-      base += match;
-    }
-  }
-
-  const final = `select * from ubereats.restaurant_login where email IN (${base})`;
-  if (!req.user || !req.user.isCustomer) {
-    response.unauthorized(res, "unauthorized access");
-  } else {
-    db.query(final, (err, result) => {
+  kafkaRequest(
+    topics.request,
+    "getRestaurantsList",
+    { search, delivery, vegType, favorite, email },
+    (err, result) => {
       if (err) {
         response.error(res, 500, err.code);
-        return;
+      } else {
+        res.send(result);
       }
-      // db.query(
-      //   'select * from ubereats.restaurant_login where email IN ()',
-      //   (err1, result1) => {
-      //     if (err1) {
-      //       response.error(res, 500, err1.code);
-      //       return;
-      //     }
-      //     res.send(result1);
-      //   }
-      // );
-      res.send(result);
-    });
-  }
+    }
+  );
+
+  // let base = ` select distinct restaurant_login.email from ubereats.restaurant_login join ubereats.dishes on restaurant_login.email = dishes.email`;
+  // const fav = `  restaurant_login.email IN (select restaurant_id from favorite where user_id = '${req.user.email}') `;
+  // const match = ` (location like '%${search}%' or dishes.name like '%${search}%') `;
+
+  // if (vegType !== -1 || delivery !== -1 || favorite !== 0 || search !== "") {
+  //   base += " where ";
+  // }
+  // if (vegType !== -1) {
+  //   base += ` dishes.type = ${vegType} `;
+  //   if (delivery !== -1) {
+  //     base += ` and restaurant_login.delivery = ${delivery} `;
+  //   }
+  // } else if (delivery !== -1) {
+  //   base += ` restaurant_login.delivery = ${delivery} `;
+  // }
+
+  // if (favorite === 1) {
+  //   if (delivery !== -1 || vegType !== -1) {
+  //     base += ` and ${fav}`;
+  //   } else {
+  //     base += fav;
+  //   }
+  // }
+  // if (search !== "") {
+  //   if (delivery !== -1 || vegType !== -1 || favorite !== 0) {
+  //     base += ` and ${match}`;
+  //   } else {
+  //     base += match;
+  //   }
+  // }
+
+  // const final = `select * from ubereats.restaurant_login where email IN (${base})`;
+  // if (!req.user || !req.user.isCustomer) {
+  //   response.unauthorized(res, "unauthorized access");
+  // } else {
+  //   db.query(final, (err, result) => {
+  //     if (err) {
+  //       response.error(res, 500, err.code);
+  //       return;
+  //     }
+  //     // db.query(
+  //     //   'select * from ubereats.restaurant_login where email IN ()',
+  //     //   (err1, result1) => {
+  //     //     if (err1) {
+  //     //       response.error(res, 500, err1.code);
+  //     //       return;
+  //     //     }
+  //     //     res.send(result1);
+  //     //   }
+  //     // );
+  //     res.send(result);
+  //   });
+  // }
 };
 
 const addToCart = (req, res) => {
@@ -102,17 +117,33 @@ const addToCart = (req, res) => {
   if (!req.user || !req.user.isCustomer) {
     response.unauthorized(res, "unauthorized access");
   } else {
-    db.query(
-      COMMON.ADD_TO_CART,
-      [req.user.email, restaurantId, dish, count, price, count],
+    kafkaRequest(
+      topics.request,
+      "addToCart",
+      {
+        query: { userId: req.user.email, restaurantId, dish },
+        value: { count, price },
+      },
       (err, result) => {
         if (err) {
           response.error(res, 500, err.code);
-          return;
+        } else {
+          res.send();
         }
-        res.send();
       }
     );
+
+    // db.query(
+    //   COMMON.ADD_TO_CART,
+    //   [req.user.email, restaurantId, dish, count, price, count],
+    //   (err, result) => {
+    //     if (err) {
+    //       response.error(res, 500, err.code);
+    //       return;
+    //     }
+    //     res.send();
+    //   }
+    // );
   }
 };
 
@@ -121,23 +152,38 @@ const addNewToCart = (req, res) => {
   if (!req.user || !req.user.isCustomer) {
     response.unauthorized(res, "unauthorized access");
   } else {
-    db.query(COMMON.CLEAR_CART, [], (err, result) => {
-      if (err) {
-        response.error(res, 500, err.code);
-        return;
-      }
-      db.query(
-        COMMON.ADD_TO_CART,
-        [req.user.email, restaurantId, dish, count, price, count],
-        (err1, result1) => {
-          if (err1) {
-            response.error(res, 500, err1.code);
-            return;
-          }
+    kafkaRequest(
+      topics.request,
+      "addNewToCart",
+      {
+        query: { userId: req.user.email, restaurantId },
+        value: { count, price, dish },
+      },
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+        } else {
           res.send();
         }
-      );
-    });
+      }
+    );
+    // db.query(COMMON.CLEAR_CART, [], (err, result) => {
+    //   if (err) {
+    //     response.error(res, 500, err.code);
+    //     return;
+    //   }
+    //   db.query(
+    //     COMMON.ADD_TO_CART,
+    //     [req.user.email, restaurantId, dish, count, price, count],
+    //     (err1, result1) => {
+    //       if (err1) {
+    //         response.error(res, 500, err1.code);
+    //         return;
+    //       }
+    //       res.send();
+    //     }
+    //   );
+    // });
   }
 };
 
@@ -145,13 +191,27 @@ const getCart = (req, res) => {
   if (!req.user || !req.user.isCustomer) {
     response.unauthorized(res, "unauthorized access");
   } else {
-    db.query(COMMON.GET_CART, [req.user.email], (err, result) => {
-      if (err) {
-        response.error(res, 500, err.code);
-        return;
+    kafkaRequest(
+      topics.request,
+      "getCart",
+      {
+        userId: req.user.email,
+      },
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+        } else {
+          res.send(result);
+        }
       }
-      res.send(result);
-    });
+    );
+    // db.query(COMMON.GET_CART, [req.user.email], (err, result) => {
+    //   if (err) {
+    //     response.error(res, 500, err.code);
+    //     return;
+    //   }
+    //   res.send(result);
+    // });
   }
 };
 

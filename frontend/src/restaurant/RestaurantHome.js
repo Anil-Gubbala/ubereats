@@ -28,7 +28,7 @@ import { apiActionCreators } from '../reducers/actionCreators';
 
 function RestaurantHome() {
   const appCookies = cookie.load(CONSTANTS.COOKIE);
-  const isCustomer = localStorage.getItem(CONSTANTS.IS_CUSTOMER);
+  const isCustomer = JSON.parse(localStorage.getItem(CONSTANTS.IS_CUSTOMER));
   const jwtToken = localStorage.getItem(CONSTANTS.TOKEN);
   if (!jwtToken) {
     return <RedirectSignin></RedirectSignin>;
@@ -39,7 +39,7 @@ function RestaurantHome() {
 
   const dispatch = useDispatch();
   const { doGet, doPost } = bindActionCreators(apiActionCreators, dispatch);
-  const restaurantInfoApi = useSelector((state) => state.restaurantInfoApi);
+  const getRestaurantInfoApi = useSelector((state) => state.getRestaurantInfoApi);
   const updateRestaurantInfoApi = useSelector((state) => state.updateRestaurantInfoApi);
 
   const windowUrl = window.location.search;
@@ -61,19 +61,19 @@ function RestaurantHome() {
 
   const [restaurantInfo, setRestaurantInfo] = useState(defaultValues);
   useEffect(() => {
-    doGet('/restaurantInfo', { id: params.get('id') });
+    doGet('/getRestaurantInfo', { id: params.get('id') });
     // get('/restaurantInfo', { id: params.get('id') }).then((data) => {
     //   setRestaurantInfo((prev) => ({ ...prev, ...data[0] }));
     // });
   }, []);
 
   useEffect(() => {
-    if (restaurantInfoApi.status === 1) {
-      if (restaurantInfoApi.error === '') {
-        setRestaurantInfo((prev) => ({ ...prev, ...restaurantInfoApi.response[0] }));
+    if (getRestaurantInfoApi.status === 1) {
+      if (getRestaurantInfoApi.error === '') {
+        setRestaurantInfo((prev) => ({ ...prev, ...getRestaurantInfoApi.response }));
       }
     }
-  }, [restaurantInfoApi]);
+  }, [getRestaurantInfoApi]);
 
   const [open, setOpen] = React.useState(false);
   const [dialogData, setDialogData] = useState(restaurantInfo);

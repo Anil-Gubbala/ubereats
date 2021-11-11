@@ -44,14 +44,11 @@ function Profile() {
     contact: '',
     dob: '',
     email: '',
-    location: '',
+    primaryAddress: { location: '', country: 'US', latitude: '', longitude: '' },
     name: '',
     nickname: '',
     picture: '',
     about: '',
-    country: 'US',
-    latitude: '',
-    longitude: '',
   };
   const [formData, setFormData] = useState(defaultFormData);
 
@@ -72,10 +69,10 @@ function Profile() {
   useEffect(() => {
     if (getUserProfileApi.status === 1) {
       if (getUserProfileApi.error === '') {
-        const user = getUserProfileApi.response[0][0];
-        const userData = getUserProfileApi.response[1][0];
-        const addresses = getUserProfileApi.response[2][0];
-        setFormData((prev) => ({ ...prev, ...user, ...userData, ...addresses }));
+        // const user = getUserProfileApi.response[0][0];
+        // const userData = getUserProfileApi.response[1][0];
+        // const addresses = getUserProfileApi.response[2][0];
+        setFormData((prev) => ({ ...prev, ...getUserProfileApi.response }));
       }
     }
   }, [getUserProfileApi]);
@@ -172,25 +169,34 @@ function Profile() {
               />
             </FloatingLabel>
             <FloatingLabel controlId="country" label="Country" className="mb-3">
-              <CountriesList name="country" value={formData.country} onChange={eventHandler} />
+              <CountriesList
+                name="country"
+                value={formData.primaryAddress.country}
+                onChange={eventHandler}
+              />
               <Location
-                value={formData.location}
+                value={formData.primaryAddress.location}
                 change={(e) => {
-                  setFormData((prev) => ({ ...prev, location: e }));
+                  setFormData((prev) => ({
+                    ...prev,
+                    primaryAddress: { ...prev.primaryAddress, location: e },
+                  }));
                 }}
                 select={(e) => {
-                  setFormData((prev) => ({ ...prev, location: e }));
+                  setFormData((prev) => ({
+                    ...prev,
+                    primaryAddress: { ...prev.primaryAddress, location: e },
+                  }));
                   geocodeByAddress(e)
                     .then((results) => getLatLng(results[0]))
                     .then(({ lat, lng }) => {
                       setFormData((prev) => ({
                         ...prev,
-                        latitude: lat,
-                        longitude: lng,
+                        primaryAddress: { ...prev.primaryAddress, latitude: lat, longitude: lng },
                       }));
                     });
                 }}
-                country={formData.country}
+                country={formData.primaryAddress.country}
               />
             </FloatingLabel>
             <FloatingLabel controlId="contact" label="Phone" className="mb-3">
@@ -251,7 +257,7 @@ function Profile() {
           </Row>
           <Row>
             <Col>Primary Address:</Col>
-            <Col>{formData.location}</Col>
+            <Col>{formData.primaryAddress.location}</Col>
           </Row>
 
           <Row>

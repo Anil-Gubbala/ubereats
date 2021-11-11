@@ -20,9 +20,21 @@ const RestaurantSchema = new Schema({
   picture: { type: String },
   contact: { type: Number },
   description: { type: String },
-  start: { type: Date },
-  end: { type: Date },
+  start: { type: String },
+  end: { type: String },
   delivery: { type: Number },
+  dishes: {
+    type: Array,
+    items: {
+      name: { type: String, unique: true },
+      ingredients: { type: String },
+      picture: { type: String },
+      price: { type: String },
+      description: { type: String },
+      category: { type: String, default: 0 },
+      type: { type: String, default: 0 },
+    },
+  },
 });
 
 const RestaurantModel = mongoose.model("restaurant", RestaurantSchema);
