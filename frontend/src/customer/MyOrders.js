@@ -58,6 +58,7 @@ function MyOrders() {
       restaurantId: e.target.getAttribute('restaurant'),
       status: e.target.getAttribute('status'),
       orderId: e.target.getAttribute('name'),
+      instructions: e.target.getAttribute('instructions'),
     }));
     setTotalCost(() =>
       data[index].dishes.reduce((prev, next) => {
@@ -109,6 +110,7 @@ function MyOrders() {
         <Row>{`Restaurant ID : ${orderInfo.restaurantId}`}</Row>
         {/* <Row>{`Status : ${orderInfo.status}`}</Row> */}
         <Row>{`Order ID : ${orderInfo.orderId}`}</Row>
+        {orderInfo.instructions && <Row>{`Instructions : ${orderInfo.instructions}`}</Row>}
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -224,6 +226,7 @@ function MyOrders() {
                     name={each._id}
                     restaurant={each.restaurantId}
                     status={each.status}
+                    instructions={each.instructions}
                     variant="link"
                     index={index}
                     onClick={showDetails}

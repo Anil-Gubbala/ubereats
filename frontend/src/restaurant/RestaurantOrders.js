@@ -78,6 +78,7 @@ function RestaurantOrders() {
       status: e.target.getAttribute('status'),
       orderId: e.target.getAttribute('name'),
       index: e.target.getAttribute('index'),
+      instructions: e.target.getAttribute('instructions'),
     }));
     setOrderStatus(e.target.getAttribute('status'));
     setDetailsDelivery(parseInt(e.target.getAttribute('delivery'), 10));
@@ -222,6 +223,7 @@ function RestaurantOrders() {
                     name={each._id}
                     user={each.userId}
                     status={each.status}
+                    instructions={each.instructions}
                     delivery={each.delivery}
                     index={index}
                     variant="link"
@@ -269,6 +271,7 @@ function RestaurantOrders() {
             </Col>
           </Row>
           <Row>{`Order ID : ${orderInfo.orderId}`}</Row>
+          {orderInfo.instructions && <Row>{`Instructions : ${orderInfo.instructions}`}</Row>}
           <Table striped bordered hover>
             <thead>
               <tr>

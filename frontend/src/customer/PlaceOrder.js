@@ -5,11 +5,11 @@ import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 import Modal from 'react-bootstrap/Modal';
 import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { bindActionCreators } from 'redux';
 import { post, get } from '../utils/serverCall';
 import CountriesList from '../utils/CountriesList';
 import Location from '../account/Location';
 import { actionCreators, apiActionCreators } from '../reducers/actionCreators';
-import { bindActionCreators } from 'redux';
 
 function PlaceOrder() {
   const cartState = useSelector((state) => state.cartReducer);
@@ -17,6 +17,7 @@ function PlaceOrder() {
   const [status, setStatus] = useState(0); // 0- not placed, 1- order placed.
   const [deliveryType, setDeliveryType] = useState(0);
   const [restDelivery, setRestDelivery] = useState(0);
+  const [instructions, setInstructions] = useState('');
 
   const dispatch = useDispatch();
   const { doGet, doPost } = bindActionCreators(apiActionCreators, dispatch);
@@ -85,6 +86,7 @@ function PlaceOrder() {
       restaurantId: cartState.restaurantId,
       address: deliveryAddress,
       delivery: deliveryType,
+      instructions,
     });
     // post('/placeOrder', {
     //   restaurantId: cartState.restaurantId,
@@ -232,6 +234,17 @@ function PlaceOrder() {
             </tr>
           </tbody>
         </Table>
+      </Row>
+      <Row>
+        <FloatingLabel controlId="floatingTextarea" label="Special Instructions" className="mb-3">
+          <Form.Control
+            as="textarea"
+            placeholder="Leave a comment here"
+            onChange={(e) => {
+              setInstructions(e.target.value);
+            }}
+          />
+        </FloatingLabel>
       </Row>
       <Row>
         <FloatingLabel

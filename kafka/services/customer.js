@@ -52,6 +52,7 @@ const placeOrder = (msg, callback) => {
         address: msg.data.address,
         delivery: msg.data.delivery,
         isCart: 0,
+        instructions: msg.data.instructions,
         date: Date.now(),
       }
     ),

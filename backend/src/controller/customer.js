@@ -6,14 +6,14 @@ const { response } = require("../utils/response");
 const { topics, kafkaRequest } = require("./kafkaRequest");
 
 const placeOrder = (req, res) => {
-  const { restaurantId, address, delivery } = req.body;
+  const { restaurantId, address, delivery, instructions } = req.body;
   if (!req.user || !req.user.isCustomer) {
     response.unauthorized(res, "unauthorized access");
   } else {
     kafkaRequest(
       topics.request,
       "placeOrder",
-      { email: req.user.email, address, delivery },
+      { email: req.user.email, address, delivery, instructions },
       (err, result) => {
         if (err) {
           response.error(res, 500, err.code);

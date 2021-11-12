@@ -21,6 +21,7 @@ const OrderSchema = new Schema({
     },
   ],
   isCart: { type: Number, required: true, default: 1 },
+  instructions: { type: String },
 });
 
 const OrderModel = mongoose.model("order", OrderSchema);
