@@ -306,15 +306,6 @@ function Navigator() {
         <Row>
           <Navbar bg="dark" variant="dark">
             <Container>
-              <Nav className="me-auto">
-                <Button
-                  onClick={() => {
-                    test('/test', 'second');
-                  }}
-                >
-                  test
-                </Button>
-              </Nav>
               <Navbar.Brand>Uber Eats</Navbar.Brand>
               <Nav className="me-auto">
                 <Link to="/" className="nav-link">

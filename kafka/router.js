@@ -10,6 +10,9 @@ const {
   createDish,
   getDishes,
   updateDish,
+  getRestaurantOrders,
+  updateOrderStatus,
+  deleteDish,
 } = require("./services/restaurant");
 
 const {
@@ -17,6 +20,7 @@ const {
   addToCart,
   addNewToCart,
   getCart,
+  getOrderDetails,
 } = require("./services/common");
 
 const {
@@ -55,6 +59,10 @@ const functionMap = {
   getFavorites,
   removeFromFavorites,
   addNewAddress,
+  getOrderDetails,
+  getRestaurantOrders,
+  updateOrderStatus,
+  deleteDish,
 };
 
 const callFunction = (msg, callback) => {

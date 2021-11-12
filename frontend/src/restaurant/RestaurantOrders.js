@@ -16,8 +16,8 @@ import { bindActionCreators } from 'redux';
 
 function RestaurantOrders() {
   const appCookies = cookie.load(CONSTANTS.COOKIE);
-  const isCustomer = localStorage.getItem(CONSTANTS.IS_CUSTOMER);
-  const jwtToken = localStorage.test(CONSTANTS.TOKEN);
+  const isCustomer = JSON.parse(localStorage.getItem(CONSTANTS.IS_CUSTOMER));
+  const jwtToken = localStorage.getItem(CONSTANTS.TOKEN);
   if (!jwtToken) {
     return <RedirectSignin />;
   }
@@ -34,9 +34,9 @@ function RestaurantOrders() {
   const [data, setData] = useState([]);
   const [dishesData, setDishesData] = useState([]);
   const defaultOrderInfo = {
-    user_id: '',
+    userId: '',
     status: '',
-    order_id: '',
+    orderId: '',
     index: 0,
   };
   const [orderInfo, setOrderInfo] = useState(defaultOrderInfo);
@@ -71,24 +71,36 @@ function RestaurantOrders() {
   }, []);
 
   const showDetails = (e) => {
-    const id = e.target.getAttribute('name');
+    const index = e.target.getAttribute('index');
     setOrderInfo((prev) => ({
       ...prev,
-      user_id: e.target.getAttribute('user'),
+      userId: e.target.getAttribute('user'),
       status: e.target.getAttribute('status'),
-      order_id: e.target.getAttribute('name'),
+      orderId: e.target.getAttribute('name'),
       index: e.target.getAttribute('index'),
     }));
     setOrderStatus(e.target.getAttribute('status'));
     setDetailsDelivery(parseInt(e.target.getAttribute('delivery'), 10));
-    doGet('/getOrderDetails', { id });
+
+    setTotalCost(() =>
+      data[index].dishes.reduce((prev, next) => {
+        let total = parseFloat(prev) + next.count * next.price;
+        total = parseFloat(total.toFixed(2));
+        return total;
+      }, 0)
+    );
+    setDishesData(data[index].dishes);
+    handleShow();
+
+    // doGet('/getOrderDetails', { id });
+
     // get('/getOrderDetails', { id })
     //   .then((response) => {
     //     setOrderInfo((prev) => ({
     //       ...prev,
-    //       user_id: e.target.getAttribute('user'),
+    //       userId: e.target.getAttribute('user'),
     //       status: e.target.getAttribute('status'),
-    //       order_id: e.target.getAttribute('name'),
+    //       orderId: e.target.getAttribute('name'),
     //       index: e.target.getAttribute('index'),
     //     }));
     //     setTotalCost(() =>
@@ -124,11 +136,11 @@ function RestaurantOrders() {
 
   const updateOrderStatus = () => {
     doPost('/updateOrderStatus', {
-      order_id: orderInfo.order_id,
+      orderId: orderInfo.orderId,
       status: orderStatus,
     });
     // post('/updateOrderStatus', {
-    //   order_id: orderInfo.order_id,
+    //   orderId: orderInfo.orderId,
     //   status: orderStatus,
     // }).then(() => {
     //   setDisableUpdate(true);
@@ -184,7 +196,7 @@ function RestaurantOrders() {
           <thead>
             <tr>
               <th>order ID</th>
-              <th>user_id</th>
+              <th>userId</th>
               <th>Date</th>
               <th>Address</th>
               <th>Status</th>
@@ -193,11 +205,11 @@ function RestaurantOrders() {
           </thead>
           <tbody>
             {data.map((each, index) => (
-              <tr key={each.id}>
-                <td>{each.id}</td>
+              <tr key={each._id}>
+                <td>{each._id}</td>
                 <td>
-                  <Link to={`/profile?id=${each.user_id}`} className="nav-link">
-                    {each.user_id}
+                  <Link to={`/profile?id=${each.userId}`} className="nav-link">
+                    {each.userId}
                   </Link>
                 </td>
                 <td>{each.date}</td>
@@ -207,8 +219,8 @@ function RestaurantOrders() {
                 </td>
                 <td>
                   <Button
-                    name={each.id}
-                    user={each.user_id}
+                    name={each._id}
+                    user={each.userId}
                     status={each.status}
                     delivery={each.delivery}
                     index={index}
@@ -228,7 +240,7 @@ function RestaurantOrders() {
           <Modal.Title>Order Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* <Row>{`User : ${orderInfo.user_id}`}</Row> */}
+          {/* <Row>{`User : ${orderInfo.userId}`}</Row> */}
           <Row>
             <Col>Status:</Col>
             <Col>
@@ -256,7 +268,7 @@ function RestaurantOrders() {
               </Form.Select>
             </Col>
           </Row>
-          <Row>{`Order ID : ${orderInfo.order_id}`}</Row>
+          <Row>{`Order ID : ${orderInfo.orderId}`}</Row>
           <Table striped bordered hover>
             <thead>
               <tr>

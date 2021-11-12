@@ -261,23 +261,35 @@ const updateRestaurantInfo = (req, res) => {
 };
 
 const getRestaurantOrders = (req, res) => {
-  const { filter } = req.query;
+  const filter = parseInt(req.query.filter, 10);
   if (!req.user || req.user.isCustomer) {
     response.unauthorized(res, "unauthorized access");
   } else {
-    db.query(
-      filter === 0
-        ? RESTAURANT.GET_RESTAURANT_ORDERS_NEW
-        : RESTAURANT.GET_RESTAURANT_ORDERS_OLD,
-      [req.user.email, filter],
+    kafkaRequest(
+      topics.request,
+      "getRestaurantOrders",
+      { email: req.user.email, filter },
       (err, result) => {
         if (err) {
           response.error(res, 500, err.code);
-          return;
+        } else {
+          res.send(result);
         }
-        res.send(result);
       }
     );
+    // db.query(
+    //   filter === 0
+    // ? RESTAURANT.GET_RESTAURANT_ORDERS_NEW
+    //     : RESTAURANT.GET_RESTAURANT_ORDERS_OLD,
+    //   [req.user.email, filter],
+    //   (err, result) => {
+    //     if (err) {
+    //       response.error(res, 500, err.code);
+    //       return;
+    //     }
+    //     res.send(result);
+    //   }
+    // );
   }
 };
 
@@ -286,17 +298,29 @@ const updateOrderStatus = (req, res) => {
   if (!req.user || req.user.isCustomer) {
     response.unauthorized(res, "unauthorized access");
   } else {
-    db.query(
-      RESTAURANT.UDPATE_ORDER_STATUS,
-      [body.status, body.order_id],
+    kafkaRequest(
+      topics.request,
+      "updateOrderStatus",
+      { status: body.status, id: body.orderId },
       (err, result) => {
         if (err) {
           response.error(res, 500, err.code);
-          return;
+        } else {
+          res.send();
         }
-        res.send();
       }
     );
+    // db.query(
+    //   RESTAURANT.UDPATE_ORDER_STATUS,
+    //   [body.status, body.order_id],
+    //   (err, result) => {
+    //     if (err) {
+    //       response.error(res, 500, err.code);
+    //       return;
+    //     }
+    //     res.send();
+    //   }
+    // );
   }
 };
 
@@ -305,13 +329,25 @@ const deleteDish = (req, res) => {
   if (!req.user || req.user.isCustomer) {
     response.unauthorized(res, "unauthorized access");
   } else {
-    db.query(RESTAURANT.DELETE_DISH, [req.user.email, name], (err, result) => {
-      if (err) {
-        response.error(res, 500, err.code);
-        return;
+    kafkaRequest(
+      topics.request,
+      "deleteDish",
+      { email: req.user.email, name },
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+        } else {
+          res.send();
+        }
       }
-      res.send();
-    });
+    );
+    // db.query(RESTAURANT.DELETE_DISH, [req.user.email, name], (err, result) => {
+    //   if (err) {
+    //     response.error(res, 500, err.code);
+    //     return;
+    //   }
+    //   res.send();
+    // });
   }
 };
 

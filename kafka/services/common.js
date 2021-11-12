@@ -108,4 +108,14 @@ const getCart = (msg, callback) => {
   doExec(OrderModel.findOne({ ...msg.data, isCart: 1 }), callback);
 };
 
-module.exports = { getRestaurantsList, addToCart, addNewToCart, getCart };
+const getOrderDetails = (msg, callback) => {
+  doExec(OrderModel.findById({ _id: msg.data.id }), callback);
+};
+
+module.exports = {
+  getRestaurantsList,
+  addToCart,
+  addNewToCart,
+  getCart,
+  getOrderDetails,
+};

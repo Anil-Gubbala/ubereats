@@ -52,14 +52,23 @@ function MyOrders() {
   }, []);
 
   const showDetails = (e) => {
-    const id = e.target.getAttribute('name');
+    const index = e.target.getAttribute('index');
     setOrderInfo((prev) => ({
       ...prev,
       restaurantId: e.target.getAttribute('restaurant'),
       status: e.target.getAttribute('status'),
       orderId: e.target.getAttribute('name'),
     }));
-    doGet('/getOrderDetails', { id });
+    setTotalCost(() =>
+      data[index].dishes.reduce((prev, next) => {
+        let total = parseFloat(prev) + next.count * next.price;
+        total = parseFloat(total.toFixed(2));
+        return total;
+      }, 0)
+    );
+    setDishesData(data[index].dishes);
+    handleShow();
+    // doGet('/getOrderDetails', { id });
     // get('/getOrderDetails', { id })
     //   .then((response) => {
     //     setTotalCost(() =>
@@ -201,7 +210,7 @@ function MyOrders() {
             </tr>
           </thead>
           <tbody>
-            {data.map((each) => (
+            {data.map((each, index) => (
               <tr key={each._id}>
                 <td>{each._id}</td>
                 <td>{each.restaurantId}</td>
@@ -216,6 +225,7 @@ function MyOrders() {
                     restaurant={each.restaurantId}
                     status={each.status}
                     variant="link"
+                    index={index}
                     onClick={showDetails}
                   >
                     Details

@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+const OrderModel = require("../models/order");
 const RestaurantModel = require("../models/restaurant");
 
 const { doExec } = require("../utils/doQuery");
@@ -68,10 +70,47 @@ const getDishes = (msg, callback) => {
   }
 };
 
+const getRestaurantOrders = (msg, callback) => {
+  const { email, filter } = msg.data;
+  const query = {};
+  query.email = email;
+  query.isCart = 0;
+  if (filter === 0) {
+    query.status = { $lte: 2 };
+  } else {
+    query.status = filter;
+  }
+
+  doExec(OrderModel.find(query), callback);
+};
+
+const updateOrderStatus = (msg, callback) => {
+  doExec(
+    OrderModel.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(msg.data.id) },
+      { status: msg.data.status }
+    ),
+    callback
+  );
+};
+
+const deleteDish = (msg, callback) => {
+  doExec(
+    RestaurantModel.findOneAndUpdate(
+      { email: msg.data.email },
+      { $pull: { dishes: { name: msg.data.name } } }
+    ),
+    callback
+  );
+};
+
 module.exports = {
   getRestaurantInfo,
   updateRestaurantInfo,
   createDish,
   getDishes,
   updateDish,
+  getRestaurantOrders,
+  updateOrderStatus,
+  deleteDish,
 };
