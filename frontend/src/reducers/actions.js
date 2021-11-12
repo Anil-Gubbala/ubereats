@@ -56,6 +56,39 @@ export const addItem = (payload) => (dispatch, getState) => {
   }
 };
 
+export const removeItem = (payload) => (dispatch, getState) => {
+  const cart = getState().cartReducer;
+  const { restaurantId, dish, price } = payload;
+  let count;
+  if (cart.restaurantId) {
+    if (cart.dishes[dish]) {
+      count = parseInt(cart.dishes[dish][0], 10) - 1;
+    }
+  }
+  post('/addToCart', {
+    restaurantId,
+    dish,
+    count,
+    price,
+  })
+    .then(() => {
+      if (count <= 0) {
+        delete cart.dishes[dish];
+        if (Object.keys(cart.dishes).length <= 0) {
+          cart.restaurantId = '';
+          cart.dishes = {};
+        }
+      } else {
+        cart.restaurantId = restaurantId;
+        cart.dishes = { ...cart.dishes, [dish]: [count, price] };
+      }
+      dispatch({ type: 'REMOVE', payload: cart });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
 export const updateCart = (payload) => (dispatch) => {
   dispatch({ type: 'INSERT', payload });
 };

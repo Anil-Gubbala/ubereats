@@ -1,6 +1,6 @@
 const initialState = {
   restaurantId: '',
-  dishes: {},
+  dishes: {}, // key: name , value : [count, price]
 };
 
 const cartReducer = (state = initialState, action) => {
@@ -11,6 +11,12 @@ const cartReducer = (state = initialState, action) => {
         ...state,
       };
     case 'INSERT':
+      return {
+        ...state,
+        restaurantId: action.payload.restaurantId,
+        dishes: action.payload.dishes,
+      };
+    case 'REMOVE':
       return {
         ...state,
         restaurantId: action.payload.restaurantId,

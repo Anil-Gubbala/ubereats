@@ -20,7 +20,7 @@ const createDish = (msg, callback) => {
   const { email } = msg.data.query;
   doExec(
     RestaurantModel.findOneAndUpdate(
-      { email },
+      { email, "dishes.name": { $ne: msg.data.value.name } },
       { $push: { dishes: msg.data.value } }
     ),
     callback

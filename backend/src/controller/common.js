@@ -121,8 +121,8 @@ const addToCart = (req, res) => {
       topics.request,
       "addToCart",
       {
-        query: { userId: req.user.email, restaurantId, dish },
-        value: { count, price },
+        query: { userId: req.user.email, restaurantId },
+        value: { dish, count, price },
       },
       (err, result) => {
         if (err) {

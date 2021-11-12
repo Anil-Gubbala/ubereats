@@ -47,6 +47,8 @@ function Navigator() {
     updateVegType,
     insertNewRest,
     updateFavoriteMode,
+    addItem,
+    removeItem,
   } = bindActionCreators(actionCreators, dispatch);
 
   const { doGet } = bindActionCreators(apiActionCreators, dispatch);
@@ -192,6 +194,23 @@ function Navigator() {
     }
   };
 
+  const incrementItem = (e) => {
+    console.log('increment');
+    addItem({
+      restaurantId: e.target.getAttribute('restaurant'),
+      dish: e.target.getAttribute('dish'),
+      price: e.target.getAttribute('price'),
+    });
+  };
+  const decrementItem = (e) => {
+    console.log('decrement');
+    removeItem({
+      restaurantId: e.target.getAttribute('restaurant'),
+      dish: e.target.getAttribute('dish'),
+      price: e.target.getAttribute('price'),
+    });
+  };
+
   const filters = (
     <Offcanvas show={canvas} onHide={closeCanvas}>
       <Offcanvas.Header closeButton>
@@ -260,13 +279,29 @@ function Navigator() {
             {Object.keys(cartState.dishes).map((key) => (
               <Row key={key}>
                 <Col>{key}</Col>
-                {/* <Col>
-                      <button>-</button>
-                    </Col> */}
+                <Col>
+                  <button
+                    restaurant={cartState.restaurantId}
+                    dish={key}
+                    price={cartState.dishes[key][1]}
+                    type="button"
+                    onClick={decrementItem}
+                  >
+                    -
+                  </button>
+                </Col>
                 <Col>{cartState.dishes[key][0]} </Col>
-                {/* <Col>
-                      <button>+</button>
-                    </Col> */}
+                <Col>
+                  <button
+                    restaurant={cartState.restaurantId}
+                    dish={key}
+                    price={cartState.dishes[key][1]}
+                    type="button"
+                    onClick={incrementItem}
+                  >
+                    +
+                  </button>
+                </Col>
                 <Col> {`$${cartState.dishes[key][1]}`}</Col>
               </Row>
             ))}

@@ -66,6 +66,7 @@ const myOrders = (msg, callback) => {
       email: msg.data.email,
       status: msg.data.filter,
       delivery: msg.data.deliveryType,
+      isCart: 0,
     }),
     callback
   );
