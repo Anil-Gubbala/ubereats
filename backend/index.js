@@ -42,7 +42,7 @@ app.use(
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "http://18.116.80.129:3000",
     methods: ["GET", "POST", "PUT"],
     credentials: true,
   })
