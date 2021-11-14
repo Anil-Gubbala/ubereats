@@ -62,13 +62,24 @@ const placeOrder = (msg, callback) => {
 
 const myOrders = (msg, callback) => {
   // const { query, value } = msg.data;
+  const query = {
+    userId: msg.data.email,
+    status: msg.data.filter,
+    delivery: msg.data.deliveryType,
+    isCart: 0,
+  };
+  if (parseInt(msg.data.filter, 10) === 10) {
+    delete query.status;
+  }
   doExec(
-    OrderModel.find({
-      email: msg.data.email,
-      status: msg.data.filter,
-      delivery: msg.data.deliveryType,
-      isCart: 0,
-    }),
+    OrderModel.find(
+      query,
+      {},
+      {
+        skip: msg.data.currentPage * msg.data.rowsPerPage,
+        limit: msg.data.rowsPerPage,
+      }
+    ),
     callback
   );
 };
@@ -109,6 +120,32 @@ const addNewAddress = (msg, callback) => {
   );
 };
 
+const cancelMyOrder = (msg, callback) => {
+  // const { query, value } = msg.data;
+  doExec(
+    OrderModel.findOneAndUpdate(
+      {
+        _id: msg.data.orderId,
+      },
+      { status: 4 }
+    ),
+    callback
+  );
+};
+
+const getOrderCount = (msg, callback) => {
+  const query = {
+    userId: msg.data.email,
+    status: msg.data.filter,
+    delivery: msg.data.deliveryType,
+    isCart: 0,
+  };
+  if (parseInt(msg.data.filter, 10) === 10) {
+    delete query.status;
+  }
+  doExec(OrderModel.find(query).count(), callback);
+};
+
 module.exports = {
   placeOrder,
   addToFavorites,
@@ -120,4 +157,6 @@ module.exports = {
   getFavorites,
   removeFromFavorites,
   addNewAddress,
+  cancelMyOrder,
+  getOrderCount,
 };

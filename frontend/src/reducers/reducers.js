@@ -30,6 +30,8 @@ import {
   getAllAddressesApi,
   getRestaurantDeliveryApi,
   addNewAddressApi,
+  cancelMyOrderApi,
+  getOrderCountApi,
 } from './apiReducers';
 
 const reducers = combineReducers({
@@ -63,6 +65,8 @@ const reducers = combineReducers({
   getAllAddressesApi,
   getRestaurantDeliveryApi,
   addNewAddressApi,
+  cancelMyOrderApi,
+  getOrderCountApi,
 });
 
 export default reducers;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Col, Container, FloatingLabel, Form, Row, Table } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import TablePagination from '@mui/material/TablePagination';
 import { get } from '../utils/serverCall';
 
 import { DELIVERY_STATUS, ORDER_DELIVERY_MODE, PICKUP_STATUS } from '../utils/consts';
@@ -22,16 +23,25 @@ function MyOrders() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const dispatch = useDispatch();
-  const { doGet } = bindActionCreators(apiActionCreators, dispatch);
+  const { doGet, doPost } = bindActionCreators(apiActionCreators, dispatch);
   const myOrdersApi = useSelector((state) => state.myOrdersApi);
+  const cancelMyOrderApi = useSelector((state) => state.cancelMyOrderApi);
   const getOrderDetailsApi = useSelector((state) => state.getOrderDetailsApi);
+  const getOrderCountApi = useSelector((state) => state.getOrderCountApi);
 
   const [filter, setFilter] = useState(0);
   const [deliveryType, setDeliveryType] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
+  const [cancelIndex, setCancelIndex] = useState(null);
 
-  const getMyOrders = (param1, param2) => {
-    doGet('/myOrders', { deliveryType: param1, filter: param2 });
+  const [cancelMyOrderFlag, setCancelMyOrderFlag] = useState(false);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(2);
+  const [totalPages, setTotalPages] = useState(-1);
+
+  const getMyOrders = (param1, param2, perPage = rowsPerPage, currentPage = 0) => {
+    doGet('/myOrders', { deliveryType: param1, filter: param2, rowsPerPage: perPage, currentPage });
     // get('/myOrders', { deliveryType: param1, filter: param2 })
     //   .then((response) => {
     //     setData(response);
@@ -47,6 +57,39 @@ function MyOrders() {
     }
   }, [myOrdersApi]);
 
+  const getOrderCount = (deliveryType, filter) => {
+    doGet('/getOrderCount', { deliveryType, filter });
+  };
+
+  const handleChangePage = (e, newPage, dType = deliveryType, filt = filter) => {
+    setPage(newPage);
+    getMyOrders(dType, filt, rowsPerPage, newPage);
+  };
+
+  const handleFilterChange = (dType = deliveryType, filt = filter) => {
+    getOrderCount(dType, filt);
+    handleChangePage({}, 0, dType, filt);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    setPage(0);
+    getMyOrders(deliveryType, filter, newRowsPerPage, 0);
+  };
+
+  useEffect(() => {
+    getOrderCount(deliveryType, filter);
+  }, []);
+
+  useEffect(() => {
+    if (getOrderCountApi.status === 1) {
+      if (getOrderCountApi.error === '') {
+        setTotalPages(getOrderCountApi.response.count);
+      }
+    }
+  }, [getOrderCountApi]);
+
   useEffect(() => {
     getMyOrders(deliveryType, filter);
   }, []);
@@ -55,6 +98,7 @@ function MyOrders() {
     const index = e.target.getAttribute('index');
     setOrderInfo((prev) => ({
       ...prev,
+      index: e.target.getAttribute('index'),
       restaurantId: e.target.getAttribute('restaurant'),
       status: e.target.getAttribute('status'),
       orderId: e.target.getAttribute('name'),
@@ -101,6 +145,29 @@ function MyOrders() {
     }
   }, [getOrderDetailsApi]);
 
+  useEffect(() => {
+    if (cancelMyOrderFlag && cancelMyOrderApi.status === 1) {
+      if (cancelMyOrderApi.error === '') {
+        // data.splice(cancelIndex, 1);
+        setCancelMyOrderFlag(false);
+        handleClose();
+        setData((prev) => {
+          const prevOrder = prev[cancelIndex];
+          prevOrder.status = 4;
+          return prev;
+        });
+      }
+    }
+  }, [cancelMyOrderApi]);
+
+  const cancelMyOrder = (e) => {
+    setCancelIndex(e.target.getAttribute('index'));
+    setCancelMyOrderFlag(true);
+    doPost('/cancelMyOrder', {
+      orderId: e.target.getAttribute('orderid'),
+    });
+  };
+
   const detailsDialog = (
     <Modal show={show} onHide={handleClose} animation={false}>
       <Modal.Header closeButton>
@@ -134,6 +201,19 @@ function MyOrders() {
             </tr>
           </tbody>
         </Table>
+        {parseInt(orderInfo.status, 10) === 0 && (
+          <Row>
+            <Button
+              orderid={orderInfo.orderId}
+              index={orderInfo.index}
+              onClick={cancelMyOrder}
+              style={{ marginLeft: 'auto', width: 'fit-content' }}
+              siez="sm"
+            >
+              Cancel Order
+            </Button>
+          </Row>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
@@ -157,7 +237,9 @@ function MyOrders() {
               value={deliveryType}
               onChange={(e) => {
                 setDeliveryType(parseInt(e.target.value, 10));
-                getMyOrders(parseInt(e.target.value, 10), filter);
+                handleFilterChange(parseInt(e.target.value, 10), filter);
+                // getMyOrders(parseInt(e.target.value, 10), filter);
+                // getOrderCount(parseInt(e.target.value, 10), filter);
               }}
             >
               {Object.keys(ORDER_DELIVERY_MODE).map((key) => (
@@ -179,7 +261,9 @@ function MyOrders() {
               value={filter}
               onChange={(e) => {
                 setFilter(parseInt(e.target.value, 10));
-                getMyOrders(deliveryType, parseInt(e.target.value, 10));
+                handleFilterChange(deliveryType, parseInt(e.target.value, 10));
+                // getMyOrders(deliveryType, parseInt(e.target.value, 10));
+                // getOrderCount(deliveryType, parseInt(e.target.value, 10));
               }}
             >
               {deliveryType === 0 &&
@@ -216,7 +300,7 @@ function MyOrders() {
               <tr key={each._id}>
                 <td>{each._id}</td>
                 <td>{each.restaurantId}</td>
-                <td>{each.date}</td>
+                <td>{new Date(each.date).toUTCString()}</td>
                 <td>
                   {each.delivery === 0 ? DELIVERY_STATUS[each.status] : PICKUP_STATUS[each.status]}
                 </td>
@@ -238,6 +322,17 @@ function MyOrders() {
             ))}
           </tbody>
         </Table>
+      </Row>
+      <Row>
+        <TablePagination
+          component="div"
+          count={totalPages}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          rowsPerPageOptions={[2, 5, 10]}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Row>
       {detailsDialog}
     </Container>

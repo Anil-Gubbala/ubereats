@@ -30,6 +30,8 @@ const {
   getAllAddresses,
   addNewAddress,
   getRestaurantDelivery,
+  cancelMyOrder,
+  getOrderCount,
 } = require("./controller/customer");
 const { checkAuth } = require("./utils/auth");
 const { makeRequest } = require("./kafka/client");
@@ -69,6 +71,8 @@ router.route("/getFavorites").get(checkAuth, getFavorites);
 router.route("/getAllAddresses").get(checkAuth, getAllAddresses);
 router.route("/addNewAddress").post(checkAuth, addNewAddress);
 router.route("/getRestaurantDelivery").get(checkAuth, getRestaurantDelivery);
+router.route("/cancelMyOrder").post(checkAuth, cancelMyOrder);
+router.route("/getOrderCount").get(checkAuth, getOrderCount);
 
 router.route("/kafka").get((req, res) => {
   makeRequest("request-topic", { test: "test" }, (error, response) => {

@@ -213,8 +213,8 @@ function RestaurantOrders() {
                     {each.userId}
                   </Link>
                 </td>
-                <td>{each.date}</td>
-                <td>{each.delivery === 0 ? each.location : 'Pick up'}</td>
+                <td>{new Date(each.date).toUTCString()}</td>
+                <td>{each.delivery === 0 ? each.address : 'Pick up'}</td>
                 <td>
                   {each.delivery === 0 ? DELIVERY_STATUS[each.status] : PICKUP_STATUS[each.status]}
                 </td>

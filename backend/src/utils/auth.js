@@ -4,16 +4,16 @@ const passport = require("passport");
 
 // Setup work and export for the JWT passport strategy
 function auth() {
-  console.log("entered auth");
+  // console.log("entered auth");
   const opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("jwt"),
     secretOrKey: "ubereatslab2",
   };
-  console.log(opts);
+  // console.log(opts);
   passport.use(
     new JwtStrategy(opts, (payload, callback) => {
-      console.log("entered auth");
-      console.log(payload);
+      // console.log("entered auth");
+      // console.log(payload);
       callback(null, payload);
     })
   );

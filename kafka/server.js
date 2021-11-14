@@ -34,8 +34,8 @@ function handleTopicRequest(topicName, fname) {
   const consumer = connection.getConsumer(topicName);
   // console.log("server is running ");
   consumer.on("message", (message) => {
-    // console.log(`message received for ${topicName} `, fname);
-    // console.log(JSON.stringify(message.value));
+    console.log(`message received for ${topicName} `, fname);
+    console.log(JSON.stringify(message.value));
     if (!IsJsonString(message.value)) {
       return;
     }

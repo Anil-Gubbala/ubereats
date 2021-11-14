@@ -20,8 +20,8 @@ const RestaurantSchema = new Schema({
   picture: { type: String },
   contact: { type: Number },
   description: { type: String },
-  start: { type: String },
-  end: { type: String },
+  start: { type: String, default: "09:00" },
+  end: { type: String, default: "18:00" },
   delivery: { type: Number },
   dishes: {
     type: Array,

@@ -22,7 +22,7 @@ import { actionCreators, apiActionCreators } from '../reducers/actionCreators';
 function Profile() {
   const status = localStorage.getItem(CONSTANTS.STATUS);
   const cookieData = cookie.load(CONSTANTS.COOKIE);
-  const isCustomer = localStorage.getItem(CONSTANTS.IS_CUSTOMER);
+  const isCustomer = JSON.parse(localStorage.getItem(CONSTANTS.IS_CUSTOMER));
   const windowUrl = window.location.search;
   const params = new URLSearchParams(windowUrl);
   let email = '';
@@ -173,6 +173,7 @@ function Profile() {
                 name="country"
                 value={formData.primaryAddress.country}
                 onChange={eventHandler}
+                required
               />
               <Location
                 value={formData.primaryAddress.location}

@@ -605,4 +605,48 @@ export const addNewAddressApi = (state = defaultResponse, action) => {
   }
 };
 
-export const test = 1;
+export const cancelMyOrderApi = (state = defaultResponse, action) => {
+  switch (action.type) {
+    case 'CANCEL_MY_ORDER_API_SUCCESS':
+      return {
+        ...state,
+        response: action.payload,
+        error: '',
+        status: 1,
+      };
+    case 'CANCEL_MY_ORDER_API_ERROR':
+      return {
+        ...state,
+        response: {},
+        error: action.payload,
+        status: 1,
+      };
+    case 'RESET':
+      return { ...defaultResponse };
+    default:
+      return state;
+  }
+};
+
+export const getOrderCountApi = (state = defaultResponse, action) => {
+  switch (action.type) {
+    case 'GET_ORDER_COUNT_API_SUCCESS':
+      return {
+        ...state,
+        response: action.payload,
+        error: '',
+        status: 1,
+      };
+    case 'GET_ORDER_COUNT_API_ERROR':
+      return {
+        ...state,
+        response: {},
+        error: action.payload,
+        status: 1,
+      };
+    case 'RESET':
+      return { ...defaultResponse };
+    default:
+      return state;
+  }
+};

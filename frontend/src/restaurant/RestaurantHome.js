@@ -88,7 +88,8 @@ function RestaurantHome() {
     setOpen(false);
   };
 
-  const handleSave = () => {
+  const handleSave = (e) => {
+    e.preventDefault();
     doPost('/updateRestaurantInfo', dialogData);
     // post('/updateRestaurantInfo', dialogData)
     //   .then(() => {
@@ -115,102 +116,117 @@ function RestaurantHome() {
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Update Restaurant Info</DialogTitle>
       <DialogContent>
-        <TextField
-          margin="dense"
-          id="rdname"
-          name="name"
-          label="Name"
-          fullWidth
-          variant="standard"
-          value={dialogData.name}
-          onChange={handleDialogChange}
-        />
-        <TextField
-          margin="dense"
-          id="rddescription"
-          name="description"
-          label="Description"
-          fullWidth
-          variant="standard"
-          value={dialogData.description}
-          onChange={handleDialogChange}
-        />
-        <TextField
-          margin="dense"
-          id="rdcontact"
-          name="contact"
-          label="Contact Information"
-          fullWidth
-          variant="standard"
-          value={dialogData.contact}
-          onChange={handleDialogChange}
-        />
-        <FloatingLabel controlId="start" label="Start Time" className="mb-3">
-          <Form.Control
-            name="start"
-            type="time"
-            onChange={handleDialogChange}
-            required
-            value={dialogData.start}
-          />
-        </FloatingLabel>
-        <FloatingLabel controlId="end" label="End Time" className="mb-3">
-          <Form.Control
-            name="end"
-            type="time"
-            onChange={handleDialogChange}
-            required
-            value={dialogData.end}
-          />
-        </FloatingLabel>
-        <Form.Select name="delivery" value={dialogData.delivery} onChange={handleDialogChange}>
-          {Object.keys(REST_DELIVERY_MODE).map((key) => (
-            <option key={key} value={key}>
-              {REST_DELIVERY_MODE[key]}
-            </option>
-          ))}
-        </Form.Select>
-
-        <Location
-          value={dialogData.location}
-          change={(e) => {
-            setDialogData((prev) => ({ ...prev, location: e }));
-          }}
-          select={(e) => {
-            geocodeByAddress(e).then((results) => {
-              setDialogData((prev) => ({
-                ...prev,
-                location: e,
-              }));
-              getLatLng(results[0])
-                .then(({ lat, lng }) => {
-                  setDialogData((prev) => ({
-                    ...prev,
-                    latitude: lat,
-                    longitude: lng,
-                  }));
-                })
-                .catch((error) => console.log(error));
-            });
-          }}
-        />
-        <Form.Group className="mb-3" controlId="nickname">
-          <Col xs={6} md={4}>
-            <Image src={dialogData.picture} roundedCircle thumbnail="true" />
-          </Col>
-          <Col>
-            <FileUpload
-              onUpload={(e) => {
-                setDialogData({ ...dialogData, picture: e });
-              }}
-              id={`${new Date().valueOf() + dialogData.email}restaurantPic`}
+        <Form id="updateRestaurantForm" onSubmit={handleSave}>
+          <FloatingLabel controlId="rdname" label="Name" className="mb-3">
+            <Form.Control
+              name="name"
+              type="input"
+              onChange={handleDialogChange}
+              required
+              value={dialogData.name}
             />
-          </Col>
-        </Form.Group>
+          </FloatingLabel>
+          <FloatingLabel controlId="rdddescription" label="Description" className="mb-3">
+            <Form.Control
+              name="description"
+              type="input"
+              onChange={handleDialogChange}
+              required
+              value={dialogData.description}
+            />
+          </FloatingLabel>
+          <FloatingLabel controlId="rdcontact" label="Contact Information" className="mb-3">
+            <Form.Control
+              name="contact"
+              type="number"
+              min="1000000000"
+              max="9999999999"
+              onInvalid={(e) => {
+                e.target.setCustomValidity('Enter valid number');
+              }}
+              onInput={(e) => {
+                e.target.setCustomValidity('');
+              }}
+              onChange={(e) => {
+                e.target.setCustomValidity('');
+                handleDialogChange(e);
+              }}
+              required
+              value={dialogData.contact}
+            />
+          </FloatingLabel>
+
+          <FloatingLabel controlId="start" label="Start Time" className="mb-3">
+            <Form.Control
+              name="start"
+              type="time"
+              onChange={handleDialogChange}
+              required
+              value={dialogData.start}
+            />
+          </FloatingLabel>
+          <FloatingLabel controlId="end" label="End Time" className="mb-3">
+            <Form.Control
+              name="end"
+              type="time"
+              onChange={handleDialogChange}
+              required
+              value={dialogData.end}
+            />
+          </FloatingLabel>
+          <Form.Select name="delivery" value={dialogData.delivery} onChange={handleDialogChange}>
+            {Object.keys(REST_DELIVERY_MODE).map((key) => (
+              <option key={key} value={key}>
+                {REST_DELIVERY_MODE[key]}
+              </option>
+            ))}
+          </Form.Select>
+
+          <Location
+            value={dialogData.location}
+            change={(e) => {
+              setDialogData((prev) => ({ ...prev, location: e }));
+            }}
+            select={(e) => {
+              geocodeByAddress(e).then((results) => {
+                setDialogData((prev) => ({
+                  ...prev,
+                  location: e,
+                }));
+                getLatLng(results[0])
+                  .then(({ lat, lng }) => {
+                    setDialogData((prev) => ({
+                      ...prev,
+                      latitude: lat,
+                      longitude: lng,
+                    }));
+                  })
+                  .catch((error) => console.log(error));
+              });
+            }}
+          />
+          <Form.Group className="mb-3" controlId="nickname">
+            <Col xs={6} md={4}>
+              <Image src={dialogData.picture} roundedCircle thumbnail="true" />
+            </Col>
+            <Col>
+              <FileUpload
+                onUpload={(e) => {
+                  setDialogData({ ...dialogData, picture: e });
+                }}
+                id={`${new Date().valueOf() + dialogData.email}restaurantPic`}
+              />
+            </Col>
+          </Form.Group>
+        </Form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleSave}>Save</Button>
+        <Button type="submit" onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button form="updateRestaurantForm" type="submit">
+          Save
+        </Button>
       </DialogActions>
     </Dialog>
   );

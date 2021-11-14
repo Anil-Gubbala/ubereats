@@ -58,14 +58,20 @@ const placeOrder = (req, res) => {
 
 const myOrders = (req, res) => {
   console.log(req.user);
-  const { filter, deliveryType } = req.query;
+  const { filter, deliveryType, rowsPerPage, currentPage } = req.query;
   if (!req.user || !req.user.isCustomer) {
     response.unauthorized(res, "unauthorized access");
   } else {
     kafkaRequest(
       topics.request,
       "myOrders",
-      { email: req.user.email, filter, deliveryType },
+      {
+        email: req.user.email,
+        filter,
+        deliveryType,
+        rowsPerPage: parseInt(rowsPerPage, 10),
+        currentPage: parseInt(currentPage, 10),
+      },
       (err, result) => {
         if (err) {
           response.error(res, 500, err.code);
@@ -116,14 +122,11 @@ const updateUserInfo = (req, res) => {
     contact,
     email,
     dob,
-    location,
+    primaryAddress,
     name,
     nickname,
     picture,
     about,
-    country,
-    latitude,
-    longitude,
   } = req.body;
   if (!req.user || !req.user.isCustomer) {
     response.unauthorized(res, "unauthorized access");
@@ -142,7 +145,7 @@ const updateUserInfo = (req, res) => {
           nickname,
           picture,
           about,
-          primaryAddress: { location, country, latitude, longitude },
+          primaryAddress,
         },
       },
       (err, result) => {
@@ -385,6 +388,45 @@ const getRestaurantDelivery = (req, res) => {
   }
 };
 
+const cancelMyOrder = (req, res) => {
+  if (!req.user) {
+    response.unauthorized(res, "unauthorized access");
+  } else {
+    kafkaRequest(
+      topics.request,
+      "cancelMyOrder",
+      { orderId: req.body.orderId },
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+        } else {
+          res.send(req.body.orderId);
+        }
+      }
+    );
+  }
+};
+
+const getOrderCount = (req, res) => {
+  const { filter, deliveryType } = req.query;
+  if (!req.user) {
+    response.unauthorized(res, "unauthorized access");
+  } else {
+    kafkaRequest(
+      topics.request,
+      "getOrderCount",
+      { email: req.user.email, filter, deliveryType },
+      (err, result) => {
+        if (err) {
+          response.error(res, 500, err.code);
+        } else {
+          res.send({ count: result });
+        }
+      }
+    );
+  }
+};
+
 module.exports = {
   placeOrder,
   myOrders,
@@ -396,4 +438,6 @@ module.exports = {
   getAllAddresses,
   addNewAddress,
   getRestaurantDelivery,
+  cancelMyOrder,
+  getOrderCount,
 };

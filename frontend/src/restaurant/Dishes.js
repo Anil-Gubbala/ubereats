@@ -30,7 +30,7 @@ import { actionCreators, apiActionCreators } from '../reducers/actionCreators';
 
 import { get, post } from '../utils/serverCall';
 import { restaurant } from '../reducers/actions';
-import { Col, Form } from 'react-bootstrap';
+import { Col, Form, InputGroup } from 'react-bootstrap';
 import FileUpload from '../common/FileUpload';
 import { DISH_CATEGORY, VEG } from '../utils/consts';
 
@@ -102,7 +102,8 @@ export default function Dishes(props) {
     setOpen(false);
   };
 
-  const createDish = () => {
+  const createDish = (e) => {
+    e.preventDefault();
     if (updateMode) {
       doPost('/updateDish', {
         ...dialogData,
@@ -200,90 +201,101 @@ export default function Dishes(props) {
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Add Dish</DialogTitle>
       <DialogContent>
-        <Stack>
-          <TextField
-            id="dialogName"
-            name="name"
-            label="Dish Name"
-            variant="standard"
-            value={dialogData.name}
-            onChange={handleDialogChange}
-          />
-          <TextField
-            id="dialogIngredients"
-            name="ingredients"
-            label="Ingredients"
-            variant="standard"
-            value={dialogData.ingredients}
-            onChange={handleDialogChange}
-          />
-
-          <InputLabel htmlFor="dialogAmount">Price</InputLabel>
-          <Input
-            id="dialogAmount"
-            name="price"
-            startAdornment={<InputAdornment position="start">$</InputAdornment>}
-            value={dialogData.price}
-            onChange={handleDialogChange}
-          />
-          <TextField
-            id="dialogDescription"
-            name="description"
-            label="Description"
-            variant="standard"
-            value={dialogData.description}
-            onChange={handleDialogChange}
-          />
-          <br />
-          <FloatingLabel controlId="floatingSelect" label="Dish Category">
-            <Form.Select
-              aria-label="Category"
-              value={dialogData.category}
-              onChange={handleDialogChange}
-              name="category"
-            >
-              {Object.keys(DISH_CATEGORY).map((key) => (
-                <option key={key} value={key}>
-                  {DISH_CATEGORY[key]}
-                </option>
-              ))}
-            </Form.Select>
-          </FloatingLabel>
-          <br />
-          <FloatingLabel controlId="floatingSelect" label="Dish Type">
-            <Form.Select
-              aria-label="type"
-              value={dialogData.type}
-              onChange={handleDialogChange}
-              name="type"
-            >
-              {Object.keys(VEG).map((key) => (
-                <option key={key} value={key}>
-                  {VEG[key]}
-                </option>
-              ))}
-            </Form.Select>
-          </FloatingLabel>
-        </Stack>
-        <Stack alignItems="center" spacing={2}>
-          <Form.Group className="mb-3" controlId="nickname">
-            <Col xs={6} md={4}>
-              <Image src={dialogData.picture} roundedCircle thumbnail="true" />
-            </Col>
-            <Col>
-              <FileUpload
-                onUpload={(e) => {
-                  setDialogData({ ...dialogData, picture: e });
-                }}
-                id={`${new Date().valueOf() + params.get('id') + dialogData.name}`}
+        <Form id="createDishForm" onSubmit={createDish}>
+          <Stack>
+            <FloatingLabel controlId="dialogName" label="Dish Name" className="mb-3">
+              <Form.Control
+                name="name"
+                type="input"
+                onChange={handleDialogChange}
+                required
+                value={dialogData.name}
               />
-            </Col>
-          </Form.Group>
-        </Stack>
+            </FloatingLabel>
+            <FloatingLabel controlId="ingredients" label="Ingredients" className="mb-3">
+              <Form.Control
+                name="ingredients"
+                type="input"
+                onChange={handleDialogChange}
+                required
+                value={dialogData.ingredients}
+              />
+            </FloatingLabel>
+            <FloatingLabel controlId="dialogAmount" label="Price in $" className="mb-3">
+              <Form.Control
+                name="price"
+                onChange={handleDialogChange}
+                required
+                type="number"
+                step="0.01"
+                value={dialogData.price}
+              />
+            </FloatingLabel>
+
+            <FloatingLabel controlId="description" label="Description" className="mb-3">
+              <Form.Control
+                name="description"
+                type="input"
+                onChange={handleDialogChange}
+                required
+                value={dialogData.description}
+              />
+            </FloatingLabel>
+
+            <br />
+            <FloatingLabel controlId="floatingSelect" label="Dish Category">
+              <Form.Select
+                aria-label="Category"
+                value={dialogData.category}
+                onChange={handleDialogChange}
+                name="category"
+                required
+              >
+                {Object.keys(DISH_CATEGORY).map((key) => (
+                  <option key={key} value={key}>
+                    {DISH_CATEGORY[key]}
+                  </option>
+                ))}
+              </Form.Select>
+            </FloatingLabel>
+            <br />
+            <FloatingLabel controlId="floatingSelect" label="Dish Type">
+              <Form.Select
+                aria-label="type"
+                value={dialogData.type}
+                onChange={handleDialogChange}
+                name="type"
+              >
+                {Object.keys(VEG).map((key) => (
+                  <option key={key} value={key}>
+                    {VEG[key]}
+                  </option>
+                ))}
+              </Form.Select>
+            </FloatingLabel>
+          </Stack>
+          <Stack alignItems="center" spacing={2}>
+            <Form.Group className="mb-3" controlId="nickname">
+              <Col xs={6} md={4}>
+                <Image src={dialogData.picture} roundedCircle thumbnail="true" />
+              </Col>
+              <Col>
+                <FileUpload
+                  onUpload={(e) => {
+                    setDialogData({ ...dialogData, picture: e });
+                  }}
+                  id={`${new Date().valueOf() + params.get('id') + dialogData.name}`}
+                />
+              </Col>
+            </Form.Group>
+          </Stack>
+        </Form>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Close</Button>
-        <Button onClick={createDish}>Confirm</Button>
+        <Button type="submit" form="createDishForm">
+          Confirm
+        </Button>
       </DialogActions>
     </Dialog>
   );

@@ -86,7 +86,7 @@ KafkaRPC.prototype.setupResponseQueue = function (producer, topicName, next) {
   // subscribe to messages
   const consumer = self.connection.getConsumer("response_topic");
   consumer.on("message", (message) => {
-    // console.log("msg received");
+    console.log("msg received");
     if (!IsJsonString(message.value)) {
       return;
     }

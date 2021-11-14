@@ -17,6 +17,7 @@ export const DELIVERY_STATUS = {
   2: 'On the way',
   3: 'Delivered',
   4: 'Cancelled',
+  10: 'All',
 };
 
 export const PICKUP_STATUS = {
@@ -25,6 +26,7 @@ export const PICKUP_STATUS = {
   2: 'Ready for pickup',
   3: 'Picked up',
   4: 'Cancelled',
+  10: 'All',
 };
 
 export const LOG_REDUCER = {

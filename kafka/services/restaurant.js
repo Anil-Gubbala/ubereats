@@ -73,7 +73,7 @@ const getDishes = (msg, callback) => {
 const getRestaurantOrders = (msg, callback) => {
   const { email, filter } = msg.data;
   const query = {};
-  query.email = email;
+  query.restaurantId = email;
   query.isCart = 0;
   if (filter === 0) {
     query.status = { $lte: 2 };

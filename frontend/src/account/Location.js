@@ -20,13 +20,12 @@ function Location({ value, change, select, country }) {
               placeholder: 'Location',
               className: 'location-search-input locationBox',
             })}
+            required
           />
-          <div className='autocomplete-dropdown-container'>
+          <div className="autocomplete-dropdown-container">
             {loading && <div>Loading...</div>}
             {suggestions.map((suggestion) => {
-              const className = suggestion.active
-                ? 'suggestion-item--active'
-                : 'suggestion-item';
+              const className = suggestion.active ? 'suggestion-item--active' : 'suggestion-item';
               // inline style for demonstration purpose
               const style = suggestion.active
                 ? { backgroundColor: '#fafafa', cursor: 'pointer' }

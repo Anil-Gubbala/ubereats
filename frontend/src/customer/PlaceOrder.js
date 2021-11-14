@@ -26,6 +26,7 @@ function PlaceOrder() {
   const getAllAddressesApi = useSelector((state) => state.getAllAddressesApi);
   const placeOrderApi = useSelector((state) => state.placeOrderApi);
   const addNewAddressApi = useSelector((state) => state.addNewAddressApi);
+  const [placeOrderFlag, setPlaceOrderFlag] = useState(false);
 
   useEffect(() => {
     if (cartState.restaurantId) {
@@ -82,6 +83,7 @@ function PlaceOrder() {
   }, [getAllAddressesApi]);
 
   const handlePlaceOrder = () => {
+    setPlaceOrderFlag(true);
     doPost('/placeOrder', {
       restaurantId: cartState.restaurantId,
       address: deliveryAddress,
@@ -101,8 +103,9 @@ function PlaceOrder() {
   };
 
   useEffect(() => {
-    if (placeOrderApi.status === 1) {
+    if (placeOrderFlag && placeOrderApi.status === 1) {
       if (placeOrderApi.error === '') {
+        setPlaceOrderFlag(false);
         clearCart();
         setStatus(1);
       }

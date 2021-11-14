@@ -34,6 +34,8 @@ const {
   getFavorites,
   removeFromFavorites,
   addNewAddress,
+  cancelMyOrder,
+  getOrderCount,
 } = require("./services/customer");
 
 const functionMap = {
@@ -63,6 +65,8 @@ const functionMap = {
   getRestaurantOrders,
   updateOrderStatus,
   deleteDish,
+  cancelMyOrder,
+  getOrderCount,
 };
 
 const callFunction = (msg, callback) => {

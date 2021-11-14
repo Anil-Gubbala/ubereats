@@ -12,7 +12,7 @@ const OrderSchema = new Schema({
     default: 0,
   },
   date: { type: Date, required: true, default: Date.now },
-  delivery: { type: Number, required: true, default: 0 },
+  delivery: { type: String, required: true, default: 0 },
   dishes: [
     {
       dish: { type: String, required: true },
