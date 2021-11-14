@@ -4,7 +4,7 @@ const config = require("./utils/config");
 function ConnectionProvider() {
   this.getConsumer = function (topicName) {
     this.client = new kafka.KafkaClient({
-      kafkaHost: `${config.KAFKA_HOST}:${config.KAFKA_PORT}`,
+      kafkaHost: `${config.config.KAFKA_HOST}:${config.config.KAFKA_PORT}`,
     });
     this.kafkaConsumerConnection = new kafka.Consumer(this.client, [
       { topic: topicName, partition: 0 },
@@ -20,7 +20,7 @@ function ConnectionProvider() {
   this.getProducer = function () {
     if (!this.kafkaProducerConnection) {
       this.client = new kafka.KafkaClient({
-        kafkaHost: `${config.KAFKA_HOST}:${config.KAFKA_PORT}`,
+        kafkaHost: `${config.config.KAFKA_HOST}:${config.config.KAFKA_PORT}`,
       });
       const { HighLevelProducer } = kafka;
       this.kafkaProducerConnection = new HighLevelProducer(this.client);
