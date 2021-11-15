@@ -37,7 +37,8 @@ const updateUserInfo = (msg, callback) => {
   doExec(
     UserModel.findOneAndUpdate(
       { email: msg.data.query },
-      { ...msg.data.value }
+      { ...msg.data.value },
+      { new: true }
     ),
     callback
   );
@@ -54,7 +55,8 @@ const placeOrder = (msg, callback) => {
         isCart: 0,
         instructions: msg.data.instructions,
         date: Date.now(),
-      }
+      },
+      { new: true }
     ),
     callback
   );
