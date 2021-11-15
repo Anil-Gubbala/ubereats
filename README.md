@@ -18,3 +18,11 @@ cd backend
 npm install
 
 node index.js
+
+
+# To start Kafka and mongodb (4000)
+cd kafka 
+
+npm install
+
+node server.js
