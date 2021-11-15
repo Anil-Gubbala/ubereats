@@ -27,6 +27,6 @@
     "eslint-plugin-import": "^2.24.2"
   },
   "scripts": {
-    "test": "mocha test/sample.test.js"
+    "test": "mocha test/test.js"
   }
 }
