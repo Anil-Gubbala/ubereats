@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Col,
@@ -7,38 +7,39 @@ import {
   Form,
   Row,
   Table,
-} from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import cookie from 'react-cookies';
+} from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+// import cookie from "react-cookies";
 
-import { get, post } from '../utils/serverCall';
+import { Link } from "react-router-dom";
+import { get, post } from "../utils/serverCall";
 
 import CONSTANTS, {
   DELIVERY_STATUS,
   PICKUP_STATUS,
   REST_ORDER_FILTER,
-} from '../utils/consts';
-import RedirectSignin from '../common/RedirectSignin';
-import RedirectInvalid from '../common/RedirectInvalid';
-import { Link } from 'react-router-dom';
+} from "../utils/consts";
+import RedirectSignin from "../common/RedirectSignin";
+import RedirectInvalid from "../common/RedirectInvalid";
+import { isCustomer, isSignedIn } from "../utils/checkAuth";
 
 function RestaurantOrders() {
-  const appCookies = cookie.load(CONSTANTS.COOKIE);
-  const isCustomer = appCookies && appCookies[CONSTANTS.COOKIE_KEY.ISCUSTOMER];
-  if (!appCookies) {
+  // const appCookies = cookie.load(CONSTANTS.COOKIE);
+  const isCustomerLogin = isCustomer();
+  if (!isSignedIn()) {
     return <RedirectSignin />;
   }
-  if (isCustomer) {
+  if (isCustomerLogin) {
     return <RedirectInvalid />;
   }
 
   const [data, setData] = useState([]);
   const [dishesData, setDishesData] = useState([]);
   const defaultOrderInfo = {
-    user_id: '',
-    status: '',
-    order_id: '',
+    user_id: "",
+    status: "",
+    order_id: "",
     index: 0,
   };
   const [orderInfo, setOrderInfo] = useState(defaultOrderInfo);
@@ -53,7 +54,7 @@ function RestaurantOrders() {
   const [totalCost, setTotalCost] = useState(0);
 
   const getRestaurantOrders = (type) => {
-    get('/getRestaurantOrders', { filter: type })
+    get("/getRestaurantOrders", { filter: type })
       .then((response) => {
         setData(response);
       })
@@ -65,15 +66,15 @@ function RestaurantOrders() {
   }, []);
 
   const showDetails = (e) => {
-    const id = e.target.getAttribute('name');
-    get('/getOrderDetails', { id })
+    const id = e.target.getAttribute("name");
+    get("/getOrderDetails", { id })
       .then((response) => {
         setOrderInfo((prev) => ({
           ...prev,
-          user_id: e.target.getAttribute('user'),
-          status: e.target.getAttribute('status'),
-          order_id: e.target.getAttribute('name'),
-          index: e.target.getAttribute('index'),
+          user_id: e.target.getAttribute("user"),
+          status: e.target.getAttribute("status"),
+          order_id: e.target.getAttribute("name"),
+          index: e.target.getAttribute("index"),
         }));
         setTotalCost(() =>
           response.reduce((prev, next) => {
@@ -82,8 +83,8 @@ function RestaurantOrders() {
             return total;
           }, 0)
         );
-        setOrderStatus(e.target.getAttribute('status'));
-        setDetailsDelivery(parseInt(e.target.getAttribute('delivery'), 10));
+        setOrderStatus(e.target.getAttribute("status"));
+        setDetailsDelivery(parseInt(e.target.getAttribute("delivery"), 10));
         setDishesData(response);
         handleShow();
       })
@@ -91,7 +92,7 @@ function RestaurantOrders() {
   };
 
   const updateOrderStatus = () => {
-    post('/updateOrderStatus', {
+    post("/updateOrderStatus", {
       order_id: orderInfo.order_id,
       status: orderStatus,
     }).then(() => {
@@ -109,12 +110,12 @@ function RestaurantOrders() {
     <Container>
       <Row>
         <FloatingLabel
-          style={{ marginTop: '8px' }}
-          controlId='floatingSelect'
-          label='Select Order Type'
+          style={{ marginTop: "8px" }}
+          controlId="floatingSelect"
+          label="Select Order Type"
         >
           <Form.Select
-            aria-label='Default select example'
+            aria-label="Default select example"
             value={filter}
             onChange={(e) => {
               setFilter(e.target.value);
@@ -130,7 +131,7 @@ function RestaurantOrders() {
         </FloatingLabel>
       </Row>
 
-      <Row style={{ marginTop: '8px' }}>
+      <Row style={{ marginTop: "8px" }}>
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -147,12 +148,12 @@ function RestaurantOrders() {
               <tr key={each.id}>
                 <td>{each.id}</td>
                 <td>
-                  <Link to={`/profile?id=${each.user_id}`} className='nav-link'>
+                  <Link to={`/profile?id=${each.user_id}`} className="nav-link">
                     {each.user_id}
                   </Link>
                 </td>
                 <td>{each.date}</td>
-                <td>{each.delivery === 0 ? each.location : 'Pick up'}</td>
+                <td>{each.delivery === 0 ? each.location : "Pick up"}</td>
                 <td>
                   {each.delivery === 0
                     ? DELIVERY_STATUS[each.status]
@@ -165,7 +166,7 @@ function RestaurantOrders() {
                     status={each.status}
                     delivery={each.delivery}
                     index={index}
-                    variant='link'
+                    variant="link"
                     onClick={showDetails}
                   >
                     Details
@@ -186,7 +187,7 @@ function RestaurantOrders() {
             <Col>Status:</Col>
             <Col>
               <Form.Select
-                aria-label='Default select example'
+                aria-label="Default select example"
                 value={orderStatus}
                 disabled={orderStatus >= 3}
                 onChange={(e) => {
@@ -228,20 +229,20 @@ function RestaurantOrders() {
               ))}
               <tr>
                 <td>Total</td>
-                <td></td>
+                <td />
                 <td>{totalCost}</td>
               </tr>
             </tbody>
           </Table>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='secondary' onClick={handleClose}>
+          <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
           <Button
             onClick={updateOrderStatus}
             disabled={disableUpdate}
-            variant='primary'
+            variant="primary"
           >
             Update Order Status
           </Button>

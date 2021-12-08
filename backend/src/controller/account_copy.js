@@ -1,8 +1,7 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const db = require("../dbConnector");
-const RESTAURANT = require("../sql/restaurantSql");
-const USER = require("../sql/userSql");
+const bcrypt = require('bcrypt');
+const db = require('../dbConnector');
+const RESTAURANT = require('../sql/restaurantSql');
+const USER = require('../sql/userSql');
 
 const saltRounds = 10;
 
@@ -20,7 +19,7 @@ const registerRestaurant = (req, res, hash) => {
         sendError(
           res,
           409,
-          err1.errno === 1062 ? "email already registered" : err1.code
+          err1.errno === 1062 ? 'email already registered' : err1.code
         );
       } else {
         res.status(200).send({ success: true });
@@ -35,7 +34,7 @@ const registerUser = (req, res, hash) => {
       sendError(
         res,
         409,
-        err1.errno === 1062 ? "email already registered" : err1.code
+        err1.errno === 1062 ? 'email already registered' : err1.code
       );
     } else {
       res.status(200).send({ success: true });
@@ -49,7 +48,7 @@ const signup = (req, res) => {
       sendError(res, 404, err.code);
       return;
     }
-    if (req.body.accountType === "1") {
+    if (req.body.accountType === '1') {
       registerRestaurant(req, res, hash);
     } else {
       registerUser(req, res, hash);
@@ -58,7 +57,7 @@ const signup = (req, res) => {
 };
 
 const setSession = (req, res, email, isCustomer, status) => {
-  res.cookie("ubereats273", JSON.stringify({ customer: isCustomer, email }), {
+  res.cookie('ubereats273', JSON.stringify({ customer: isCustomer, email }), {
     maxAge: 2 * 60 * 60 * 1000,
     httpOnly: false,
     // sameSite: 'none',
@@ -74,17 +73,30 @@ const setSession = (req, res, email, isCustomer, status) => {
   });
 };
 
-const signin = (req, context, _res, _rej) => {
-  console.log(req);
+const signin = (req, res) => {
+  if (req.session.user) {
+    res.cookie(
+      'ubereats273',
+      JSON.stringify({
+        customer: req.session.user.isCustomer,
+        email: req.session.email,
+      }),
+      {
+        maxAge: 2 * 60 * 60 * 1000,
+        httpOnly: false,
+      }
+    );
+    res.send(req.session.user);
+    return;
+  }
   let sql = USER.PASSWORD;
   if (!req.body.customer) {
     sql = RESTAURANT.PASSWORD;
   }
   db.query(sql, req.body.email, (err, result) => {
     if (err) {
-      _rej(err.code);
-      // sendError(res, 404, err.code);
-      // return;
+      sendError(res, 404, err.code);
+      return;
     }
     if (result.length > 0) {
       bcrypt.compare(
@@ -92,20 +104,22 @@ const signin = (req, context, _res, _rej) => {
         result[0].password,
         (error, response) => {
           if (response) {
-            _res({
-              email: req.body.email,
-              isCustomer: req.body.customer,
-              status: result[0].status,
-              token: jwt.sign({ email: "email", name: "name" }, "lab3"),
-            });
-            return;
+            setSession(
+              req,
+              res,
+              req.body.email,
+              req.body.customer,
+              result[0].status
+            );
+          } else {
+            res
+              .status(404)
+              .send({ err: 'Wrong username/password combination!' });
           }
-          _rej("Wrong username/password combination!");
         }
       );
     } else {
-      _rej("User doesn't exist");
-      // res.status(404).send({ err: "User doesn't exist" });
+      res.status(404).send({ err: "User doesn't exist" });
     }
   });
 };
@@ -115,8 +129,8 @@ const signout = (req, res) => {
     req.session.destroy();
     req.session = null;
     console.log(res.cookie);
-    res.clearCookie("ubereats273", {
-      path: "/",
+    res.clearCookie('ubereats273', {
+      path: '/',
     });
     res.send();
   } else {

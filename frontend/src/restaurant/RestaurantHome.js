@@ -1,32 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import Container from 'react-bootstrap/Container';
-import Card from '@mui/material/Card';
-import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import cookie from 'react-cookies';
+import React, { useEffect, useState } from "react";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import Container from "react-bootstrap/Container";
+import Card from "@mui/material/Card";
+import CardMedia from "@mui/material/CardMedia";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+// import cookie from 'react-cookies';
 
-import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
-import { FloatingLabel, Form, Image } from 'react-bootstrap';
-import { get, post } from '../utils/serverCall';
-import Dishes from './Dishes';
-import CONSTANTS, { REST_DELIVERY_MODE } from '../utils/consts';
-import RedirectSignin from '../common/RedirectSignin';
-import Location from '../account/Location';
-import FileUpload from '../common/FileUpload';
+import { geocodeByAddress, getLatLng } from "react-places-autocomplete";
+import { FloatingLabel, Form, Image } from "react-bootstrap";
+import { get, post } from "../utils/serverCall";
+import Dishes from "./Dishes";
+import CONSTANTS, { REST_DELIVERY_MODE } from "../utils/consts";
+import RedirectSignin from "../common/RedirectSignin";
+import Location from "../account/Location";
+import FileUpload from "../common/FileUpload";
+import { isCustomer, isSignedIn } from "../utils/checkAuth";
 
 function RestaurantHome() {
-  const appCookies = cookie.load(CONSTANTS.COOKIE);
-  const isCustomer = appCookies && appCookies[CONSTANTS.COOKIE_KEY.ISCUSTOMER];
-  if (!appCookies) {
+  // const appCookies = cookie.load(CONSTANTS.COOKIE);
+  const isCustomerLogin = isCustomer();
+  if (!isSignedIn()) {
     return <RedirectSignin />;
   }
 
@@ -34,22 +35,22 @@ function RestaurantHome() {
   const params = new URLSearchParams(windowUrl);
 
   const defaultValues = {
-    contact: '',
-    description: 'Add description',
-    end: '16:00:00',
-    location: 'Add restaurant location',
-    name: '',
-    picture: '',
-    start: '16:00:00',
-    email: params.get('id'),
-    latitude: '',
-    longitude: '',
+    contact: "",
+    description: "Add description",
+    end: "16:00:00",
+    location: "Add restaurant location",
+    name: "",
+    picture: "",
+    start: "16:00:00",
+    email: params.get("id"),
+    latitude: "",
+    longitude: "",
     delivery: 0,
   };
 
   const [restaurantInfo, setRestaurantInfo] = useState(defaultValues);
   useEffect(() => {
-    get('/restaurantInfo', { id: params.get('id') }).then((data) => {
+    get("/restaurantInfo", { id: params.get("id") }).then((data) => {
       setRestaurantInfo((prev) => ({ ...prev, ...data[0] }));
     });
   }, []);
@@ -68,7 +69,7 @@ function RestaurantHome() {
   };
 
   const handleSave = () => {
-    post('/updateRestaurantInfo', dialogData)
+    post("/updateRestaurantInfo", dialogData)
       .then(() => {
         setRestaurantInfo(dialogData);
         handleClose();
@@ -85,55 +86,55 @@ function RestaurantHome() {
       <DialogTitle>Update Restaurant Info</DialogTitle>
       <DialogContent>
         <TextField
-          margin='dense'
-          id='rdname'
-          name='name'
-          label='Name'
+          margin="dense"
+          id="rdname"
+          name="name"
+          label="Name"
           fullWidth
-          variant='standard'
+          variant="standard"
           value={dialogData.name}
           onChange={handleDialogChange}
         />
         <TextField
-          margin='dense'
-          id='rddescription'
-          name='description'
-          label='Description'
+          margin="dense"
+          id="rddescription"
+          name="description"
+          label="Description"
           fullWidth
-          variant='standard'
+          variant="standard"
           value={dialogData.description}
           onChange={handleDialogChange}
         />
         <TextField
-          margin='dense'
-          id='rdcontact'
-          name='contact'
-          label='Contact Information'
+          margin="dense"
+          id="rdcontact"
+          name="contact"
+          label="Contact Information"
           fullWidth
-          variant='standard'
+          variant="standard"
           value={dialogData.contact}
           onChange={handleDialogChange}
         />
-        <FloatingLabel controlId='start' label='Start Time' className='mb-3'>
+        <FloatingLabel controlId="start" label="Start Time" className="mb-3">
           <Form.Control
-            name='start'
-            type='time'
+            name="start"
+            type="time"
             onChange={handleDialogChange}
             required
             value={dialogData.start}
           />
         </FloatingLabel>
-        <FloatingLabel controlId='end' label='End Time' className='mb-3'>
+        <FloatingLabel controlId="end" label="End Time" className="mb-3">
           <Form.Control
-            name='end'
-            type='time'
+            name="end"
+            type="time"
             onChange={handleDialogChange}
             required
             value={dialogData.end}
           />
         </FloatingLabel>
         <Form.Select
-          name='delivery'
+          name="delivery"
           value={dialogData.delivery}
           onChange={handleDialogChange}
         >
@@ -167,9 +168,9 @@ function RestaurantHome() {
             });
           }}
         />
-        <Form.Group className='mb-3' controlId='nickname'>
+        <Form.Group className="mb-3" controlId="nickname">
           <Col xs={6} md={4}>
-            <Image src={dialogData.picture} roundedCircle thumbnail='true' />
+            <Image src={dialogData.picture} roundedCircle thumbnail="true" />
           </Col>
           <Col>
             <FileUpload
@@ -192,37 +193,37 @@ function RestaurantHome() {
       <Row>
         <Card>
           <CardMedia
-            component='img'
-            height='140'
+            component="img"
+            height="140"
             image={restaurantInfo.picture}
-            alt='green iguana'
+            alt="green iguana"
           />
           <Row>
             <Col>
               <Stack spacing={2}>
-                <Stack spacing={2} direction='row'>
-                  <Typography gutterBottom variant='h5' component='div'>
+                <Stack spacing={2} direction="row">
+                  <Typography gutterBottom variant="h5" component="div">
                     {restaurantInfo.name}
                   </Typography>
                   <Typography
-                    style={{ marginTop: 'auto', marginBottom: 'auto' }}
-                    variant='body2'
-                    color='text.secondary'
+                    style={{ marginTop: "auto", marginBottom: "auto" }}
+                    variant="body2"
+                    color="text.secondary"
                   >
                     {restaurantInfo.start} - {restaurantInfo.end}
                   </Typography>
                 </Stack>
-                <Typography variant='body2' color='text.secondary'>
+                <Typography variant="body2" color="text.secondary">
                   {restaurantInfo.location}
                 </Typography>
-                <Typography variant='subtitle2' gutterBottom component='div'>
+                <Typography variant="subtitle2" gutterBottom component="div">
                   {restaurantInfo.description}
                 </Typography>
               </Stack>
             </Col>
-            {!isCustomer && (
-              <Col md='auto'>
-                <Row style={{ padding: '8px' }}>
+            {!isCustomerLogin && (
+              <Col md="auto">
+                <Row style={{ padding: "8px" }}>
                   <Stack spacing={2}>
                     <Button onClick={handleClickOpen}>
                       Update Restaurant Info
@@ -236,7 +237,7 @@ function RestaurantHome() {
         </Card>
       </Row>
       <Row>
-        <Dishes isCustomer={isCustomer} />
+        <Dishes isCustomerLogin={isCustomerLogin} />
       </Row>
     </Container>
   );

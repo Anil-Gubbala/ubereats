@@ -1,55 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import Image from 'react-bootstrap/Image';
-import cookie from 'react-cookies';
+import React, { useEffect, useState } from "react";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
+import Image from "react-bootstrap/Image";
+import cookie from "react-cookies";
 
-import { Row } from 'react-bootstrap';
-import { Redirect } from 'react-router';
-import CONSTANTS from '../utils/consts';
-import { get, post } from '../utils/serverCall';
-import FileUpload from '../common/FileUpload';
-import CountriesList from '../utils/CountriesList';
-import Location from '../account/Location';
-import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import { Row } from "react-bootstrap";
+import { Redirect } from "react-router";
+import { geocodeByAddress, getLatLng } from "react-places-autocomplete";
+import CONSTANTS from "../utils/consts";
+import { get, post } from "../utils/serverCall";
+import FileUpload from "../common/FileUpload";
+import CountriesList from "../utils/CountriesList";
+import Location from "../account/Location";
+import { isCustomer } from "../utils/checkAuth";
 
 function Profile() {
   const status = localStorage.getItem(CONSTANTS.STATUS);
-  const cookieData = cookie.load(CONSTANTS.COOKIE);
-  const isCustomer = cookieData[CONSTANTS.COOKIE_KEY.ISCUSTOMER];
+  // const cookieData = cookie.load(CONSTANTS.COOKIE);
+  const isCustomerLogin = isCustomer();
   const windowUrl = window.location.search;
   const params = new URLSearchParams(windowUrl);
-  let email = '';
-  const [editMode, setEditMode] = useState(status === '0' && isCustomer);
+  let email = "";
+  const [editMode, setEditMode] = useState(status === "0" && isCustomerLogin);
 
-  if (isCustomer) {
-    if (params.get('id')) {
-      return <Redirect to='/profile' />;
+  if (isCustomerLogin) {
+    if (params.get("id")) {
+      return <Redirect to="/profile" />;
     }
   } else {
-    email = params.get('id');
+    email = params.get("id");
   }
 
   const defaultFormData = {
-    contact: '',
-    dob: '',
-    email: '',
-    location: '',
-    name: '',
-    nickname: '',
-    picture: '',
-    about: '',
-    country: 'US',
-    latitude: '',
-    longitude: '',
+    contact: "",
+    dob: "",
+    email: "",
+    location: "",
+    name: "",
+    nickname: "",
+    picture: "",
+    about: "",
+    country: "US",
+    latitude: "",
+    longitude: "",
   };
   const [formData, setFormData] = useState(defaultFormData);
 
   useEffect(() => {
-    get('/getUserProfile', {
+    get("/getUserProfile", {
       email,
     }).then((response) => {
       const user = response[0][0];
@@ -65,7 +66,7 @@ function Profile() {
 
   const handleUpdateProfile = (e) => {
     e.preventDefault();
-    post('/updateUserInfo', formData).then(() => {
+    post("/updateUserInfo", formData).then(() => {
       setEditMode(false);
       // setViewMode(true);
       localStorage.removeItem(CONSTANTS.STATUS);
@@ -81,9 +82,9 @@ function Profile() {
       <Container>
         <Col>
           <Form onSubmit={handleUpdateProfile}>
-            <Form.Group className='mb-3' controlId='nickname'>
+            <Form.Group className="mb-3" controlId="nickname">
               <Col xs={6} md={4}>
-                <Image src={formData.picture} roundedCircle thumbnail='true' />
+                <Image src={formData.picture} roundedCircle thumbnail="true" />
               </Col>
               <Col>
                 <FileUpload
@@ -95,65 +96,65 @@ function Profile() {
               </Col>
             </Form.Group>
             <FloatingLabel
-              controlId='email'
-              label='Email Address'
-              className='mb-3'
+              controlId="email"
+              label="Email Address"
+              className="mb-3"
             >
               <Form.Control
-                name='email'
+                name="email"
                 onChange={eventHandler}
-                type='email'
+                type="email"
                 required
                 value={formData.email}
               />
             </FloatingLabel>
-            <FloatingLabel controlId='name' label='Name' className='mb-3'>
+            <FloatingLabel controlId="name" label="Name" className="mb-3">
               <Form.Control
-                name='name'
-                type='input'
+                name="name"
+                type="input"
                 onChange={eventHandler}
                 required
                 value={formData.name}
               />
             </FloatingLabel>
             <FloatingLabel
-              controlId='dob'
-              label='Date of Birth'
-              className='mb-3'
+              controlId="dob"
+              label="Date of Birth"
+              className="mb-3"
             >
               <Form.Control
-                name='dob'
-                type='date'
+                name="dob"
+                type="date"
                 onChange={eventHandler}
                 required
-                value={formData.dob.split('T')[0]}
+                value={formData.dob.split("T")[0]}
               />
             </FloatingLabel>
             <FloatingLabel
-              controlId='nickname'
-              label='Nickname'
-              className='mb-3'
+              controlId="nickname"
+              label="Nickname"
+              className="mb-3"
             >
               <Form.Control
-                name='nickname'
-                type='input'
+                name="nickname"
+                type="input"
                 onChange={eventHandler}
                 required
                 value={formData.nickname}
               />
             </FloatingLabel>
-            <FloatingLabel controlId='about' label='About' className='mb-3'>
+            <FloatingLabel controlId="about" label="About" className="mb-3">
               <Form.Control
-                as='textarea'
-                name='about'
+                as="textarea"
+                name="about"
                 onChange={eventHandler}
                 required
                 value={formData.about}
               />
             </FloatingLabel>
-            <FloatingLabel controlId='country' label='Country' className='mb-3'>
+            <FloatingLabel controlId="country" label="Country" className="mb-3">
               <CountriesList
-                name='country'
+                name="country"
                 value={formData.country}
                 onChange={eventHandler}
               />
@@ -177,17 +178,17 @@ function Profile() {
                 country={formData.country}
               />
             </FloatingLabel>
-            <FloatingLabel controlId='contact' label='Phone' className='mb-3'>
+            <FloatingLabel controlId="contact" label="Phone" className="mb-3">
               <Form.Control
-                name='contact'
-                type='input'
+                name="contact"
+                type="input"
                 onChange={eventHandler}
                 required
                 value={formData.contact}
               />
             </FloatingLabel>
 
-            <Button variant='primary' type='submit'>
+            <Button variant="primary" type="submit">
               Submit
             </Button>
           </Form>
@@ -202,10 +203,10 @@ function Profile() {
           <Image
             src={
               formData.picture ||
-              'https://imageuploadlab1.s3.us-east-2.amazonaws.com/profile/customer.jpeg'
+              "https://imageuploadlab1.s3.us-east-2.amazonaws.com/profile/customer.jpeg"
             }
             roundedCircle
-            thumbnail='true'
+            thumbnail="true"
           />
         </Col>
         <Col>
@@ -239,8 +240,8 @@ function Profile() {
           </Row>
 
           <Row>
-            {isCustomer && (
-              <Button variant='primary' type='button' onClick={editProfile}>
+            {isCustomerLogin && (
+              <Button variant="primary" type="button" onClick={editProfile}>
                 Edit
               </Button>
             )}
