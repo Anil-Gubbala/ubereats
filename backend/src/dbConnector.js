@@ -18,7 +18,7 @@ const mysql = require('mysql');
 //   // multipleStatements: true,
 // });
 
-const connector = mysql.createPool({
+const db = mysql.createPool({
   user: 'auro',
   host: 'lab1237cmpe.cauvszlanaze.us-east-2.rds.amazonaws.com',
   password: 'gnQAMYArWg3rqfuntohZ',
@@ -39,13 +39,13 @@ const connector = mysql.createPool({
 //   },
 // };
 
-const db = mysql.createConnection({
-  user: 'auro',
-  host: 'lab1237cmpe.cauvszlanaze.us-east-2.rds.amazonaws.com',
-  password: 'gnQAMYArWg3rqfuntohZ',
-  database: 'ubereats',
-  port: '3306',
-  multipleStatements: true,
-});
+// const db = mysql.createConnection({
+//   user: 'auro',
+//   host: 'lab1237cmpe.cauvszlanaze.us-east-2.rds.amazonaws.com',
+//   password: 'gnQAMYArWg3rqfuntohZ',
+//   database: 'ubereats',
+//   port: '3306',
+//   multipleStatements: true,
+// });
 
 module.exports = db;

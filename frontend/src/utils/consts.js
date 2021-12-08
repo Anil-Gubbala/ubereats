@@ -1,7 +1,8 @@
 const CONSTANTS = {
   COOKIE: 'ubereats273',
   COOKIE_KEY: { ISCUSTOMER: 'customer', EMAIL: 'email' },
-  SERVERURL: 'http://3.142.131.218:4000',
+  // SERVERURL: 'http://3.142.131.218:4000',
+  SERVERURL: 'http://localhost:4000',
   STR_KEY: 'ubereats',
   STR_USER: '1',
   STR_RESTAURANT: '2',

@@ -19,7 +19,7 @@ const get = (path, data) =>
     });
 
 const post = (path, data) =>
-  Axios.post(CONSTANTS.SERVERURL + path, data, { mode: 'cors' })
+  Axios.post(CONSTANTS.SERVERURL + path, data)
     .then((response) => response.data)
     .catch((error) => {
       if (error.response.data.err) {
