@@ -1,30 +1,32 @@
-import { post } from '../utils/serverCall';
+import { doMutate } from "../graphql/serverCall";
+import { post } from "../utils/serverCall";
+import { gqlAddToCart } from "../graphql/queries";
 
 export const customer = (payload) => (dispatch) => {
-  dispatch({ type: 'CUSTOMER', payload });
+  dispatch({ type: "CUSTOMER", payload });
 };
 
 export const restaurant = (payload) => (dispatch) => {
-  dispatch({ type: 'RESTAURANT', payload });
+  dispatch({ type: "RESTAURANT", payload });
 };
 
 export const signout = () => (dispatch) => {
-  dispatch({ type: 'SIGNOUT' });
+  dispatch({ type: "SIGNOUT" });
 };
 
 export const signup = (payload) => (dispatch) => {
-  dispatch({ type: 'SIGNUP', payload });
+  dispatch({ type: "SIGNUP", payload });
 };
 
 export const newRestWarning = (payload) => (dispatch) => {
-  dispatch({ type: 'SHOW_WARNING', payload });
+  dispatch({ type: "SHOW_WARNING", payload });
 };
 
 export const addItem = (payload) => (dispatch, getState) => {
   const cart = getState().cartReducer;
   const { restaurantId, dish, price } = payload;
   let { count } = payload;
-  if (cart.restaurantId === '' || cart.restaurantId === restaurantId) {
+  if (cart.restaurantId === "" || cart.restaurantId === restaurantId) {
     if (cart.restaurantId) {
       if (cart.dishes[dish]) {
         count = parseInt(cart.dishes[dish][0], 10) + 1;
@@ -34,16 +36,26 @@ export const addItem = (payload) => (dispatch, getState) => {
     } else {
       count = 1;
     }
-    post('/addToCart', {
-      restaurantId,
-      dish,
-      count,
-      price,
-    })
+    doMutate(
+      gqlAddToCart,
+      {
+        restaurantId,
+        dish,
+        count,
+        price: parseFloat(price),
+      },
+      "addToCart"
+    )
+      // post("/addToCart", {
+      //   restaurantId,
+      //   dish,
+      //   count,
+      //   price,
+      // })
       .then(() => {
         cart.restaurantId = restaurantId;
         cart.dishes = { ...cart.dishes, [dish]: [count, price] };
-        dispatch({ type: 'INSERT', payload: cart });
+        dispatch({ type: "INSERT", payload: cart });
       })
       .catch((error) => {
         console.log(error);
@@ -57,11 +69,11 @@ export const addItem = (payload) => (dispatch, getState) => {
 };
 
 export const updateCart = (payload) => (dispatch) => {
-  dispatch({ type: 'INSERT', payload });
+  dispatch({ type: "INSERT", payload });
 };
 
 export const clearCart = () => (dispatch) => {
-  dispatch({ type: 'CLEAR_CART' });
+  dispatch({ type: "CLEAR_CART" });
 };
 
 export const insertNewRest = (payload) => (dispatch) => {
@@ -69,7 +81,7 @@ export const insertNewRest = (payload) => (dispatch) => {
   // dispatch(addItem(payload));
   const { restaurantId, dish, price } = payload;
   const count = 1;
-  post('/addNewToCart', {
+  post("/addNewToCart", {
     restaurantId,
     dish,
     count,
@@ -77,7 +89,7 @@ export const insertNewRest = (payload) => (dispatch) => {
   })
     .then(() => {
       const dishes = { [dish]: [count, price] };
-      dispatch({ type: 'INSERT', payload: { restaurantId, dishes } });
+      dispatch({ type: "INSERT", payload: { restaurantId, dishes } });
     })
     .catch((error) => {
       console.log(error);
@@ -85,19 +97,19 @@ export const insertNewRest = (payload) => (dispatch) => {
 };
 
 export const updateDeliveryMode = (payload) => (dispatch) => {
-  dispatch({ type: 'DELIVERY', payload });
+  dispatch({ type: "DELIVERY", payload });
 };
 
 export const updateVegType = (payload) => (dispatch) => {
-  dispatch({ type: 'VEG', payload });
+  dispatch({ type: "VEG", payload });
 };
 
 export const updateFavoriteMode = (payload) => (dispatch) => {
-  dispatch({ type: 'FAVORITE', payload });
+  dispatch({ type: "FAVORITE", payload });
 };
 
 export const clearHomeFilters = () => (dispatch) => {
-  dispatch({ type: 'CLEAR_HOME_FILTERS' });
+  dispatch({ type: "CLEAR_HOME_FILTERS" });
 };
 
 // export const cart = (payload) => (dispatch, getState) => {};

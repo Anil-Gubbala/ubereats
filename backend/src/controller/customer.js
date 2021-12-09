@@ -4,17 +4,19 @@ const CUSTOMER = require("../sql/customer");
 const RESTAURANT = require("../sql/restaurantSql");
 const { response } = require("../utils/response");
 
-const placeOrder = (req, res) => {
+const placeOrder = (req, _res, _rej) => {
   const { restaurantId, addressId, delivery } = req.body;
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, "unauthorized access");
+    _rej("unauthorized");
+    // response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       CUSTOMER.CART_INSERT,
       [req.session.user.email, restaurantId, addressId, delivery],
       (err, result) => {
         if (err) {
-          response.error(res, 500, err.code);
+          _rej(err.code);
+          // response.error(res, 500, err.code);
           return;
         }
         db.query(
@@ -22,7 +24,8 @@ const placeOrder = (req, res) => {
           [result.insertId, req.session.user.email, restaurantId],
           (err2, result2) => {
             if (err2) {
-              response.error(res, 500, err2.code);
+              _rej(err2.code);
+              // response.error(res, 500, err2.code);
               return;
             }
             db.query(
@@ -30,10 +33,12 @@ const placeOrder = (req, res) => {
               [req.session.user.email, restaurantId],
               (err3, result3) => {
                 if (err3) {
-                  response.error(res, 500, err3.code);
+                  _rej(err3.code);
+                  // response.error(res, 500, err3.code);
                   return;
                 }
-                res.send(result3);
+                _res({ success: true });
+                // res.send(result3);
               }
             );
           }
@@ -43,21 +48,24 @@ const placeOrder = (req, res) => {
   }
 };
 
-const myOrders = (req, res) => {
+const myOrders = (req, _res, _rej) => {
   console.log(req.session.user);
   const { filter, deliveryType } = req.query;
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, "unauthorized access");
+    _rej("unauthorized");
+    // response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       CUSTOMER.GET_ORDERS,
       [req.session.user.email, deliveryType, filter],
       (err, result) => {
         if (err) {
-          response.error(res, 500, err.code);
+          _rej(err.code);
+          // response.error(res, 500, err.code);
           return;
         }
-        res.send(result);
+        _res(result);
+        // res.send(result);
       }
     );
   }
@@ -217,19 +225,22 @@ const getFavorites = (req, res) => {
   }
 };
 
-const getAllAddresses = (req, res) => {
+const getAllAddresses = (req, _res, _rej) => {
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, "unauthorized access");
+    _rej("unauthorized");
+    // response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       CUSTOMER.ADDRESSES_GET_ALL,
       [req.session.user.email],
       (err, result) => {
         if (err) {
-          response.error(res, 500, err.code);
+          _rej(err.code);
+          // response.error(res, 500, err.code);
           return;
         }
-        res.send(result);
+        _res(result);
+        // res.send(result);
       }
     );
   }
@@ -254,19 +265,22 @@ const addNewAddress = (req, res) => {
   }
 };
 
-const getRestaurantDelivery = (req, res) => {
+const getRestaurantDelivery = (req, _res, _rej) => {
   if (!req.session.user) {
-    response.unauthorized(res, "unauthorized access");
+    // response.unauthorized(res, "unauthorized access");
+    _rej("unauthorized");
   } else {
     db.query(
       RESTAURANT.GET_RESTAURANT_DELIVERY,
       [req.query.email],
       (err, result) => {
         if (err) {
-          response.error(res, 500, err.code);
+          _rej(err.code);
+          // response.error(res, 500, err.code);
           return;
         }
-        res.send(result);
+        _res(result);
+        // res.send(result);
       }
     );
   }

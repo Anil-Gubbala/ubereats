@@ -23,6 +23,11 @@ import RedirectSignin from "../common/RedirectSignin";
 import Location from "../account/Location";
 import FileUpload from "../common/FileUpload";
 import { isCustomer, isSignedIn } from "../utils/checkAuth";
+import { doMutate, doQuery } from "../graphql/serverCall";
+import {
+  gqlGetRestaurantInfo,
+  gqlUpdateRestaurantInfo,
+} from "../graphql/queries";
 
 function RestaurantHome() {
   // const appCookies = cookie.load(CONSTANTS.COOKIE);
@@ -50,9 +55,11 @@ function RestaurantHome() {
 
   const [restaurantInfo, setRestaurantInfo] = useState(defaultValues);
   useEffect(() => {
-    get("/restaurantInfo", { id: params.get("id") }).then((data) => {
-      setRestaurantInfo((prev) => ({ ...prev, ...data[0] }));
-    });
+    doQuery(gqlGetRestaurantInfo, { id: params.get("id") }, "getRestaurantInfo")
+      // get("/getRestaurantInfo", { id: params.get("id") })
+      .then((data) => {
+        setRestaurantInfo((prev) => ({ ...prev, ...data }));
+      });
   }, []);
 
   const [open, setOpen] = React.useState(false);
@@ -69,7 +76,8 @@ function RestaurantHome() {
   };
 
   const handleSave = () => {
-    post("/updateRestaurantInfo", dialogData)
+    doMutate(gqlUpdateRestaurantInfo, dialogData, "updateRestaurantInfo")
+      // post("/updateRestaurantInfo", dialogData)
       .then(() => {
         setRestaurantInfo(dialogData);
         handleClose();
@@ -78,7 +86,10 @@ function RestaurantHome() {
   };
 
   const handleDialogChange = (e) => {
-    setDialogData({ ...dialogData, [e.target.name]: e.target.value });
+    setDialogData({
+      ...dialogData,
+      [e.target.name]: JSON.parse(e.target.value),
+    });
   };
 
   const updateRestDialog = (
@@ -237,7 +248,7 @@ function RestaurantHome() {
         </Card>
       </Row>
       <Row>
-        <Dishes isCustomerLogin={isCustomerLogin} />
+        <Dishes isCustomer={isCustomerLogin} />
       </Row>
     </Container>
   );

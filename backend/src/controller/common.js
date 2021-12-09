@@ -67,20 +67,23 @@ const getRestaruantsList = (req, _res, _rej) => {
   }
 };
 
-const addToCart = (req, res) => {
+const addToCart = (req, _res, _rej) => {
   const { restaurantId, dish, count, price } = req.body;
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, "unauthorized access");
+    _rej("unauthorized");
+    // response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       COMMON.ADD_TO_CART,
       [req.session.user.email, restaurantId, dish, count, price, count],
       (err, result) => {
         if (err) {
-          response.error(res, 500, err.code);
+          _rej(err.code);
+          // response.error(res, 500, err.code);
           return;
         }
-        res.send();
+        _res({ success: true });
+        // res.send();
       }
     );
   }
@@ -111,30 +114,36 @@ const addNewToCart = (req, res) => {
   }
 };
 
-const getCart = (req, res) => {
+const getCart = (req, _res, _rej) => {
   if (!req.session.user || !req.session.user.isCustomer) {
-    response.unauthorized(res, "unauthorized access");
+    _rej("unauthorized");
+    // response.unauthorized(res, "unauthorized access");
   } else {
     db.query(COMMON.GET_CART, [req.session.user.email], (err, result) => {
       if (err) {
-        response.error(res, 500, err.code);
+        _rej(err.code);
+        // response.error(res, 500, err.code);
         return;
       }
-      res.send(result);
+      _res(result);
+      // res.send(result);
     });
   }
 };
 
-const getOrderDetails = (req, res) => {
+const getOrderDetails = (req, _res, _rej) => {
   if (!req.session.user) {
-    response.unauthorized(res, "unauthorized access");
+    _rej("unauthorized");
+    // response.unauthorized(res, "unauthorized access");
   } else {
     db.query(COMMON.GET_ORDER_DETAILS, [req.query.id], (err, result) => {
       if (err) {
-        response.error(res, 500, err.code);
+        _res(err.code);
+        // response.error(res, 500, err.code);
         return;
       }
-      res.send(result);
+      _res(result);
+      // res.send(result);
     });
   }
 };

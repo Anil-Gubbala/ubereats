@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Col,
@@ -7,24 +7,26 @@ import {
   Form,
   Row,
   Table,
-} from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import { get } from '../utils/serverCall';
+} from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import { get } from "../utils/serverCall";
 
 import {
   DELIVERY_STATUS,
   ORDER_DELIVERY_MODE,
   PICKUP_STATUS,
-} from '../utils/consts';
+} from "../utils/consts";
+import { doQuery } from "../graphql/serverCall";
+import { gqlGetOrderDetails, gqlMyOrders } from "../graphql/queries";
 
 function MyOrders() {
   const [data, setData] = useState([]);
   const [dishesData, setDishesData] = useState([]);
   const defaultOrderInfo = {
-    restaurant_id: '',
-    status: '',
-    order_id: '',
+    restaurant_id: "",
+    status: "",
+    order_id: "",
   };
   const [orderInfo, setOrderInfo] = useState(defaultOrderInfo);
   const [show, setShow] = useState(false);
@@ -36,7 +38,8 @@ function MyOrders() {
   const [totalCost, setTotalCost] = useState(0);
 
   const getMyOrders = (param1, param2) => {
-    get('/myOrders', { deliveryType: param1, filter: param2 })
+    doQuery(gqlMyOrders, { deliveryType: param1, filter: param2 }, "myOrders")
+      // get("/myOrders", { deliveryType: param1, filter: param2 })
       .then((response) => {
         setData(response);
       })
@@ -48,14 +51,15 @@ function MyOrders() {
   }, []);
 
   const showDetails = (e) => {
-    const id = e.target.getAttribute('name');
-    get('/getOrderDetails', { id })
+    const id = e.target.getAttribute("name");
+    doQuery(gqlGetOrderDetails, { id: parseInt(id, 10) }, "getOrderDetails")
+      // get("/getOrderDetails", { id })
       .then((response) => {
         setOrderInfo((prev) => ({
           ...prev,
-          restaurant_id: e.target.getAttribute('restaurant'),
-          status: e.target.getAttribute('status'),
-          order_id: e.target.getAttribute('name'),
+          restaurant_id: e.target.getAttribute("restaurant"),
+          status: e.target.getAttribute("status"),
+          order_id: e.target.getAttribute("name"),
         }));
         setTotalCost(() =>
           response.reduce((prev, next) => {
@@ -97,14 +101,14 @@ function MyOrders() {
             ))}
             <tr>
               <td>Total</td>
-              <td></td>
+              <td />
               <td>{totalCost}</td>
             </tr>
           </tbody>
         </Table>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant='secondary' onClick={handleClose}>
+        <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
       </Modal.Footer>
@@ -116,12 +120,12 @@ function MyOrders() {
       <Row>
         <Col>
           <FloatingLabel
-            style={{ marginTop: '8px' }}
-            controlId='floatingSelect'
-            label='Select Delivery Type'
+            style={{ marginTop: "8px" }}
+            controlId="floatingSelect"
+            label="Select Delivery Type"
           >
             <Form.Select
-              aria-label='Default select example'
+              aria-label="Default select example"
               value={deliveryType}
               onChange={(e) => {
                 setDeliveryType(parseInt(e.target.value, 10));
@@ -138,12 +142,12 @@ function MyOrders() {
         </Col>
         <Col>
           <FloatingLabel
-            style={{ marginTop: '8px' }}
-            controlId='floatingSelect'
-            label='Select Order Type'
+            style={{ marginTop: "8px" }}
+            controlId="floatingSelect"
+            label="Select Order Type"
           >
             <Form.Select
-              aria-label='Default select example'
+              aria-label="Default select example"
               value={filter}
               onChange={(e) => {
                 setFilter(parseInt(e.target.value, 10));
@@ -190,13 +194,13 @@ function MyOrders() {
                     ? DELIVERY_STATUS[each.status]
                     : PICKUP_STATUS[each.status]}
                 </td>
-                <td>{each.delivery === 0 ? each.location : 'Pick up'}</td>
+                <td>{each.delivery === 0 ? each.location : "Pick up"}</td>
                 <td>
                   <Button
                     name={each.id}
                     restaurant={each.restaurant_id}
                     status={each.status}
-                    variant='link'
+                    variant="link"
                     onClick={showDetails}
                   >
                     Details

@@ -59,6 +59,54 @@ const typeDefs = gql`
     status: Int
   }
 
+  type Dish {
+    category: Int
+    description: String
+    email: String
+    ingredients: String
+    name: String
+    picture: String
+    price: Float
+    type: Int
+  }
+
+  type RestaurantOrder {
+    address_id: Int
+    date: String
+    delivery: Int
+    id: Int
+    location: String
+    status: Int
+    user_id: String
+  }
+
+  type UserOrder {
+    address_id: Int
+    date: String
+    delivery: Int
+    id: Int
+    location: String
+    restaurant_id: String
+    status: Int
+  }
+
+  type OrderDishDetails {
+    count: Int
+    dish: String
+    price: Float
+  }
+
+  type Cart {
+    count: Int
+    dish: String
+    price: Float
+    restaurant_id: String
+  }
+
+  type RestaurantDelivery {
+    delivery: Int
+  }
+
   type Query {
     # user(id: ID!): User!
     signin(email: ID!, password: String!, customer: Boolean): Token
@@ -70,6 +118,14 @@ const typeDefs = gql`
       favorite: Int
       search: String
     ): [RestaurantInfo]
+    getRestaurantInfo(id: String): RestaurantInfo
+    getDishes(id: String, type: Int): [Dish]
+    getRestaurantOrders(filter: Int): [RestaurantOrder]
+    getOrderDetails(id: Int): [OrderDishDetails]
+    getCart: [Cart]
+    getRestaurantDelivery(email: String): [RestaurantDelivery]
+    getAllAddresses: [UserAddress]
+    myOrders(filter: Int, deliveryType: Int): [UserOrder]
   }
 
   type Mutation {
@@ -96,6 +152,35 @@ const typeDefs = gql`
       latitude: Float
       longitude: Float
     ): Success
+    updateRestaurantInfo(
+      name: String
+      location: String
+      contact: Int
+      picture: String
+      description: String
+      start: String
+      end: String
+      latitude: Float
+      longitude: Float
+      delivery: Int
+    ): Success
+    createDish(
+      name: String
+      ingredients: String
+      picture: String
+      price: Float
+      description: String
+      category: Int
+      type: Int
+    ): Success
+    updateOrderStatus(status: Int, order_id: Int): Success
+    addToCart(
+      restaurantId: String
+      dish: String
+      count: Int
+      price: Float
+    ): Success
+    placeOrder(addressId: Int, delivery: Int, restaurantId: String): Success
   }
 `;
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Card,
   Container,
@@ -6,17 +6,23 @@ import {
   Form,
   Row,
   Table,
-} from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import Button from 'react-bootstrap/Button';
-import { Link } from 'react-router-dom';
-import Modal from 'react-bootstrap/Modal';
-import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
-import { post, get } from '../utils/serverCall';
-import CountriesList from '../utils/CountriesList';
-import Location from '../account/Location';
-import { actionCreators } from '../reducers/actionCreators';
-import { bindActionCreators } from 'redux';
+} from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import Button from "react-bootstrap/Button";
+import { Link } from "react-router-dom";
+import Modal from "react-bootstrap/Modal";
+import { geocodeByAddress, getLatLng } from "react-places-autocomplete";
+import { bindActionCreators } from "redux";
+import { post, get } from "../utils/serverCall";
+import CountriesList from "../utils/CountriesList";
+import Location from "../account/Location";
+import { actionCreators } from "../reducers/actionCreators";
+import { doMutate, doQuery } from "../graphql/serverCall";
+import {
+  gqlGetAllAddresses,
+  gqlGetRestaurantDelivery,
+  gqlPlaceOrder,
+} from "../graphql/queries";
 
 function PlaceOrder() {
   const cartState = useSelector((state) => state.cartReducer);
@@ -30,14 +36,18 @@ function PlaceOrder() {
 
   useEffect(() => {
     if (cartState.restaurantId) {
-      get('/getRestaurantDelivery', { email: cartState.restaurantId }).then(
-        (result) => {
+      doQuery(
+        gqlGetRestaurantDelivery,
+        { email: cartState.restaurantId },
+        "getRestaurantDelivery"
+      )
+        // get("/getRestaurantDelivery", { email: cartState.restaurantId })
+        .then((result) => {
           setRestDelivery(result[0].delivery);
           if (deliveryType === 0 && result[0].delivery === 1) {
             setDeliveryType(result[0].delivery);
           }
-        }
-      );
+        });
     }
     setTotalCost(0);
     Object.keys(cartState.dishes).forEach((key) => {
@@ -55,18 +65,29 @@ function PlaceOrder() {
   const [deliveryAddress, setDeliveryAddress] = useState();
 
   useEffect(() => {
-    get('/getAllAddresses').then((result) => {
-      setDeliveryAddress(result[0].id);
-      setAddresses(result);
-    });
+    doQuery(gqlGetAllAddresses, {}, "getAllAddresses")
+      // get("/getAllAddresses")
+      .then((result) => {
+        setDeliveryAddress(result[0].id);
+        setAddresses(result);
+      });
   }, []);
 
   const handlePlaceOrder = () => {
-    post('/placeOrder', {
-      restaurantId: cartState.restaurantId,
-      addressId: deliveryAddress,
-      delivery: deliveryType,
-    })
+    doMutate(
+      gqlPlaceOrder,
+      {
+        restaurantId: cartState.restaurantId,
+        addressId: deliveryAddress,
+        delivery: deliveryType,
+      },
+      "placeOrder"
+    )
+      // post("/placeOrder", {
+      //   restaurantId: cartState.restaurantId,
+      //   addressId: deliveryAddress,
+      //   delivery: deliveryType,
+      // })
       .then(() => {
         clearCart();
         setStatus(1);
@@ -75,10 +96,10 @@ function PlaceOrder() {
   };
 
   const defaultDialogData = {
-    location: '',
-    country: 'US',
-    latitude: '',
-    longitude: '',
+    location: "",
+    country: "US",
+    latitude: "",
+    longitude: "",
   };
   const [dialogData, setDialogData] = useState(defaultDialogData);
   const [show, setShow] = useState(false);
@@ -88,7 +109,7 @@ function PlaceOrder() {
   };
   const handleShow = () => setShow(true);
   const addNewAddress = () => {
-    post('/addNewAddress', { ...dialogData }).then((result) => {
+    post("/addNewAddress", { ...dialogData }).then((result) => {
       setAddresses((prev) => [...prev, { id: result.insertId, ...dialogData }]);
       console.log(result);
       handleClose();
@@ -104,9 +125,9 @@ function PlaceOrder() {
         <Modal.Title>Add New Address</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <FloatingLabel controlId='country' label='Country' className='mb-3'>
+        <FloatingLabel controlId="country" label="Country" className="mb-3">
           <CountriesList
-            name='country'
+            name="country"
             value={dialogData.country}
             onChange={eventHandler}
           />
@@ -132,10 +153,10 @@ function PlaceOrder() {
         </FloatingLabel>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant='secondary' onClick={handleClose}>
+        <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
-        <Button variant='primary' onClick={addNewAddress}>
+        <Button variant="primary" onClick={addNewAddress}>
           Add
         </Button>
       </Modal.Footer>
@@ -146,10 +167,10 @@ function PlaceOrder() {
     return (
       <Container>
         <Row>
-          <Card style={{ width: '18rem', margin: 'auto' }}>
+          <Card style={{ width: "18rem", margin: "auto" }}>
             <Card.Body>
               <Card.Title>Placed Order succesfully</Card.Title>
-              <Link to='/myOrders' className='nav-link'>
+              <Link to="/myOrders" className="nav-link">
                 Go to my orders page
               </Link>
               {/* <Card.Link href='/signin'>Go to login page</Card.Link> */}
@@ -194,36 +215,36 @@ function PlaceOrder() {
       </Row>
       <Row>
         <FloatingLabel
-          style={{ marginTop: '8px' }}
-          controlId='floatingSelect'
-          label='Delivery Type'
+          style={{ marginTop: "8px" }}
+          controlId="floatingSelect"
+          label="Delivery Type"
         >
           <Form.Select
-            aria-label='deliveryType'
+            aria-label="deliveryType"
             value={deliveryType}
             onChange={(e) => {
               setDeliveryType(parseInt(e.target.value, 10));
               console.log(deliveryType);
             }}
-            name='deliveryType'
+            name="deliveryType"
           >
-            {restDelivery === 0 && <option value='0'>Home Delivery</option>}
-            <option value='1'>Pickup</option>
+            {restDelivery === 0 && <option value="0">Home Delivery</option>}
+            <option value="1">Pickup</option>
           </Form.Select>
         </FloatingLabel>
         {deliveryType === 0 && (
           <FloatingLabel
-            style={{ marginTop: '8px' }}
-            controlId='floatingSelect'
-            label='Select Address'
+            style={{ marginTop: "8px" }}
+            controlId="floatingSelect"
+            label="Select Address"
           >
             <Form.Select
-              aria-label='deliveryAddress'
+              aria-label="deliveryAddress"
               value={deliveryAddress}
               onChange={(e) => {
                 setDeliveryAddress(e.target.value);
               }}
-              name='deliveryAddress'
+              name="deliveryAddress"
             >
               {addresses.map((each) => (
                 <option key={each.id} value={each.id}>
@@ -234,14 +255,14 @@ function PlaceOrder() {
           </FloatingLabel>
         )}
         <br />
-        <Row style={{ marginTop: '8px' }}>
-          <Button variant='dark' onClick={handleShow}>
+        <Row style={{ marginTop: "8px" }}>
+          <Button variant="dark" onClick={handleShow}>
             Add New Address
           </Button>
         </Row>
       </Row>
-      <Row style={{ marginTop: '8px' }}>
-        <Button variant='dark' onClick={handlePlaceOrder}>
+      <Row style={{ marginTop: "8px" }}>
+        <Button variant="dark" onClick={handlePlaceOrder}>
           Place Order
         </Button>
       </Row>

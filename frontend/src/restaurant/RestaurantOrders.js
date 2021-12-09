@@ -23,6 +23,12 @@ import CONSTANTS, {
 import RedirectSignin from "../common/RedirectSignin";
 import RedirectInvalid from "../common/RedirectInvalid";
 import { isCustomer, isSignedIn } from "../utils/checkAuth";
+import { doMutate, doQuery } from "../graphql/serverCall";
+import {
+  gqlGetOrderDetails,
+  gqlGetRestaurantOrders,
+  gqlUpdateOrderStatus,
+} from "../graphql/queries";
 
 function RestaurantOrders() {
   // const appCookies = cookie.load(CONSTANTS.COOKIE);
@@ -54,7 +60,12 @@ function RestaurantOrders() {
   const [totalCost, setTotalCost] = useState(0);
 
   const getRestaurantOrders = (type) => {
-    get("/getRestaurantOrders", { filter: type })
+    doQuery(
+      gqlGetRestaurantOrders,
+      { filter: parseInt(type, 10) },
+      "getRestaurantOrders"
+    )
+      // get("/getRestaurantOrders", { filter: type })
       .then((response) => {
         setData(response);
       })
@@ -67,7 +78,8 @@ function RestaurantOrders() {
 
   const showDetails = (e) => {
     const id = e.target.getAttribute("name");
-    get("/getOrderDetails", { id })
+    doQuery(gqlGetOrderDetails, { id: parseInt(id, 10) }, "getOrderDetails")
+      // get("/getOrderDetails", { id })
       .then((response) => {
         setOrderInfo((prev) => ({
           ...prev,
@@ -92,18 +104,27 @@ function RestaurantOrders() {
   };
 
   const updateOrderStatus = () => {
-    post("/updateOrderStatus", {
-      order_id: orderInfo.order_id,
-      status: orderStatus,
-    }).then(() => {
-      setDisableUpdate(true);
-      setData((prev) => {
-        const prevOrder = prev[orderInfo.index];
-        prevOrder.status = orderStatus;
-        return prev;
+    doMutate(
+      gqlUpdateOrderStatus,
+      {
+        order_id: parseInt(orderInfo.order_id, 10),
+        status: parseInt(orderStatus, 10),
+      },
+      "updateOrderStatus"
+    )
+      // post("/updateOrderStatus", {
+      //   order_id: orderInfo.order_id,
+      //   status: orderStatus,
+      // })
+      .then(() => {
+        setDisableUpdate(true);
+        setData((prev) => {
+          const prevOrder = prev[orderInfo.index];
+          prevOrder.status = orderStatus;
+          return prev;
+        });
+        handleClose();
       });
-      handleClose();
-    });
   };
 
   return (

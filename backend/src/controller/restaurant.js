@@ -1,10 +1,11 @@
-const db = require('../dbConnector');
-const RESTAURANT = require('../sql/restaurantSql');
-const { response } = require('../utils/response');
+const db = require("../dbConnector");
+const RESTAURANT = require("../sql/restaurantSql");
+const { response } = require("../utils/response");
 
-const getRestaurantInfo = (req, res) => {
+const getRestaurantInfo = (req, _res, _rej) => {
   if (!req.session.user) {
-    response.unauthorized(res, 'unauthorized access');
+    _rej("Unauthorized");
+    // response.unauthorized(res, "unauthorized access");
   } else {
     let { email } = req.session.user;
     if (req.session.user.isCustomer) {
@@ -12,45 +13,52 @@ const getRestaurantInfo = (req, res) => {
     }
     db.query(RESTAURANT.ALL_INFO, email, (err, result) => {
       if (err) {
-        response.error(res, 500, err.code);
+        _rej(err.code);
+        // response.error(res, 500, err.code);
         return;
       }
       if (result.length > 0) {
-        res.send(result);
+        _res(result[0]);
+        // res.send(result);
       } else {
-        response.error(res, 404, 'Record not found');
+        _rej("record not exist");
+        // response.error(res, 404, "Record not found");
       }
     });
   }
 };
 
-const getDishes = (req, res) => {
+const getDishes = (req, _res, _rej) => {
   const { type } = req.query;
   if (!req.session.user) {
-    response.unauthorized(res, 'unauthorized access');
+    _rej("unauthoirzed");
+    // response.unauthorized(res, "unauthorized access");
   } else {
     let query = RESTAURANT.DISHES;
     let { email } = req.session.user;
     if (req.session.user.isCustomer) {
       email = req.query.id;
-      if (type !== '-1') {
+      if (type !== -1) {
         query = RESTAURANT.DISHES_WITH_FILTER;
       }
     }
     db.query(query, [email, type], (err, result) => {
       if (err) {
-        response.error(res, 500, err.code);
+        _rej(err.code);
+        // response.error(res, 500, err.code);
         return;
       }
-      res.send(result);
+      _res(result);
+      // res.send(result);
     });
   }
 };
 
-const createDish = (req, res) => {
+const createDish = (req, _res, _rej) => {
   const { body } = req;
   if (!req.session.user || req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    _rej("unauthorized");
+    // response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       RESTAURANT.ADD_DISH,
@@ -66,10 +74,12 @@ const createDish = (req, res) => {
       ],
       (err, result) => {
         if (err) {
-          response.error(res, 500, err.code);
+          _rej(err.code);
+          // response.error(res, 500, err.code);
           return;
         }
-        res.send();
+        _res({ success: true });
+        // res.send();
       }
     );
   }
@@ -78,7 +88,7 @@ const createDish = (req, res) => {
 const updateDish = (req, res) => {
   const { body } = req;
   if (!req.session.user || req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       RESTAURANT.UPDATE_DISH,
@@ -104,7 +114,7 @@ const updateDish = (req, res) => {
   }
 };
 
-const updateRestaurantInfo = (req, res) => {
+const updateRestaurantInfo = (req, _res, _rej) => {
   const {
     name,
     location,
@@ -118,7 +128,8 @@ const updateRestaurantInfo = (req, res) => {
     delivery,
   } = req.body;
   if (!req.session.user || req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    _rej("unauthorized");
+    // response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       RESTAURANT.UPDATE_RESTAURANT,
@@ -137,19 +148,22 @@ const updateRestaurantInfo = (req, res) => {
       ],
       (err, result) => {
         if (err) {
-          response.error(res, 500, err.code);
+          _rej(err.code);
+          // response.error(res, 500, err.code);
           return;
         }
-        res.send();
+        _res({ success: true });
+        // res.send();
       }
     );
   }
 };
 
-const getRestaurantOrders = (req, res) => {
+const getRestaurantOrders = (req, _res, _rej) => {
   const { filter } = req.query;
   if (!req.session.user || req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    // response.unauthorized(res, "unauthorized access");
+    _rej("unauthorized");
   } else {
     db.query(
       filter === 0
@@ -158,29 +172,34 @@ const getRestaurantOrders = (req, res) => {
       [req.session.user.email, filter],
       (err, result) => {
         if (err) {
-          response.error(res, 500, err.code);
+          _rej(err.code);
+          // response.error(res, 500, err.code);
           return;
         }
-        res.send(result);
+        _res(result);
+        // res.send(result);
       }
     );
   }
 };
 
-const updateOrderStatus = (req, res) => {
+const updateOrderStatus = (req, _res, _rej) => {
   const { body } = req;
   if (!req.session.user || req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    _rej("unauthorized");
+    // response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       RESTAURANT.UDPATE_ORDER_STATUS,
       [body.status, body.order_id],
       (err, result) => {
         if (err) {
-          response.error(res, 500, err.code);
+          _rej(err.code);
+          // response.error(res, 500, err.code);
           return;
         }
-        res.send();
+        _res({ success: true });
+        // res.send();
       }
     );
   }
@@ -189,7 +208,7 @@ const updateOrderStatus = (req, res) => {
 const deleteDish = (req, res) => {
   const { name } = req.body;
   if (!req.session.user || req.session.user.isCustomer) {
-    response.unauthorized(res, 'unauthorized access');
+    response.unauthorized(res, "unauthorized access");
   } else {
     db.query(
       RESTAURANT.DELETE_DISH,

@@ -24,6 +24,8 @@ import CONSTANTS, {
 import { actionCreators } from "../reducers/actionCreators";
 import { get } from "../utils/serverCall";
 import { isCustomer, isSignedIn } from "../utils/checkAuth";
+import { doQuery } from "../graphql/serverCall";
+import { gqlGetCart } from "../graphql/queries";
 
 function Navigator() {
   // const appCookies = cookie.load(CONSTANTS.COOKIE);
@@ -65,7 +67,8 @@ function Navigator() {
   }));
 
   const getCart = (callback) => {
-    get("/getCart")
+    doQuery(gqlGetCart, {}, "getCart")
+      // get("/getCart")
       .then((response) => {
         if (response.length > 0) {
           const dishes = response.reduce(

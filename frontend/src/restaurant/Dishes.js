@@ -1,38 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Input from '@mui/material/Input';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import Stack from '@mui/material/Stack';
-import Image from 'react-bootstrap/Image';
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import Input from "@mui/material/Input";
+import InputLabel from "@mui/material/InputLabel";
+import InputAdornment from "@mui/material/InputAdornment";
+import Stack from "@mui/material/Stack";
+import Image from "react-bootstrap/Image";
 
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Typography from "@mui/material/Typography";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
 
-import { Container } from '@mui/material';
-import Grid from '@mui/material/Grid';
-import propTypes from 'prop-types';
+import { Container } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import propTypes from "prop-types";
 
-import { useDispatch, useSelector } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { useDispatch, useSelector } from "react-redux";
+import { bindActionCreators } from "redux";
 
-import { actionCreators } from '../reducers/actionCreators';
+import { Col, Form } from "react-bootstrap";
+import { actionCreators } from "../reducers/actionCreators";
 
-import { get, post } from '../utils/serverCall';
-import { restaurant } from '../reducers/actions';
-import { Col, Form } from 'react-bootstrap';
-import FileUpload from '../common/FileUpload';
-import { DISH_CATEGORY, VEG } from '../utils/consts';
+import { get, post } from "../utils/serverCall";
+import { restaurant } from "../reducers/actions";
+import FileUpload from "../common/FileUpload";
+import { DISH_CATEGORY, VEG } from "../utils/consts";
+import { doMutate, doQuery } from "../graphql/serverCall";
+import { gqlCreateDish, gqlGetDishes } from "../graphql/queries";
 
 export default function Dishes(props) {
   const dispatch = useDispatch();
@@ -45,30 +47,46 @@ export default function Dishes(props) {
   const [updateIndex, setUpdateIndex] = useState(0);
   const homeFilterState = useSelector((state) => state.homeFilterReducer);
   const dialogDefault = {
-    name: '',
-    ingredients: '',
-    picture: '',
-    price: '',
-    description: '',
-    category: '',
-    type: '',
+    name: "",
+    ingredients: "",
+    picture: "",
+    price: "",
+    description: "",
+    category: 0,
+    type: 0,
   };
 
-  const defaultCart = { restaurantId: '', dishes: {} };
+  const defaultCart = { restaurantId: "", dishes: {} };
   const [cart, setCart] = useState(defaultCart);
   const [dialogData, setDialogData] = useState(dialogDefault);
   const handleDialogChange = (e) => {
-    setDialogData({ ...dialogData, [e.target.name]: e.target.value });
+    if (e.target.getAttribute("type") === "number") {
+      setDialogData({
+        ...dialogData,
+        [e.target.name]: JSON.parse(e.target.value),
+      });
+    } else {
+      setDialogData({ ...dialogData, [e.target.name]: e.target.value });
+    }
   };
 
   useEffect(() => {
-    get('/getDishes', {
-      id: params.get('id'),
-      type: homeFilterState.vegType,
-    }).then((response) => {
-      // const result = new Map(response.map((i) => [i.name, i]));
-      setDishes(() => response);
-    });
+    doQuery(
+      gqlGetDishes,
+      {
+        id: params.get("id"),
+        type: JSON.parse(homeFilterState.vegType),
+      },
+      "getDishes"
+    )
+      // get("/getDishes", {
+      //   id: params.get("id"),
+      //   type: homeFilterState.vegType,
+      // })
+      .then((response) => {
+        // const result = new Map(response.map((i) => [i.name, i]));
+        setDishes(() => response);
+      });
   }, [homeFilterState]);
 
   const handleClickOpen = () => {
@@ -85,7 +103,7 @@ export default function Dishes(props) {
 
   const createDish = () => {
     if (updateMode) {
-      post('/updateDish', {
+      post("/updateDish", {
         ...dialogData,
         originalName: dishes[updateIndex].name,
       })
@@ -99,7 +117,8 @@ export default function Dishes(props) {
         })
         .catch(() => {});
     } else {
-      post('/createDish', dialogData)
+      doMutate(gqlCreateDish, dialogData, "createDish")
+        // post("/createDish", dialogData)
         .then(() => {
           setDishes((prev) => [...prev, dialogData]);
           closeDialog();
@@ -113,21 +132,21 @@ export default function Dishes(props) {
 
   const handleDishEdit = (e) => {
     setUpdateMode(true);
-    setDialogData(dishes[e.target.getAttribute('index')]);
-    setUpdateIndex(e.target.getAttribute('index'));
+    setDialogData(dishes[e.target.getAttribute("index")]);
+    setUpdateIndex(e.target.getAttribute("index"));
     setOpen(true);
   };
 
   const addToCart = (e) => {
-    const restaurantId = params.get('id');
-    const dish = e.target.getAttribute('dish');
-    const price = e.target.getAttribute('price');
+    const restaurantId = params.get("id");
+    const dish = e.target.getAttribute("dish");
+    const price = e.target.getAttribute("price");
     addItem({ restaurantId, dish, price });
   };
 
   const deleteDish = (e) => {
-    const index = e.target.getAttribute('index');
-    post('/deleteDish', { name: dishes[index].name })
+    const index = e.target.getAttribute("index");
+    post("/deleteDish", { name: dishes[index].name })
       .then(() => {
         setDishes((prev) => {
           prev.splice(parseInt(index, 10), 1);
@@ -143,45 +162,47 @@ export default function Dishes(props) {
       <DialogContent>
         <Stack>
           <TextField
-            id='dialogName'
-            name='name'
-            label='Dish Name'
-            variant='standard'
+            id="dialogName"
+            name="name"
+            label="Dish Name"
+            variant="standard"
             value={dialogData.name}
             onChange={handleDialogChange}
           />
           <TextField
-            id='dialogIngredients'
-            name='ingredients'
-            label='Ingredients'
-            variant='standard'
+            id="dialogIngredients"
+            name="ingredients"
+            label="Ingredients"
+            variant="standard"
             value={dialogData.ingredients}
             onChange={handleDialogChange}
           />
 
-          <InputLabel htmlFor='dialogAmount'>Price</InputLabel>
+          <InputLabel htmlFor="dialogAmount">Price</InputLabel>
           <Input
-            id='dialogAmount'
-            name='price'
-            startAdornment={<InputAdornment position='start'>$</InputAdornment>}
+            id="dialogAmount"
+            name="price"
+            type="number"
+            startAdornment={<InputAdornment position="start">$</InputAdornment>}
             value={dialogData.price}
             onChange={handleDialogChange}
           />
           <TextField
-            id='dialogDescription'
-            name='description'
-            label='Description'
-            variant='standard'
+            id="dialogDescription"
+            name="description"
+            label="Description"
+            variant="standard"
             value={dialogData.description}
             onChange={handleDialogChange}
           />
           <br />
-          <FloatingLabel controlId='floatingSelect' label='Dish Category'>
+          <FloatingLabel controlId="floatingSelect" label="Dish Category">
             <Form.Select
-              aria-label='Category'
+              aria-label="Category"
               value={dialogData.category}
+              type="number"
               onChange={handleDialogChange}
-              name='category'
+              name="category"
             >
               {Object.keys(DISH_CATEGORY).map((key) => (
                 <option key={key} value={key}>
@@ -191,12 +212,13 @@ export default function Dishes(props) {
             </Form.Select>
           </FloatingLabel>
           <br />
-          <FloatingLabel controlId='floatingSelect' label='Dish Type'>
+          <FloatingLabel controlId="floatingSelect" label="Dish Type">
             <Form.Select
-              aria-label='type'
+              aria-label="type"
               value={dialogData.type}
+              type="number"
               onChange={handleDialogChange}
-              name='type'
+              name="type"
             >
               {Object.keys(VEG).map((key) => (
                 <option key={key} value={key}>
@@ -206,10 +228,10 @@ export default function Dishes(props) {
             </Form.Select>
           </FloatingLabel>
         </Stack>
-        <Stack alignItems='center' spacing={2}>
-          <Form.Group className='mb-3' controlId='nickname'>
+        <Stack alignItems="center" spacing={2}>
+          <Form.Group className="mb-3" controlId="nickname">
             <Col xs={6} md={4}>
-              <Image src={dialogData.picture} roundedCircle thumbnail='true' />
+              <Image src={dialogData.picture} roundedCircle thumbnail="true" />
             </Col>
             <Col>
               <FileUpload
@@ -217,7 +239,7 @@ export default function Dishes(props) {
                   setDialogData({ ...dialogData, picture: e });
                 }}
                 id={`${
-                  new Date().valueOf() + params.get('id') + dialogData.name
+                  new Date().valueOf() + params.get("id") + dialogData.name
                 }`}
               />
             </Col>
@@ -232,9 +254,9 @@ export default function Dishes(props) {
   );
 
   return (
-    <Container style={{ marginTop: '16px' }}>
+    <Container style={{ marginTop: "16px" }}>
       {!props.isCustomer && (
-        <Button variant='outlined' onClick={handleClickOpen}>
+        <Button variant="outlined" onClick={handleClickOpen}>
           Add Dishes
         </Button>
       )}
@@ -244,34 +266,34 @@ export default function Dishes(props) {
         container
         spacing={{ xs: 2, md: 3 }}
         columns={{ xs: 4, sm: 8, md: 12 }}
-        style={{ marginTop: '16px' }}
+        style={{ marginTop: "16px" }}
       >
         {dishes.map((each, index) => (
           <Grid item xs={2} sm={4} md={4} key={each.name}>
             <Card sx={{ maxWidth: 345 }}>
               <CardMedia
-                component='img'
-                height='140'
+                component="img"
+                height="140"
                 image={each.picture}
-                alt='green iguana'
+                alt="green iguana"
               />
               <CardContent>
-                <Typography gutterBottom variant='h5' component='div'>
+                <Typography gutterBottom variant="h5" component="div">
                   {each.name}
                 </Typography>
-                <Typography variant='body2' color='text.secondary'>
+                <Typography variant="body2" color="text.secondary">
                   {each.description}
                 </Typography>
-                <Typography variant='body2' color='text.secondary'>
+                <Typography variant="body2" color="text.secondary">
                   {`$${each.price}`}
                 </Typography>
               </CardContent>
               {!props.isCustomer && (
                 <CardActions>
-                  <Button size='small' index={index} onClick={handleDishEdit}>
+                  <Button size="small" index={index} onClick={handleDishEdit}>
                     Edit
                   </Button>
-                  <Button size='small' index={index} onClick={deleteDish}>
+                  <Button size="small" index={index} onClick={deleteDish}>
                     Delete
                   </Button>
                 </CardActions>
@@ -281,7 +303,7 @@ export default function Dishes(props) {
                   <Button
                     dish={each.name}
                     price={each.price}
-                    size='small'
+                    size="small"
                     index={index}
                     onClick={addToCart}
                   >
