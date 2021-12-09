@@ -1,14 +1,6 @@
 const { gql } = require("apollo-server");
 
 const typeDefs = gql`
-
-const typeDefs = gql`
-  type File {
-    filename: String!
-    mimetype: String!
-    encoding: String!
-  }
-
   type User {
     email: String
     name: String
