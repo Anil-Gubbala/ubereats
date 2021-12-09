@@ -5,7 +5,6 @@ const { response } = require("../utils/response");
 const getRestaurantInfo = (req, _res, _rej) => {
   if (!req.session.user) {
     _rej("Unauthorized");
-    // response.unauthorized(res, "unauthorized access");
   } else {
     let { email } = req.session.user;
     if (req.session.user.isCustomer) {
@@ -14,15 +13,13 @@ const getRestaurantInfo = (req, _res, _rej) => {
     db.query(RESTAURANT.ALL_INFO, email, (err, result) => {
       if (err) {
         _rej(err.code);
-        // response.error(res, 500, err.code);
         return;
       }
       if (result.length > 0) {
+        console.log(result[0]);
         _res(result[0]);
-        // res.send(result);
       } else {
         _rej("record not exist");
-        // response.error(res, 404, "Record not found");
       }
     });
   }
@@ -198,6 +195,7 @@ const updateOrderStatus = (req, _res, _rej) => {
           // response.error(res, 500, err.code);
           return;
         }
+        console.log(result);
         _res({ success: true });
         // res.send();
       }

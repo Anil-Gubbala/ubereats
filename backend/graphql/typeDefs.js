@@ -1,6 +1,14 @@
 const { gql } = require("apollo-server");
 
 const typeDefs = gql`
+
+const typeDefs = gql`
+  type File {
+    filename: String!
+    mimetype: String!
+    encoding: String!
+  }
+
   type User {
     email: String
     name: String
@@ -140,7 +148,7 @@ const typeDefs = gql`
       longitude: Float
     ): Success
     updateUserInfo(
-      contact: Int
+      contact: Float
       email: String
       dob: String
       location: String
@@ -155,7 +163,7 @@ const typeDefs = gql`
     updateRestaurantInfo(
       name: String
       location: String
-      contact: Int
+      contact: Float
       picture: String
       description: String
       start: String

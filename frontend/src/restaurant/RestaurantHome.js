@@ -88,7 +88,7 @@ function RestaurantHome() {
   const handleDialogChange = (e) => {
     setDialogData({
       ...dialogData,
-      [e.target.name]: JSON.parse(e.target.value),
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -124,7 +124,12 @@ function RestaurantHome() {
           fullWidth
           variant="standard"
           value={dialogData.contact}
-          onChange={handleDialogChange}
+          onChange={(e) => {
+            setDialogData({
+              ...dialogData,
+              [e.target.name]: parseInt(e.target.value, 10),
+            });
+          }}
         />
         <FloatingLabel controlId="start" label="Start Time" className="mb-3">
           <Form.Control

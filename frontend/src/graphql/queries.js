@@ -211,7 +211,7 @@ export const gqlUpdateOrderStatus = gql`
 
 export const gqlUpdateUserProfile = gql`
   mutation UpdateUserInfo(
-    $contact: Int
+    $contact: Float
     $email: String
     $name: String
     $location: String
@@ -245,7 +245,7 @@ export const gqlUpdateRestaurantInfo = gql`
   mutation UpdateRestaurantInfo(
     $name: String
     $location: String
-    $contact: Int
+    $contact: Float
     $picture: String
     $description: String
     $start: String

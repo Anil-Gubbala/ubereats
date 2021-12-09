@@ -23,7 +23,11 @@ export const doMutate = (mutation, params, key) =>
       variables: params,
     })
     .then(
-      ({ data: { [key]: data } }) => data
+      ({ data }) => {
+        const newData = data[key];
+        console.log(data);
+        return newData;
+      }
       //   console.log(data);
     )
     .catch((err) => {

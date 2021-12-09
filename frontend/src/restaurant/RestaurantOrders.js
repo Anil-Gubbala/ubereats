@@ -116,7 +116,8 @@ function RestaurantOrders() {
       //   order_id: orderInfo.order_id,
       //   status: orderStatus,
       // })
-      .then(() => {
+      .then((response) => {
+        console.log(response);
         setDisableUpdate(true);
         setData((prev) => {
           const prevOrder = prev[orderInfo.index];

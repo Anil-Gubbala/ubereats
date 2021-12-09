@@ -142,6 +142,7 @@ const getOrderDetails = (req, _res, _rej) => {
         // response.error(res, 500, err.code);
         return;
       }
+      console.log(result);
       _res(result);
       // res.send(result);
     });
