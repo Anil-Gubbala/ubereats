@@ -10,49 +10,56 @@ const sendError = (res, status, code) => {
   res.status(status).send({ err: code });
 };
 
-const registerRestaurant = (req, res, hash) => {
+const registerRestaurant = (req, hash, _res, _rej) => {
   const { restaurantName, email, location, latitude, longitude } = req.body;
   db.query(
     RESTAURANT.SIGNUP,
     [restaurantName, email, hash, location, latitude, longitude],
     (err1) => {
       if (err1) {
-        sendError(
-          res,
-          409,
-          err1.errno === 1062 ? "email already registered" : err1.code
-        );
+        // err1.errno === 1062
+        _rej("email already registered");
+        // : _rej(err1.code);
+        // sendError(
+        //   res,
+        //   409,
+        //   err1.errno === 1062 ? "email already registered" : err1.code
+        // );
       } else {
-        res.status(200).send({ success: true });
+        // res.status(200).send({ success: true });
+        _res({ success: true });
       }
     }
   );
 };
 
-const registerUser = (req, res, hash) => {
+const registerUser = (req, hash, _res, _rej) => {
   db.query(USER.SIGNUP, [req.body.name, req.body.email, hash], (err1) => {
     if (err1) {
-      sendError(
-        res,
-        409,
-        err1.errno === 1062 ? "email already registered" : err1.code
-      );
+      // sendError(
+      _rej("email already registered");
+      // res,
+      // 409,
+      // err1.errno === 1062 ? "email already registered" : err1.code
+      // );
     } else {
-      res.status(200).send({ success: true });
+      _res({ success: true });
+      // res.status(200).send({ success: true });
     }
   });
 };
 
-const signup = (req, res) => {
+const signup = (req, _res, _rej) => {
   bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
     if (err) {
-      sendError(res, 404, err.code);
+      _rej("Hashing Error");
+      // sendError(res, 404, err.code);
       return;
     }
     if (req.body.accountType === "1") {
-      registerRestaurant(req, res, hash);
+      registerRestaurant(req, hash, _res, _rej);
     } else {
-      registerUser(req, res, hash);
+      registerUser(req, hash, _res, _rej);
     }
   });
 };
@@ -74,7 +81,7 @@ const setSession = (req, res, email, isCustomer, status) => {
   });
 };
 
-const signin = (req, context, _res, _rej) => {
+const signin = (req, _res, _rej) => {
   console.log(req);
   let sql = USER.PASSWORD;
   if (!req.body.customer) {
@@ -96,7 +103,10 @@ const signin = (req, context, _res, _rej) => {
               email: req.body.email,
               isCustomer: req.body.customer,
               status: result[0].status,
-              token: jwt.sign({ email: "email", name: "name" }, "lab3"),
+              token: jwt.sign(
+                { email: req.body.email, isCustomer: req.body.customer },
+                "lab3"
+              ),
             });
             return;
           }

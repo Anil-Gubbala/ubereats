@@ -12,6 +12,21 @@ export const doQuery = (query, params, key) =>
       //   console.log(data);
     )
     .catch((err) => {
-      throw new Error(err);
+      throw err.message;
+      //   console.log(err);
+    });
+
+export const doMutate = (mutation, params, key) =>
+  client
+    .mutate({
+      mutation,
+      variables: params,
+    })
+    .then(
+      ({ data: { [key]: data } }) => data
+      //   console.log(data);
+    )
+    .catch((err) => {
+      throw err.message;
       //   console.log(err);
     });

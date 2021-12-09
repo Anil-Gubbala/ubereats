@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Container,
   FormControl,
   InputGroup,
   Button,
   Nav,
-} from 'react-bootstrap';
-import Card from 'react-bootstrap/Card';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import { Link } from 'react-router-dom';
-import IconButton from '@mui/material/IconButton';
-import StarIcon from '@mui/icons-material/Star';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { useSelector } from 'react-redux';
+} from "react-bootstrap";
+import Card from "react-bootstrap/Card";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import { Link } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import { useSelector } from "react-redux";
 
-import { get, post } from '../utils/serverCall';
+import { get, post } from "../utils/serverCall";
+import { doQuery } from "../graphql/serverCall";
+import { gqlGetRestaruantsList } from "../graphql/queries";
 
 function CustomerHome() {
   const defaultValues = [];
   const [restaurantsInfo, setRestaurantsInfo] = useState(defaultValues);
   const [favorites, setFavorites] = useState([]);
   const homeFilterState = useSelector((state) => state.homeFilterReducer);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [tab, setTab] = useState(0);
 
   // const defaultFilter = {
@@ -32,13 +34,23 @@ function CustomerHome() {
   // const [filter, setFilter] = useState(defaultFilter);
 
   const getRestaurantList = (fav) => {
-    get('/getRestaruantsList', {
-      ...homeFilterState,
-      search,
-      favorite: fav,
-    }).then((data) => {
-      setRestaurantsInfo(() => data);
-    });
+    doQuery(
+      gqlGetRestaruantsList,
+      {
+        ...homeFilterState,
+        search,
+        favorite: fav,
+      },
+      "getRestaruantsList"
+    )
+      // get('/getRestaruantsList', {
+      //   ...homeFilterState,
+      //   search,
+      //   favorite: fav,
+      // })
+      .then((data) => {
+        setRestaurantsInfo(() => data);
+      });
   };
 
   useEffect(() => {
@@ -54,15 +66,15 @@ function CustomerHome() {
   // }, []);
 
   useEffect(() => {
-    get('/getFavorites').then((data) => {
+    get("/getFavorites").then((data) => {
       const list = data.map((each) => each.restaurant_id);
       setFavorites(() => list);
     });
   }, []);
 
   const addToFavorites = (e) => {
-    const email = e.currentTarget.getAttribute('email');
-    post('/addToFavorites', {
+    const email = e.currentTarget.getAttribute("email");
+    post("/addToFavorites", {
       email,
     })
       .then(() => {
@@ -72,8 +84,8 @@ function CustomerHome() {
   };
 
   const removeFromFavorites = (e) => {
-    const email = e.currentTarget.getAttribute('email');
-    post('/removeFromFavorites', {
+    const email = e.currentTarget.getAttribute("email");
+    post("/removeFromFavorites", {
       email,
     })
       .then(() => {
@@ -101,21 +113,21 @@ function CustomerHome() {
   return (
     <Container>
       <Row>
-        <Nav variant='tabs' defaultActiveKey='all'>
+        <Nav variant="tabs" defaultActiveKey="all">
           <Nav.Item>
             <Nav.Link
-              eventKey='all'
+              eventKey="all"
               onClick={() => {
                 setTab(0);
               }}
             >
-              {' '}
-              ALL{' '}
+              {" "}
+              ALL{" "}
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
             <Nav.Link
-              eventKey='favorite'
+              eventKey="favorite"
               onClick={() => {
                 setTab(1);
               }}
@@ -126,19 +138,19 @@ function CustomerHome() {
         </Nav>
       </Row>
       <Row>
-        <InputGroup className='mb-3' style={{ marginTop: '8px' }}>
+        <InputGroup className="mb-3" style={{ marginTop: "8px" }}>
           <FormControl
-            placeholder='Search Restaurants'
-            aria-label='Search Restaurants'
-            aria-describedby='basic-addon2'
+            placeholder="Search Restaurants"
+            aria-label="Search Restaurants"
+            aria-describedby="basic-addon2"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
             }}
           />
           <Button
-            variant='outline-secondary'
-            id='button-addon2'
+            variant="outline-secondary"
+            id="button-addon2"
             onClick={() => {
               getRestaurantList(tab);
             }}
@@ -149,20 +161,20 @@ function CustomerHome() {
       </Row>
       {restaurantsInfo.length === 0 && (
         <Row>
-          <Card style={{ width: '18rem', margin: 'auto' }}>
+          <Card style={{ width: "18rem", margin: "auto" }}>
             <Card.Body>
               <Card.Title>No Restaurants Available</Card.Title>
             </Card.Body>
           </Card>
         </Row>
       )}
-      <Row xs={1} md={3} className='g-4'>
+      <Row xs={1} md={3} className="g-4">
         {restaurantsInfo.map((each) => (
           <Col key={each.name}>
-            <Card style={{ width: '18rem' }}>
+            <Card style={{ width: "18rem" }}>
               <Card.Img
-                style={{ height: '140px' }}
-                variant='top'
+                style={{ height: "140px" }}
+                variant="top"
                 src={each.picture}
               />
               <Card.Body>
@@ -170,13 +182,13 @@ function CustomerHome() {
                 <Card.Text>{each.description}</Card.Text>
                 <Link
                   to={`/restaurant?id=${each.email}`}
-                  className='pure-menu-link'
+                  className="pure-menu-link"
                 >
                   View Menu
                 </Link>
                 {favorites.indexOf(each.email) >= 0 ? (
                   <IconButton
-                    aria-label='Remove Favorite'
+                    aria-label="Remove Favorite"
                     email={each.email}
                     onClick={removeFromFavorites}
                   >
@@ -184,7 +196,7 @@ function CustomerHome() {
                   </IconButton>
                 ) : (
                   <IconButton
-                    aria-label='Add Favorite'
+                    aria-label="Add Favorite"
                     email={each.email}
                     onClick={addToFavorites}
                   >

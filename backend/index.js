@@ -29,7 +29,7 @@ const apolloServer = new ApolloServer({
     // console.log(token);
     let user = null;
     try {
-      user = jwt.verify(token, "lab3");
+      user = jwt.verify(token.split(" ")[1], "lab3");
     } catch (error) {
       user = null;
     }

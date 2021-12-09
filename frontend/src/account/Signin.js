@@ -71,17 +71,15 @@ function Signin() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    doQuery(
-      signin,
-      { email: "u1@gmail.com", password: "asdf", customer: true },
-      "signin"
-    )
+    doQuery(signin, formData, "signin")
       .then((data) => {
         if (formData.customer) {
+          localStorage.setItem("token", data.token);
           localStorage.setItem(CONSTANTS.STR_KEY, CONSTANTS.STR_USER);
           localStorage.setItem(CONSTANTS.STATUS, data.status);
           customer(formData.email);
         } else {
+          localStorage.setItem("token", data.token);
           localStorage.setItem(CONSTANTS.STR_KEY, CONSTANTS.STR_RESTAURANT);
           localStorage.setItem(CONSTANTS.STATUS, data.status);
           restaurant(formData.email);

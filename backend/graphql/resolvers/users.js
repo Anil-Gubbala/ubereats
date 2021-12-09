@@ -1,42 +1,69 @@
 const { AuthenticationError, UserInputError } = require("apollo-server");
 const jwt = require("jsonwebtoken");
-const { signin } = require("../../src/controller/account");
+const { signin, signup } = require("../../src/controller/account");
+const { getRestaruantsList } = require("../../src/controller/common");
+const {
+  getUserProfile,
+  updateUserInfo,
+} = require("../../src/controller/customer");
+
+const makeRequest = (args, context, func, type) =>
+  new Promise((_res, _rej) => {
+    func({ [type]: args, session: context }, _res, _rej);
+  });
 
 module.exports = {
   Query: {
     signin: async (parent, args, context) => {
-      // console.log(args);
-      // console.log(context.req.req);
-      // console.log(context);
-      // const res = {
-      //   send: () => ({ token: "hello" }),
-      // };
-
-      // try {
-      const result = await new Promise((_res, _rej) => {
-        signin({ body: args }, context, _res, _rej);
-      }).catch((err) => {
-        console.log(err);
+      const result = await makeRequest(args, context, signin, "body").catch(
+        (err) => {
+          throw new Error(err);
+        }
+      );
+      return result;
+    },
+    getUserProfile: async (parent, args, context) => {
+      const result = await makeRequest(
+        args,
+        context,
+        getUserProfile,
+        "query"
+      ).catch((err) => {
         throw new Error(err);
       });
       return result;
-
-      // } catch {
-      //   throw new Error("err");
-      // }
-
-      // result.then(())
-      // const token = await signin({ body: args });
-      // return token;
-
-      // throw new Error("err");
-
-      // return {
-      //   id: 1,
-      //   name: "",
-      //   password: jwt.sign({ email: "email", name: "name" }, "lab3"),
-      // };
+    },
+    getRestaruantsList: async (parent, args, context) => {
+      const result = await makeRequest(
+        args,
+        context,
+        getRestaruantsList,
+        "query"
+      ).catch((err) => {
+        throw new Error(err);
+      });
+      return result;
     },
   },
-  Mutation: {},
+  Mutation: {
+    signup: async (parent, args, context) => {
+      const result = await makeRequest(args, context, signup, "body").catch(
+        (err) => {
+          throw new Error(err);
+        }
+      );
+      return result;
+    },
+    updateUserInfo: async (parent, args, context) => {
+      const result = await makeRequest(
+        args,
+        context,
+        updateUserInfo,
+        "body"
+      ).catch((err) => {
+        throw new Error(err);
+      });
+      return result;
+    },
+  },
 };

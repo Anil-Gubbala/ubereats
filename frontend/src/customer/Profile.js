@@ -16,6 +16,8 @@ import FileUpload from "../common/FileUpload";
 import CountriesList from "../utils/CountriesList";
 import Location from "../account/Location";
 import { isCustomer } from "../utils/checkAuth";
+import { doMutate, doQuery } from "../graphql/serverCall";
+import { getUserProfile, gqlUpdateUserProfile } from "../graphql/queries";
 
 function Profile() {
   const status = localStorage.getItem(CONSTANTS.STATUS);
@@ -50,27 +52,49 @@ function Profile() {
   const [formData, setFormData] = useState(defaultFormData);
 
   useEffect(() => {
-    get("/getUserProfile", {
-      email,
-    }).then((response) => {
-      const user = response[0][0];
-      const userData = response[1][0];
-      const addresses = response[2][0];
-      setFormData((prev) => ({ ...prev, ...user, ...userData, ...addresses }));
-    });
+    doQuery(
+      getUserProfile,
+      {
+        email,
+      },
+      "getUserProfile"
+    )
+      // get("/getUserProfile", {
+      //   email,
+      // })
+      .then((response) => {
+        const { user } = response;
+        const userData = response.profile;
+        const { addresses } = response;
+        setFormData((prev) => ({
+          ...prev,
+          ...user,
+          ...userData,
+          ...addresses,
+        }));
+      });
   }, []);
 
   const eventHandler = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (e.target.name === "contact") {
+      setFormData({
+        ...formData,
+        [e.target.name]: parseInt(e.target.value, 10),
+      });
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    }
   };
 
   const handleUpdateProfile = (e) => {
     e.preventDefault();
-    post("/updateUserInfo", formData).then(() => {
-      setEditMode(false);
-      // setViewMode(true);
-      localStorage.removeItem(CONSTANTS.STATUS);
-    });
+    doMutate(gqlUpdateUserProfile, formData, "updateUserProfile")
+      // post("/updateUserInfo", formData)
+      .then(() => {
+        setEditMode(false);
+        // setViewMode(true);
+        localStorage.removeItem(CONSTANTS.STATUS);
+      });
   };
 
   const editProfile = () => {
@@ -127,7 +151,7 @@ function Profile() {
                 type="date"
                 onChange={eventHandler}
                 required
-                value={formData.dob.split("T")[0]}
+                value={formData.dob ? formData.dob.split("T")[0] : ""}
               />
             </FloatingLabel>
             <FloatingLabel

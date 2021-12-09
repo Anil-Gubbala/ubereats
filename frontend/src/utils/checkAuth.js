@@ -9,4 +9,5 @@ export const isSignedIn = () => {
 export const getStatus = () =>
   JSON.parse(localStorage.getItem(CONSTANTS.STATUS));
 export const isCustomer = () =>
-  JSON.parse(localStorage.getItem(CONSTANTS.STR_KEY)) === CONSTANTS.STR_USER;
+  JSON.parse(localStorage.getItem(CONSTANTS.STR_KEY)) ===
+  JSON.parse(CONSTANTS.STR_USER);
